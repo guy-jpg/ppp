@@ -1,0 +1,14 @@
+.env
+*.pyc
+__pycache__/
+.venv/
+venv/
+*.db
+*.sqlite
+*.sqlite3
+data/
+google_token.json
+google_credentials.json
+.pytest_cache/
+.idea/
+.vscode/
