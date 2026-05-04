@@ -217,6 +217,8 @@ def build_parser() -> argparse.ArgumentParser:
     # predict
     p_predict = sub.add_parser("predict")
     p_predict.add_argument("--scenario", "-s", default="baseline")
+    p_predict.add_argument("--days", "-d", type=int, default=365,
+                           help="אופק זמן בימים (ברירת מחדל: 365)")
 
     # compare
     sub.add_parser("compare")
@@ -256,8 +258,10 @@ def main(argv: list[str] | None = None) -> None:
         if sc is None:
             print(f"{RED}תרחיש לא קיים: '{args.scenario}'{RESET}")
             sys.exit(1)
-        result = predict(sc.build_factors())
-        render_result(result, scenario_name=sc.name)
+        days = getattr(args, "days", 365)
+        horizon = f"{days} יום" if days != 365 else "12 חודשים"
+        result = predict(sc.build_factors(), days=days)
+        render_result(result, scenario_name=f"{sc.name} │ אופק: {horizon}")
 
     elif args.command == "compare":
         render_comparison()

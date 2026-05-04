@@ -36,6 +36,7 @@ from conflict_model.factors import DEFAULT_FACTORS, Factor, total_weight
 _K = 8.0          # sigmoid steepness
 _N_SAMPLES = 10_000
 _SEED = 42
+_HORIZON_DAYS = 365  # model is calibrated to annual probability
 
 
 def _sigmoid(x: float) -> float:
@@ -82,10 +83,19 @@ def _risk_label(p: float) -> str:
     return "קיצוני"
 
 
+def scale_to_horizon(annual_prob: float, days: int) -> float:
+    """Convert annual probability to an arbitrary day-window via Poisson process."""
+    if annual_prob >= 1.0:
+        return 1.0
+    rate = -math.log(1.0 - annual_prob)          # events/year
+    return 1.0 - math.exp(-rate * days / _HORIZON_DAYS)
+
+
 def predict(
     factors: Optional[Dict[str, Factor]] = None,
     n_samples: int = _N_SAMPLES,
     seed: int = _SEED,
+    days: int = _HORIZON_DAYS,
 ) -> PredictionResult:
     """
     Compute conflict-resumption probability with Monte Carlo confidence interval.
@@ -131,14 +141,18 @@ def predict(
     mc_mean = sum(mc_probs) / n_samples
     mc_std = math.sqrt(sum((p - mc_mean) ** 2 for p in mc_probs) / n_samples)
 
+    p_scaled    = scale_to_horizon(p_point, days)
+    ci_low_s    = scale_to_horizon(ci_low, days)
+    ci_high_s   = scale_to_horizon(ci_high, days)
+
     return PredictionResult(
-        probability=p_point,
+        probability=p_scaled,
         raw_score=raw,
-        ci_low=ci_low,
-        ci_high=ci_high,
+        ci_low=ci_low_s,
+        ci_high=ci_high_s,
         mc_std=mc_std,
         factor_contributions=contributions,
-        label=_risk_label(p_point),
+        label=_risk_label(p_scaled),
     )
 
 
