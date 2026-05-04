@@ -1,5 +1,6 @@
 import os
 import json
+os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
