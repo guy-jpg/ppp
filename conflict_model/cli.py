@@ -161,6 +161,62 @@ def render_factors() -> None:
     print()
 
 
+def render_live(days: int = 365, show_headlines: bool = False) -> None:
+    from conflict_model.news import fetch_and_update
+
+    print()
+    print(rule("מודל חי – טוען חדשות בזמן אמת..."))
+    print(f"  {DIM}מושך נתונים מ-BBC, Al Jazeera, Times of Israel, Reuters, Jerusalem Post{RESET}")
+    print()
+
+    feed = fetch_and_update()
+
+    print(f"  {DIM}נאספו {feed.headlines_analyzed} כותרות │ רלוונטיות: {BOLD}{feed.relevant_count}{RESET}{DIM} │ {feed.fetch_time}{RESET}\n")
+
+    # Signals table
+    escalation_signals = [s for s in feed.signals if s.direction == "escalation"]
+    deescalation_signals = [s for s in feed.signals if s.direction == "de-escalation"]
+
+    if escalation_signals or deescalation_signals:
+        t = Table(title="אותות מהחדשות", col_widths=[26, 10, 8, 50])
+        t.set_headers("גורם", "כיוון", "Δ ציון", "כותרת מייצגת")
+        for sig in sorted(feed.signals, key=lambda s: abs(s.delta), reverse=True):
+            if sig.direction == "neutral":
+                continue
+            arrow = RED + "▲ הסלמה" + RESET if sig.direction == "escalation" else GREEN + "▼ הרגעה" + RESET
+            delta_str = (RED + f"+{sig.delta:.1f}" if sig.delta > 0 else GREEN + f"{sig.delta:.1f}") + RESET
+            headline_sample = sig.matched_headlines[0][:48] if sig.matched_headlines else "—"
+            t.add_row(sig.factor_name, arrow, delta_str, DIM + headline_sample + RESET)
+        print(t.render())
+        print()
+    else:
+        print(f"  {DIM}לא נמצאו אותות חדשותיים משמעותיים כרגע – משתמש בציונים בסיסיים{RESET}\n")
+
+    if show_headlines:
+        relevant = [h for h in feed.headlines if any(
+            kw in (h.title + h.summary).lower()
+            for kw in ["iran", "israel", "nuclear", "hezbollah", "houthi"]
+        )][:12]
+        if relevant:
+            print(rule("כותרות רלוונטיות"))
+            for h in relevant:
+                print(f"  {DIM}[{h.source}]{RESET} {h.title[:80]}")
+            print()
+
+    # Run model with updated factors
+    horizon = f"{days} יום" if days != 365 else "12 חודשים"
+    result = predict(feed.updated_factors, days=days)
+    render_result(result, scenario_name=f"עדכון חי │ אופק: {horizon}")
+
+    # Compare to baseline
+    from conflict_model.model import predict as predict_base
+    baseline = predict_base(days=days)
+    diff = result.probability - baseline.probability
+    if abs(diff) > 0.005:
+        direction = RED + f"▲ +{diff*100:.1f}%" + RESET if diff > 0 else GREEN + f"▼ {diff*100:.1f}%" + RESET
+        print(f"  {DIM}שינוי ביחס לבייסליין:{RESET} {direction}\n")
+
+
 def render_scenarios() -> None:
     print()
     print(rule("תרחישים זמינים"))
@@ -203,6 +259,8 @@ HELP_TEXT = f"""
   python main.py compare
   python main.py tornado --scenario proxy_escalation
   python main.py update nuclear_advancement 9.5
+  python main.py live                          עדכון מחדשות בזמן אמת
+  python main.py live --days 14               עדכון + אופק 14 יום
 """
 
 
@@ -238,6 +296,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_update.add_argument("factor_key")
     p_update.add_argument("score", type=float)
     p_update.add_argument("--scenario", "-s", default="baseline")
+
+    # live
+    p_live = sub.add_parser("live")
+    p_live.add_argument("--days", "-d", type=int, default=365)
+    p_live.add_argument("--headlines", action="store_true",
+                        help="הצג כותרות רלוונטיות")
 
     # help
     sub.add_parser("help")
@@ -304,3 +368,8 @@ def main(argv: list[str] | None = None) -> None:
         result = predict(factors)
         render_result(result, scenario_name=f"{sc.name} (מותאם)")
         render_tornado(factors)
+
+    elif args.command == "live":
+        days = getattr(args, "days", 365)
+        show_headlines = getattr(args, "headlines", False)
+        render_live(days=days, show_headlines=show_headlines)
