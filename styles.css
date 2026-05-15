@@ -37,6 +37,170 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     position: relative;
+    cursor: none;
+}
+
+a, button, input, textarea, select, .tilt-card, .service-card, .about-card, .contact-detail {
+    cursor: none;
+}
+
+/* ===== Custom Cursor ===== */
+.custom-cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px var(--accent);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: screen;
+}
+
+.custom-cursor.hover {
+    width: 50px;
+    height: 50px;
+    background: rgba(124, 92, 255, 0.3);
+    border: 2px solid var(--primary);
+}
+
+.custom-cursor-trail {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(124, 92, 255, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease-out;
+}
+
+@media (max-width: 968px), (hover: none) {
+    body, a, button, input, textarea, select { cursor: auto; }
+    .custom-cursor, .custom-cursor-trail { display: none; }
+}
+
+/* ===== Matrix rain ===== */
+.bg-matrix {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+/* ===== Particles ===== */
+.bg-particles {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ===== Scan line ===== */
+.scan-line {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+    opacity: 0.6;
+    z-index: 99;
+    pointer-events: none;
+    animation: scanMove 8s linear infinite;
+    box-shadow: 0 0 20px var(--secondary);
+}
+
+@keyframes scanMove {
+    0% { transform: translateY(0); opacity: 0; }
+    5% { opacity: 0.6; }
+    95% { opacity: 0.6; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* ===== Glitch effect ===== */
+.glitch {
+    position: relative;
+    display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--accent);
+    animation: glitchAnim 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: 2px 0 var(--secondary);
+    animation: glitchAnim 2s infinite linear alternate-reverse;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+}
+
+.glitch-color::before,
+.glitch-color::after {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes glitchAnim {
+    0%, 90%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 1px); }
+    40% { transform: translate(2px, -1px); }
+    60% { transform: translate(-1px, -1px); }
+    80% { transform: translate(1px, 1px); }
+}
+
+/* ===== Typing cursor ===== */
+.typing-text {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.typing-cursor {
+    display: inline-block;
+    color: var(--secondary);
+    animation: blink 1s step-end infinite;
+    font-weight: 300;
+    margin-right: 2px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* ===== 3D Tilt ===== */
+.tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
+
+.tilt-card .service-icon,
+.tilt-card h3,
+.tilt-card p,
+.tilt-card .service-features {
+    transform: translateZ(20px);
 }
 
 .bg-grid {

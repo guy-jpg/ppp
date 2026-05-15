@@ -20,8 +20,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-trail" id="cursorTrail"></div>
+    <canvas class="bg-matrix" id="matrixCanvas"></canvas>
+    <canvas class="bg-particles" id="particlesCanvas"></canvas>
     <div class="bg-grid"></div>
     <div class="bg-gradient"></div>
+    <div class="scan-line"></div>
 
     <header class="navbar" id="navbar">
         <div class="container nav-container">
@@ -51,8 +56,8 @@
                     מובילים את עידן ה-AI בישראל
                 </div>
                 <h1 class="hero-title">
-                    מנגישים את <span class="gradient-text">הבינה המלאכותית</span>
-                    <br>לכל אחד ואחת
+                    <span class="glitch" data-text="מנגישים את">מנגישים את</span> <span class="gradient-text glitch-color" data-text="הבינה המלאכותית">הבינה המלאכותית</span>
+                    <br>ל<span class="typing-text" id="typingText"></span><span class="typing-cursor">|</span>
                 </h1>
                 <p class="hero-subtitle">
                     TEV - <strong>טכנולוגיה, יזמות וחזון</strong>. אנחנו מאמינים שכוחה של הבינה המלאכותית המתקדמת צריך להיות נגיש לכולם - מהיזם הקטן ועד הארגון הגדול. אנחנו כאן כדי להוביל אתכם אל העתיד.
@@ -185,7 +190,7 @@
             </div>
 
             <div class="services-grid">
-                <article class="service-card reveal">
+                <article class="service-card reveal tilt-card">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0v20M2 12h20"/></svg>
                     </div>
@@ -198,7 +203,7 @@
                     </ul>
                 </article>
 
-                <article class="service-card featured reveal">
+                <article class="service-card featured reveal tilt-card">
                     <div class="featured-badge">הכי פופולרי</div>
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
@@ -212,7 +217,7 @@
                     </ul>
                 </article>
 
-                <article class="service-card reveal">
+                <article class="service-card reveal tilt-card">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                     </div>
@@ -225,7 +230,7 @@
                     </ul>
                 </article>
 
-                <article class="service-card reveal">
+                <article class="service-card reveal tilt-card">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
                     </div>
@@ -238,7 +243,7 @@
                     </ul>
                 </article>
 
-                <article class="service-card reveal">
+                <article class="service-card reveal tilt-card">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                     </div>
@@ -251,7 +256,7 @@
                     </ul>
                 </article>
 
-                <article class="service-card reveal">
+                <article class="service-card reveal tilt-card">
                     <div class="service-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                     </div>
