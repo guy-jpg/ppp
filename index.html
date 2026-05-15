@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEV - טכנולוגיה, יזמות וחזון | מנגישים את הבינה המלאכותית</title>
+    <meta name="description" content="TEV - חברת טכנולוגיה מובילה המקדמת ומנגישה את עולם הבינה המלאכותית המתקדמת לעסקים, יזמים ואנשים פרטיים בישראל.">
+    <meta name="keywords" content="TEV, בינה מלאכותית, AI, טכנולוגיה, יזמות, חזון, הנגשת AI, חדשנות, ישראל">
+    <meta name="author" content="TEV">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="TEV - מנגישים את הבינה המלאכותית">
+    <meta property="og:description" content="טכנולוגיה, יזמות וחזון - מקדמים את עתיד ה-AI בישראל">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+
+    <header class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#home" class="logo">
+                <span class="logo-mark">TEV</span>
+                <span class="logo-dot"></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#home">בית</a>
+                <a href="#about">אודות</a>
+                <a href="#services">שירותים</a>
+                <a href="#vision">החזון</a>
+                <a href="#contact">צור קשר</a>
+            </nav>
+            <button class="cta-btn cta-btn-small" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">בואו נדבר</button>
+            <button class="menu-toggle" id="menuToggle" aria-label="תפריט">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span>
+                    מובילים את עידן ה-AI בישראל
+                </div>
+                <h1 class="hero-title">
+                    מנגישים את <span class="gradient-text">הבינה המלאכותית</span>
+                    <br>לכל אחד ואחת
+                </h1>
+                <p class="hero-subtitle">
+                    TEV - <strong>טכנולוגיה, יזמות וחזון</strong>. אנחנו מאמינים שכוחה של הבינה המלאכותית המתקדמת צריך להיות נגיש לכולם - מהיזם הקטן ועד הארגון הגדול. אנחנו כאן כדי להוביל אתכם אל העתיד.
+                </p>
+                <div class="hero-cta">
+                    <button class="cta-btn cta-btn-primary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">
+                        גלו את השירותים שלנו
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="cta-btn cta-btn-secondary" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+                        קצת עלינו
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-num" data-target="100">0</div>
+                        <div class="stat-label">+ לקוחות מרוצים</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-num" data-target="50">0</div>
+                        <div class="stat-label">+ פרויקטי AI</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-num" data-target="24">0</div>
+                        <div class="stat-label">/7 תמיכה</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="orb orb-1"></div>
+                <div class="orb orb-2"></div>
+                <div class="orb orb-3"></div>
+                <div class="ai-brain">
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#7c5cff"/>
+                                <stop offset="50%" style="stop-color:#00d4ff"/>
+                                <stop offset="100%" style="stop-color:#ff5cdc"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="url(#brainGrad)" stroke-width="1" opacity="0.3"/>
+                        <circle cx="100" cy="100" r="60" fill="none" stroke="url(#brainGrad)" stroke-width="1" opacity="0.5"/>
+                        <circle cx="100" cy="100" r="40" fill="none" stroke="url(#brainGrad)" stroke-width="1" opacity="0.7"/>
+                        <g class="nodes">
+                            <circle cx="100" cy="20" r="4" fill="#7c5cff"/>
+                            <circle cx="180" cy="100" r="4" fill="#00d4ff"/>
+                            <circle cx="100" cy="180" r="4" fill="#ff5cdc"/>
+                            <circle cx="20" cy="100" r="4" fill="#7c5cff"/>
+                            <circle cx="155" cy="45" r="3" fill="#00d4ff"/>
+                            <circle cx="155" cy="155" r="3" fill="#ff5cdc"/>
+                            <circle cx="45" cy="155" r="3" fill="#7c5cff"/>
+                            <circle cx="45" cy="45" r="3" fill="#00d4ff"/>
+                            <circle cx="100" cy="100" r="8" fill="url(#brainGrad)"/>
+                        </g>
+                        <g stroke="url(#brainGrad)" stroke-width="0.8" opacity="0.6">
+                            <line x1="100" y1="20" x2="100" y2="100"/>
+                            <line x1="180" y1="100" x2="100" y2="100"/>
+                            <line x1="100" y1="180" x2="100" y2="100"/>
+                            <line x1="20" y1="100" x2="100" y2="100"/>
+                            <line x1="155" y1="45" x2="100" y2="100"/>
+                            <line x1="155" y1="155" x2="100" y2="100"/>
+                            <line x1="45" y1="155" x2="100" y2="100"/>
+                            <line x1="45" y1="45" x2="100" y2="100"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>גללו למטה</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">אודות TEV</span>
+                <h2 class="section-title">מי אנחנו?</h2>
+                <p class="section-desc">סיפור קצר על המותג שמשנה את כללי המשחק</p>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <h3>השם שלנו - <span class="gradient-text">TEV</span></h3>
+                    <p>השם TEV הוא ראשי תיבות של שלושה ערכי יסוד שמנחים אותנו:</p>
+                    <ul class="values-list">
+                        <li><span class="letter">T</span><div><strong>טכנולוגיה</strong> - אנחנו חיים ונושמים את הטכנולוגיה המתקדמת בעולם, ומביאים אותה אליכם</div></li>
+                        <li><span class="letter">E</span><div><strong>יזמות (Entrepreneurship)</strong> - רוח יזמית, יצירתיות וחשיבה מחוץ לקופסה בכל פרויקט</div></li>
+                        <li><span class="letter">V</span><div><strong>חזון (Vision)</strong> - אנחנו רואים את העתיד, ומובילים אתכם אליו צעד אחר צעד</div></li>
+                    </ul>
+                    <p class="emphasis">
+                        בעולם שבו הבינה המלאכותית הופכת ליכולת קריטית לכל עסק - TEV היא הגשר שמחבר בין הטכנולוגיה המתקדמת ביותר לבין הצרכים האמיתיים שלכם.
+                    </p>
+                </div>
+
+                <div class="about-cards reveal">
+                    <div class="about-card">
+                        <div class="card-icon">🚀</div>
+                        <h4>הוקמה ב-2026</h4>
+                        <p>חברה צעירה עם רוח חדשנית ומחויבות עמוקה לקדמה טכנולוגית</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon">🎯</div>
+                        <h4>המשימה שלנו</h4>
+                        <p>להפוך את הבינה המלאכותית המתקדמת ביותר לנגישה, מובנת ושימושית</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon">💎</div>
+                        <h4>הערכים שלנו</h4>
+                        <p>שקיפות מלאה, מקצועיות בלתי מתפשרת, וחיבה אמיתית לטכנולוגיה</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="card-icon">🌟</div>
+                        <h4>הצוות שלנו</h4>
+                        <p>מומחי AI, מהנדסים ויזמים שמאחדים כוחות לטובת הלקוחות</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">השירותים שלנו</span>
+                <h2 class="section-title">איך אנחנו <span class="gradient-text">מנגישים את ה-AI</span></h2>
+                <p class="section-desc">פתרונות מקצה לקצה לעולם הבינה המלאכותית</p>
+            </div>
+
+            <div class="services-grid">
+                <article class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 0v20M2 12h20"/></svg>
+                    </div>
+                    <h3>ייעוץ AI אסטרטגי</h3>
+                    <p>ניתוח מעמיק של הצרכים שלכם וגיבוש אסטרטגיה מותאמת לשילוב בינה מלאכותית בעסק. אנחנו נעזור לכם להבין איפה ה-AI יכול לחולל את ההשפעה הגדולה ביותר.</p>
+                    <ul class="service-features">
+                        <li>מיפוי הזדמנויות AI</li>
+                        <li>ROI וניתוח כדאיות</li>
+                        <li>תכנית יישום מפורטת</li>
+                    </ul>
+                </article>
+
+                <article class="service-card featured reveal">
+                    <div class="featured-badge">הכי פופולרי</div>
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                    </div>
+                    <h3>פיתוח פתרונות מותאמים</h3>
+                    <p>בניית מערכות AI מותאמות במיוחד עבורכם - מצ'אטבוטים חכמים ועד מערכות אוטומציה מתקדמות. אנחנו לוקחים את הטכנולוגיה הכי חמה והופכים אותה למוצר שעובד אצלכם.</p>
+                    <ul class="service-features">
+                        <li>צ'אטבוטים ועוזרים חכמים</li>
+                        <li>אוטומציה של תהליכים</li>
+                        <li>אינטגרציה עם המערכות הקיימות</li>
+                    </ul>
+                </article>
+
+                <article class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </div>
+                    <h3>הדרכות וסדנאות</h3>
+                    <p>מנגישים את הידע - סדנאות ייעודיות לצוותים, מנהלים ויזמים שרוצים להבין ולהשתמש ב-AI ביום-יום. ידע שווה זהב, ואנחנו נשמח לחלוק אותו.</p>
+                    <ul class="service-features">
+                        <li>סדנאות פרקטיות</li>
+                        <li>הדרכות לארגונים</li>
+                        <li>חומרי למידה מעמיקים</li>
+                    </ul>
+                </article>
+
+                <article class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+                    </div>
+                    <h3>מודלי שפה מתקדמים</h3>
+                    <p>שילוב והתאמה של LLMs מובילים (GPT, Claude, Gemini ועוד) למוצרים ותהליכים שלכם. אנחנו יודעים איזה מודל מתאים למשימה ואיך לגרום לו לעבוד בצורה הכי טובה.</p>
+                    <ul class="service-features">
+                        <li>בחירה והשוואת מודלים</li>
+                        <li>Prompt Engineering מקצועי</li>
+                        <li>Fine-tuning ו-RAG</li>
+                    </ul>
+                </article>
+
+                <article class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
+                    <h3>ליווי טכנולוגי שוטף</h3>
+                    <p>אנחנו לא נעלמים אחרי ההטמעה - מלווים אתכם לאורך הדרך עם תמיכה, עדכונים והתאמות. בעולם שמשתנה מהר, הליווי הזה הוא הנכס היקר ביותר.</p>
+                    <ul class="service-features">
+                        <li>תחזוקה ועדכונים</li>
+                        <li>אופטימיזציה מתמשכת</li>
+                        <li>תמיכה 24/7</li>
+                    </ul>
+                </article>
+
+                <article class="service-card reveal">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h3>חקר ופיתוח</h3>
+                    <p>מעבדת ה-R&D שלנו עוקבת אחרי החידושים הכי חדשים בעולם ה-AI ובוחנת איך להפוך אותם לערך אמיתי בשבילכם. הראשונים לדעת, הראשונים ליישם.</p>
+                    <ul class="service-features">
+                        <li>חקר טכנולוגיות חדשות</li>
+                        <li>POC לרעיונות חדשניים</li>
+                        <li>דוחות מגמות תקופתיים</li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="vision" id="vision">
+        <div class="container">
+            <div class="vision-content">
+                <div class="section-header reveal">
+                    <span class="section-tag">החזון שלנו</span>
+                    <h2 class="section-title">העתיד <span class="gradient-text">כבר כאן</span> - בואו ננגיש אותו ביחד</h2>
+                </div>
+
+                <div class="vision-grid">
+                    <div class="vision-text reveal">
+                        <p class="big-quote">
+                            "אנחנו מאמינים שכוחה של הבינה המלאכותית לא צריך להיות מנת חלקם של מעטים. ב-TEV אנחנו על משמרת אחת - להנגיש את הידע, הכלים והיכולות לכל מי שמוכן לקחת חלק במהפכה."
+                        </p>
+                        <p class="quote-author">— הצוות המייסד של TEV</p>
+
+                        <div class="vision-points">
+                            <div class="vision-point">
+                                <div class="point-icon">🔓</div>
+                                <h4>הנגשה אמיתית</h4>
+                                <p>שפה ברורה, ללא ז'רגון מיותר, מותאם לכל רמת ידע</p>
+                            </div>
+                            <div class="vision-point">
+                                <div class="point-icon">🤝</div>
+                                <h4>שותפות אמיתית</h4>
+                                <p>אנחנו לא ספקים - אנחנו שותפים למסע שלכם</p>
+                            </div>
+                            <div class="vision-point">
+                                <div class="point-icon">🌍</div>
+                                <h4>השפעה רחבה</h4>
+                                <p>פועלים לטובת מגוון רחב של תעשיות וקהלים</p>
+                            </div>
+                            <div class="vision-point">
+                                <div class="point-icon">⚡</div>
+                                <h4>חדשנות מתמדת</h4>
+                                <p>תמיד בקצה הטכנולוגי, תמיד צעד אחד קדימה</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="vision-visual reveal">
+                        <div class="floating-card card-1">
+                            <span class="card-emoji">🤖</span>
+                            <strong>בינה מלאכותית</strong>
+                            <small>הכלי החזק ביותר</small>
+                        </div>
+                        <div class="floating-card card-2">
+                            <span class="card-emoji">💡</span>
+                            <strong>חדשנות</strong>
+                            <small>בכל פרויקט</small>
+                        </div>
+                        <div class="floating-card card-3">
+                            <span class="card-emoji">🎓</span>
+                            <strong>ידע נגיש</strong>
+                            <small>לכל אחד ואחת</small>
+                        </div>
+                        <div class="floating-card card-4">
+                            <span class="card-emoji">🚀</span>
+                            <strong>קדמה</strong>
+                            <small>בלי גבולות</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-us">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">למה דווקא אנחנו</span>
+                <h2 class="section-title">למה <span class="gradient-text">TEV</span>?</h2>
+            </div>
+
+            <div class="why-grid">
+                <div class="why-item reveal">
+                    <div class="why-number">01</div>
+                    <h3>ניסיון מוכח</h3>
+                    <p>הצוות שלנו צבר ניסיון רב בפיתוח מערכות AI לארגונים מובילים בארץ ובעולם</p>
+                </div>
+                <div class="why-item reveal">
+                    <div class="why-number">02</div>
+                    <h3>גישה אישית</h3>
+                    <p>אצלנו אתם לא עוד לקוח ברשימה - אתם שותפים, ואנחנו נהיה שם בכל שלב</p>
+                </div>
+                <div class="why-item reveal">
+                    <div class="why-number">03</div>
+                    <h3>תוצאות מדידות</h3>
+                    <p>כל פרויקט נמדד בתוצאות עסקיות אמיתיות - לא בהבטחות ולא במצגות</p>
+                </div>
+                <div class="why-item reveal">
+                    <div class="why-number">04</div>
+                    <h3>שקיפות מלאה</h3>
+                    <p>מחיר ברור, תהליך ברור, ציפיות ברורות - בלי הפתעות בדרך</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info reveal">
+                    <span class="section-tag">צור קשר</span>
+                    <h2 class="section-title">בואו <span class="gradient-text">נתחיל</span> את המסע ביחד</h2>
+                    <p class="contact-desc">
+                        יש לכם רעיון? צורך? סקרנות? אנחנו פה כדי לשמוע, לייעץ ולבנות איתכם את הפתרון המושלם.
+                        השאירו פרטים ואחד מהמומחים שלנו יחזור אליכם בהקדם.
+                    </p>
+
+                    <div class="contact-details">
+                        <a href="mailto:hello@tev.co.il" class="contact-detail">
+                            <span class="contact-icon">📧</span>
+                            <div>
+                                <strong>אימייל</strong>
+                                <span>hello@tev.co.il</span>
+                            </div>
+                        </a>
+                        <a href="tel:+972000000000" class="contact-detail">
+                            <span class="contact-icon">📱</span>
+                            <div>
+                                <strong>טלפון</strong>
+                                <span>03-000-0000</span>
+                            </div>
+                        </a>
+                        <div class="contact-detail">
+                            <span class="contact-icon">📍</span>
+                            <div>
+                                <strong>משרד</strong>
+                                <span>תל אביב, ישראל</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form reveal" id="contactForm" onsubmit="return handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name">שם מלא</label>
+                        <input type="text" id="name" name="name" required placeholder="ישראל ישראלי">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">כתובת אימייל</label>
+                        <input type="email" id="email" name="email" required placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">טלפון</label>
+                        <input type="tel" id="phone" name="phone" placeholder="050-000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label for="interest">תחום עניין</label>
+                        <select id="interest" name="interest">
+                            <option value="">בחרו תחום</option>
+                            <option value="consulting">ייעוץ אסטרטגי</option>
+                            <option value="development">פיתוח פתרון</option>
+                            <option value="training">הדרכות וסדנאות</option>
+                            <option value="other">אחר</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label for="message">איך נוכל לעזור?</label>
+                        <textarea id="message" name="message" rows="4" placeholder="ספרו לנו קצת על מה שאתם מחפשים..."></textarea>
+                    </div>
+                    <button type="submit" class="cta-btn cta-btn-primary form-submit">
+                        שלחו הודעה
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <p class="form-success" id="formSuccess">✓ ההודעה נשלחה בהצלחה! נחזור אליכם בקרוב.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#home" class="logo">
+                        <span class="logo-mark">TEV</span>
+                        <span class="logo-dot"></span>
+                    </a>
+                    <p>טכנולוגיה, יזמות וחזון.<br>מנגישים את הבינה המלאכותית לכל אחד ואחת.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>ניווט מהיר</h4>
+                    <a href="#about">אודות</a>
+                    <a href="#services">שירותים</a>
+                    <a href="#vision">החזון</a>
+                    <a href="#contact">צור קשר</a>
+                </div>
+                <div class="footer-links">
+                    <h4>שירותים</h4>
+                    <a href="#services">ייעוץ AI</a>
+                    <a href="#services">פיתוח פתרונות</a>
+                    <a href="#services">הדרכות</a>
+                    <a href="#services">ליווי שוטף</a>
+                </div>
+                <div class="footer-links">
+                    <h4>צרו קשר</h4>
+                    <a href="mailto:hello@tev.co.il">hello@tev.co.il</a>
+                    <a href="tel:+972000000000">03-000-0000</a>
+                    <span>תל אביב, ישראל</span>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 TEV. כל הזכויות שמורות.</p>
+                <p>נבנה באהבה ובבינה מלאכותית 💜</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
