@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCNP Academy – לימוד רשתות תקשורת</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">🌐</span>
+          <span class="logo-text">CCNP Academy</span>
+          <span class="logo-sub">לימוד רשתות ברמה מקצועית</span>
+        </div>
+        <nav id="main-nav">
+          <button class="nav-btn active" data-page="home">🏠 בית</button>
+          <button class="nav-btn" data-page="topics">📚 נושאים</button>
+          <button class="nav-btn" data-page="quiz">✏️ בחינות</button>
+          <button class="nav-btn" data-page="progress">📊 התקדמות</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content"></main>
+
+    <footer>
+      <p>CCNP Academy &copy; 2024 – לימוד רשתות תקשורת בעברית</p>
+    </footer>
+  </div>
+
+  <script src="data/topics.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
