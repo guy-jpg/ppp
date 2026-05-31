@@ -1,0 +1,8 @@
+# Air Defense HMI — תלויות
+# גדל לבנה-לבנה. כרגע (לבנה 1) צריך רק את אלה:
+opencv-python
+numpy
+
+# יתווספו בלבנות הבאות:
+# ultralytics      # לבנה 2 — מנוע המכ"ם YOLOv8
+# mediapipe        # לבנה 3 — כוונת היד (HMI)
