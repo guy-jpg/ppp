@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GTA VII — Liberty Shores</title>
+  <meta name="description" content="GTA VII — משחק אקשן דו-ממדי מלמעלה: נהיגה, משימות, וכוכבי מבוקש. נבנה ב-HTML5 Canvas.">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-top">
+        <div class="hud-box money">$<span id="money">0</span></div>
+        <div class="hud-box wanted" id="wanted">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          <span class="star">★</span><span class="star">★</span>
+        </div>
+        <div class="hud-box health">
+          <span class="hud-label">חיים</span>
+          <div class="bar"><div id="health-bar" class="bar-fill hp"></div></div>
+        </div>
+      </div>
+      <div class="hud-bottom">
+        <div class="hud-box mission" id="mission-box">
+          <span class="hud-label">משימה</span>
+          <span id="mission-text">היכנס לרכב והגע לנקודה הצהובה</span>
+        </div>
+        <div class="hud-box speedo"><span id="speed">0</span> קמ"ש</div>
+      </div>
+      <div id="toast"></div>
+    </div>
+
+    <!-- Mobile controls -->
+    <div id="touch-controls" class="hidden">
+      <div class="dpad">
+        <button class="tc up" data-key="ArrowUp">▲</button>
+        <button class="tc left" data-key="ArrowLeft">◀</button>
+        <button class="tc right" data-key="ArrowRight">▶</button>
+        <button class="tc down" data-key="ArrowDown">▼</button>
+      </div>
+      <div class="actions">
+        <button class="tc act" data-key="f">F</button>
+        <button class="tc act fire" data-key=" ">●</button>
+      </div>
+    </div>
+
+    <!-- Start / Game over screen -->
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <h1 class="logo">GTA <span>VII</span></h1>
+        <p class="subtitle">Liberty Shores</p>
+        <div id="overlay-body">
+          <p class="how">נווט ברחבי העיר, גנוב רכבים, השלם משימות והרווח כסף — אבל היזהר מהמשטרה.</p>
+          <ul class="controls-list">
+            <li><b>חיצים / WASD</b> — תנועה ונהיגה</li>
+            <li><b>F</b> — כניסה / יציאה מרכב</li>
+            <li><b>רווח</b> — ירי (כשברגל)</li>
+          </ul>
+        </div>
+        <button id="start-btn" class="big-btn">התחל משחק</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
