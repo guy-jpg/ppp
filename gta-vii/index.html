@@ -3,16 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GTA VII — Liberty Shores</title>
-  <meta name="description" content="GTA VII — משחק אקשן דו-ממדי מלמעלה: נהיגה, משימות, וכוכבי מבוקש. נבנה ב-HTML5 Canvas.">
+  <title>GTA VII — Liberty Shores 3D</title>
+  <meta name="description" content="GTA VII — משחק נהיגה תלת-ממדי בעיר פתוחה. נבנה ב-Three.js / WebGL.">
   <link rel="stylesheet" href="styles/main.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
   <div id="game-wrap">
-    <canvas id="game"></canvas>
+    <!-- Three.js renderer canvas is injected here -->
 
     <!-- HUD -->
-    <div id="hud">
+    <div id="hud" class="hidden">
       <div class="hud-top">
         <div class="hud-box money">$<span id="money">0</span></div>
         <div class="hud-box wanted" id="wanted">
@@ -20,52 +28,55 @@
           <span class="star">★</span><span class="star">★</span>
         </div>
         <div class="hud-box health">
-          <span class="hud-label">חיים</span>
+          <span class="hud-label">מצב הרכב</span>
           <div class="bar"><div id="health-bar" class="bar-fill hp"></div></div>
         </div>
       </div>
       <div class="hud-bottom">
         <div class="hud-box mission" id="mission-box">
           <span class="hud-label">משימה</span>
-          <span id="mission-text">היכנס לרכב והגע לנקודה הצהובה</span>
+          <span id="mission-text">הגע לנקודה הזוהרת</span>
         </div>
-        <div class="hud-box speedo"><span id="speed">0</span> קמ"ש</div>
+        <div class="speed-cluster">
+          <div class="hud-box daynight" id="daynight">☀️ <span class="hint">N</span></div>
+          <div class="hud-box speedo"><span id="speed">0</span><small>קמ"ש</small></div>
+        </div>
       </div>
       <div id="toast"></div>
     </div>
 
     <!-- Mobile controls -->
     <div id="touch-controls" class="hidden">
-      <div class="dpad">
-        <button class="tc up" data-key="ArrowUp">▲</button>
+      <div class="pedals">
+        <button class="tc gas" data-key="ArrowUp">⛽</button>
+        <button class="tc brake" data-key="ArrowDown">⊟</button>
+      </div>
+      <div class="steer">
         <button class="tc left" data-key="ArrowLeft">◀</button>
         <button class="tc right" data-key="ArrowRight">▶</button>
-        <button class="tc down" data-key="ArrowDown">▼</button>
-      </div>
-      <div class="actions">
-        <button class="tc act" data-key="f">F</button>
-        <button class="tc act fire" data-key=" ">●</button>
       </div>
     </div>
 
-    <!-- Start / Game over screen -->
+    <!-- Loading / Start / Game over -->
     <div id="overlay" class="overlay">
       <div class="panel">
         <h1 class="logo">GTA <span>VII</span></h1>
-        <p class="subtitle">Liberty Shores</p>
+        <p class="subtitle">Liberty Shores · 3D</p>
         <div id="overlay-body">
-          <p class="how">נווט ברחבי העיר, גנוב רכבים, השלם משימות והרווח כסף — אבל היזהר מהמשטרה.</p>
+          <p class="how">עיר תלת-ממדית פתוחה. נהג ברחובות, השלם משימות, הרווח כסף — והיזהר מהמשטרה.</p>
           <ul class="controls-list">
-            <li><b>חיצים / WASD</b> — תנועה ונהיגה</li>
-            <li><b>F</b> — כניסה / יציאה מרכב</li>
-            <li><b>רווח</b> — ירי (כשברגל)</li>
+            <li><b>חיצים / WASD</b> — גז, בלם והיגוי</li>
+            <li><b>רווח</b> — בלם יד (סחרור)</li>
+            <li><b>N</b> — מעבר יום / לילה</li>
+            <li><b>C</b> — החלפת זווית מצלמה</li>
           </ul>
         </div>
-        <button id="start-btn" class="big-btn">התחל משחק</button>
+        <button id="start-btn" class="big-btn" disabled>טוען עולם…</button>
+        <p id="load-note" class="load-note">מאתחל מנוע גרפי…</p>
       </div>
     </div>
   </div>
 
-  <script src="game.js"></script>
+  <script type="module" src="game.js"></script>
 </body>
 </html>
