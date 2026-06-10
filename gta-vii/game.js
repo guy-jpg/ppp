@@ -4,7 +4,10 @@
    Focus: graphics & lighting — PBR materials, soft shadows, dynamic
    day/night cycle, glowing-window city, fog, tone mapping, chase camera.
    ========================================================================= */
-import * as THREE from "three";
+/* Imported directly from a CDN URL (no import map) so the game works when
+   opened via htmlpreview, GitHub Pages, or a plain file:// — import maps are
+   not honored when the HTML is injected after page load (e.g. htmlpreview). */
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 // ----------------------------------------------------------------------------
 // Layout constants (world units ~ meters)

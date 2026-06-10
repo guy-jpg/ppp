@@ -6,13 +6,13 @@
   <title>GTA VII — Liberty Shores 3D</title>
   <meta name="description" content="GTA VII — משחק נהיגה תלת-ממדי בעיר פתוחה. נבנה ב-Three.js / WebGL.">
   <link rel="stylesheet" href="styles/main.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
-  }
+  <script>
+    // Surface load/runtime errors on the start screen instead of a silent hang.
+    window.addEventListener("error", (e) => {
+      var n = document.getElementById("load-note");
+      if (n) n.textContent = "שגיאה בטעינה: " + (e.message || e.type) +
+        " — ודא חיבור אינטרנט (Three.js נטען מ-CDN).";
+    });
   </script>
 </head>
 <body>
