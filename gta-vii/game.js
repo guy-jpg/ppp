@@ -398,6 +398,59 @@ function buildKart(bodyColor, accentColor) {
   return g;
 }
 
+// ----------------------------------------------------------------------------
+// Real sports-car model (glTF) with procedural fallback
+// ----------------------------------------------------------------------------
+const CAR_MODEL_URL = "https://threejs.org/examples/models/gltf/ferrari.glb";
+const MODEL_SCALE = 1.0;
+let MODEL_YAW = 0;          // tweakable if the model faces the wrong way
+let CAR_PROTO = null;       // loaded model template (null => use procedural)
+
+function loadCarModel() {
+  if (typeof THREE.GLTFLoader !== "function") return;   // loader unavailable
+  const loader = new THREE.GLTFLoader();
+  if (typeof THREE.DRACOLoader === "function") {
+    const draco = new THREE.DRACOLoader();
+    draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+    loader.setDRACOLoader(draco);
+  }
+  loader.load(CAR_MODEL_URL, (gltf) => {
+    CAR_PROTO = gltf.scene;
+    CAR_PROTO.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    if (raceState === "idle") spawnRacers();   // refresh the menu car with the model
+    flash("🚗 מודל רכב נטען");
+  }, undefined, (err) => { console.warn("Car model failed to load — using procedural car.", err); });
+}
+
+function makeModelCar(bodyColor, accentColor) {
+  const wrapper = new THREE.Group();
+  const car = CAR_PROTO.clone(true);
+  car.traverse((o) => {
+    if (o.isMesh && o.material) { o.material = o.material.clone(); o.castShadow = true; o.receiveShadow = true; }
+  });
+  const bodyMesh = car.getObjectByName("body");
+  if (bodyMesh && bodyMesh.material && bodyMesh.material.color) {
+    bodyMesh.material.color.set(bodyColor);
+    bodyMesh.material.metalness = 0.6; bodyMesh.material.roughness = 0.32;
+    if ("clearcoat" in bodyMesh.material) bodyMesh.material.clearcoat = 1.0;
+    bodyMesh.material.envMapIntensity = 1.3;
+  }
+  const front = [], rear = [];
+  ["wheel_fl", "wheel_fr"].forEach((n) => { const w = car.getObjectByName(n); if (w) front.push(w); });
+  ["wheel_rl", "wheel_rr"].forEach((n) => { const w = car.getObjectByName(n); if (w) rear.push(w); });
+  car.rotation.y = MODEL_YAW;
+  wrapper.add(car);
+  wrapper.scale.setScalar(MODEL_SCALE);
+  wrapper.userData = { frontWheels: front, rearWheels: rear, spots: [], bodyColor, isModel: true };
+  return wrapper;
+}
+
+// dispatcher: use the loaded model if available, otherwise the procedural car
+function makeCar(bodyColor, accentColor) {
+  if (CAR_PROTO) { try { return makeModelCar(bodyColor, accentColor); } catch (e) { console.warn(e); } }
+  return buildKart(bodyColor, accentColor);
+}
+
 function addPlayerHeadlights(kart) {
   [-0.55, 0.55].forEach((x) => {
     const spot = new THREE.SpotLight(0xfff1d0, 0, 70, Math.PI / 6, 0.4, 1.2);
@@ -438,7 +491,7 @@ function startPositionFor(slot) {
 function spawnRacers() {
   // player
   const sp = startPositionFor(0);
-  player.mesh = buildKart(KART_COLORS[0], HELMETS[0]);
+  player.mesh = makeCar(KART_COLORS[0], HELMETS[0]);
   addPlayerHeadlights(player.mesh);
   scene.add(player.mesh);
   Object.assign(player, { x: sp.x, z: sp.z, heading: sp.heading, speed: 0,
@@ -452,7 +505,7 @@ function spawnRacers() {
   ai = [];
   for (let i = 1; i <= 3; i++) {
     const sp = startPositionFor(i);
-    const m = buildKart(KART_COLORS[i], HELMETS[i]);
+    const m = makeCar(KART_COLORS[i], HELMETS[i]);
     scene.add(m);
     m.position.set(sp.x, 0, sp.z);
     m.rotation.y = sp.heading;
@@ -662,9 +715,9 @@ function updatePlayer(dt) {
   player.mesh.position.set(player.x, 0, player.z);
   const yaw = player.drifting ? player.driftDir * 0.35 : 0;
   player.mesh.rotation.y = lerp(player.mesh.rotation.y, player.heading + yaw, 1 - Math.pow(0.001, dt));
-  player.mesh.userData.rearWheels.forEach((w) => w.children[0].rotation.x += player.speed * dt * 1.2);
+  player.mesh.userData.rearWheels.forEach((w) => w.rotation.x += player.speed * dt * 1.2);
   player.mesh.userData.frontWheels.forEach((w) => {
-    w.children[0].rotation.x += player.speed * dt * 1.2;
+    w.rotation.x += player.speed * dt * 1.2;
     w.rotation.y = lerp(w.rotation.y, steer * 0.4, 0.3);
   });
 }
@@ -724,8 +777,8 @@ function updateAI(dt) {
     a.mesh.position.set(p.x + n.x * lane, 0, p.z + n.z * lane);
     a.mesh.rotation.y = Math.atan2(t.x, t.z);
     a.wheelSpin += a.speed * dt * 1.2;
-    a.mesh.userData.rearWheels.forEach((w) => w.children[0].rotation.x = a.wheelSpin);
-    a.mesh.userData.frontWheels.forEach((w) => w.children[0].rotation.x = a.wheelSpin);
+    a.mesh.userData.rearWheels.forEach((w) => w.rotation.x = a.wheelSpin);
+    a.mesh.userData.frontWheels.forEach((w) => w.rotation.x = a.wheelSpin);
   }
 }
 
@@ -849,6 +902,7 @@ function boot() {
   startBtn.disabled = false;
   startBtn.textContent = "התחל מירוץ";
   document.getElementById("load-note").textContent = "מוכן! לחץ כדי לזנק";
+  loadCarModel();   // upgrade to the real sports-car model in the background
 }
 
 const clock = new THREE.Clock();

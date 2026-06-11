@@ -73,6 +73,10 @@
   <!-- Three.js UMD build (r137) — defines the global `THREE` for the classic
        script below. Newer versions (r160+) dropped the UMD build. -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
+  <!-- glTF model loaders (UMD) — used to load a real sports-car model; the game
+       falls back to a procedural car if these or the model fail to load. -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
