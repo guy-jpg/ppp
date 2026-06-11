@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GTA VII — Liberty Shores 3D</title>
-  <meta name="description" content="GTA VII — משחק נהיגה תלת-ממדי בעיר פתוחה. נבנה ב-Three.js / WebGL.">
+  <title>GTA VII — Speed Rivals (Kart Racing)</title>
+  <meta name="description" content="משחק מירוצי קארטינג תלת-ממדי בסגנון ארקייד: דריפט-בוסט, הקפות ויריבים. נבנה ב-Three.js / WebGL.">
   <link rel="stylesheet" href="styles/main.css">
   <script>
     // Surface load/runtime errors on the start screen instead of a silent hang.
@@ -22,26 +22,18 @@
     <!-- HUD -->
     <div id="hud" class="hidden">
       <div class="hud-top">
-        <div class="hud-box money">$<span id="money">0</span></div>
-        <div class="hud-box wanted" id="wanted">
-          <span class="star">★</span><span class="star">★</span><span class="star">★</span>
-          <span class="star">★</span><span class="star">★</span>
-        </div>
-        <div class="hud-box health">
-          <span class="hud-label">מצב הרכב</span>
-          <div class="bar"><div id="health-bar" class="bar-fill hp"></div></div>
-        </div>
+        <div class="hud-box place">מקום <span id="place">1</span><small>/<span id="total">4</span></small></div>
+        <div class="hud-box lap">הקפה <span id="lap">1</span><small>/<span id="laps">3</span></small></div>
+        <div class="hud-box speedo"><span id="speed">0</span><small>קמ"ש</small></div>
       </div>
       <div class="hud-bottom">
-        <div class="hud-box mission" id="mission-box">
-          <span class="hud-label">משימה</span>
-          <span id="mission-text">הגע לנקודה הזוהרת</span>
+        <div class="hud-box boost">
+          <span class="hud-label">בוסט</span>
+          <div class="bar"><div id="boost-bar" class="bar-fill boost-fill"></div></div>
         </div>
-        <div class="speed-cluster">
-          <div class="hud-box daynight" id="daynight">☀️ <span class="hint">N</span></div>
-          <div class="hud-box speedo"><span id="speed">0</span><small>קמ"ש</small></div>
-        </div>
+        <div class="hud-box daynight" id="daynight">☀️ <span class="hint">N</span></div>
       </div>
+      <div id="countdown"></div>
       <div id="toast"></div>
     </div>
 
@@ -49,6 +41,7 @@
     <div id="touch-controls" class="hidden">
       <div class="pedals">
         <button class="tc gas" data-key="ArrowUp">⛽</button>
+        <button class="tc drift" data-key=" ">DRIFT</button>
         <button class="tc brake" data-key="ArrowDown">⊟</button>
       </div>
       <div class="steer">
@@ -57,29 +50,28 @@
       </div>
     </div>
 
-    <!-- Loading / Start / Game over -->
+    <!-- Loading / Start / Results -->
     <div id="overlay" class="overlay">
       <div class="panel">
-        <h1 class="logo">GTA <span>VII</span></h1>
-        <p class="subtitle">Liberty Shores · 3D</p>
+        <h1 class="logo">SPEED <span>RIVALS</span></h1>
+        <p class="subtitle">Kart Racing · 3D</p>
         <div id="overlay-body">
-          <p class="how">עיר תלת-ממדית פתוחה. נהג ברחובות, השלם משימות, הרווח כסף — והיזהר מהמשטרה.</p>
+          <p class="how">מירוץ קארטינג ארקייד. החזק דריפט בפניות כדי לצבור בוסט, שחרר לזינוק — ועקוף את היריבים ל-3 הקפות.</p>
           <ul class="controls-list">
             <li><b>חיצים / WASD</b> — גז, בלם והיגוי</li>
-            <li><b>רווח</b> — בלם יד (סחרור)</li>
-            <li><b>N</b> — מעבר יום / לילה</li>
+            <li><b>רווח</b> — דריפט (צובר בוסט) → שחרר לזינוק</li>
+            <li><b>N</b> — יום / לילה</li>
             <li><b>C</b> — החלפת זווית מצלמה</li>
           </ul>
         </div>
-        <button id="start-btn" class="big-btn" disabled>טוען עולם…</button>
+        <button id="start-btn" class="big-btn" disabled>טוען מסלול…</button>
         <p id="load-note" class="load-note">מאתחל מנוע גרפי…</p>
       </div>
     </div>
   </div>
 
   <!-- Three.js UMD build (r137) — defines the global `THREE` for the classic
-       script below. Newer versions (r160+) dropped the UMD build, so the global
-       was undefined and the game hung on "loading". -->
+       script below. Newer versions (r160+) dropped the UMD build. -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
   <script src="game.js"></script>
 </body>

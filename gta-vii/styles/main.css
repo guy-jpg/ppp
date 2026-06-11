@@ -205,7 +205,43 @@ html, body {
 
 .speed-cluster { display: flex; gap: 10px; align-items: flex-end; }
 .speedo { font-size: 14px; color: var(--accent); text-align: center; }
+.speedo #speed { font-size: 28px; font-weight: 800; }
 .speedo small { display: block; opacity: 0.7; font-size: 11px; }
+.place, .lap { font-size: 18px; font-weight: 800; }
+.place small, .lap small { font-size: 13px; opacity: 0.6; font-weight: 600; }
+.place #place { color: var(--accent); font-size: 26px; }
+.lap #lap { color: var(--accent2); font-size: 26px; }
+
+.boost { min-width: 220px; }
+.boost .bar { width: 200px; height: 14px; }
+.boost-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #3aa0ff, #ffd23f);
+  transition: width 0.1s, background 0.2s;
+}
+.boost-fill.tier-turbo { background: linear-gradient(90deg, #ffd23f, #ff8a00); }
+.boost-fill.tier-ultra { background: linear-gradient(90deg, #ff5d8f, #b14cff); }
+.boost-fill.firing { box-shadow: 0 0 18px currentColor; }
+
+#countdown {
+  position: absolute;
+  top: 42%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 130px;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--accent);
+  text-shadow: 0 8px 40px rgba(255,210,63,0.5), 0 0 8px #000;
+  opacity: 0;
+  pointer-events: none;
+}
+#countdown.show { animation: cd-pop 1s ease-out; }
+@keyframes cd-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(2.4); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
 .daynight {
   font-size: 20px; cursor: pointer; pointer-events: auto;
   display: flex; align-items: center; gap: 8px;
@@ -217,15 +253,17 @@ html, body {
 .load-note { margin-top: 14px; font-size: 13px; opacity: 0.6; }
 .big-btn:disabled { opacity: 0.5; cursor: default; transform: none; box-shadow: none; }
 
-/* Pedal / steering touch layout for driving */
-.pedals { position: absolute; bottom: 36px; right: 28px; display: flex; flex-direction: column; gap: 14px; }
+/* Pedal / steering touch layout */
+.pedals { position: absolute; bottom: 36px; right: 28px; display: flex; flex-direction: column; gap: 12px; }
 .steer { position: absolute; bottom: 36px; left: 28px; display: flex; gap: 16px; }
-.pedals .tc, .steer .tc { position: relative; width: 64px; height: 64px; font-size: 26px; }
+.pedals .tc, .steer .tc { position: relative; width: 64px; height: 64px; font-size: 24px; }
 .pedals .gas { background: rgba(74,222,128,0.85); color: #062; }
 .pedals .brake { background: rgba(255,93,143,0.85); }
+.pedals .drift { background: rgba(58,160,255,0.9); font-size: 13px; font-weight: 800; }
 
 @media (max-width: 640px) {
-  .money { font-size: 18px; }
-  .logo { font-size: 48px; }
-  .mission { max-width: 44vw; font-size: 13px; }
+  .logo { font-size: 44px; }
+  #countdown { font-size: 90px; }
+  .boost { min-width: 150px; }
+  .boost .bar { width: 130px; }
 }
