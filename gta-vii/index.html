@@ -77,8 +77,10 @@
     </div>
   </div>
 
-  <!-- Three.js UMD build defines the global `THREE` for the classic script below -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <!-- Three.js UMD build (r137) — defines the global `THREE` for the classic
+       script below. Newer versions (r160+) dropped the UMD build, so the global
+       was undefined and the game hung on "loading". -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
