@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="אפליקציית למידה לרשתות ברמת CCNP - שיעורים, חידונים ופלאשקארדס בעברית" />
+  <meta name="keywords" content="CCNP, רשתות, ENCOR, ENARSI, OSPF, BGP, MPLS, סיסקו, לימוד" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>CCNP בעברית · למידה ותרגול</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1020'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' fill='%2358a6ff' font-family='monospace' font-size='34' font-weight='700'%3ECN%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a href="#/" class="brand" aria-label="עמוד הבית">
+        <span class="brand__mark" aria-hidden="true">CN</span>
+        <span class="brand__text">
+          <strong>CCNP בעברית</strong>
+          <small>ENCOR · ENARSI · תרגול</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="ניווט ראשי">
+        <a href="#/" data-route="home">בית</a>
+        <a href="#/topics" data-route="topics">נושאים</a>
+        <a href="#/quiz" data-route="quiz">חידון</a>
+        <a href="#/flashcards" data-route="flashcards">פלאשקארדס</a>
+        <a href="#/glossary" data-route="glossary">מונחון</a>
+        <a href="#/progress" data-route="progress">התקדמות</a>
+      </nav>
+      <div class="topbar__tools">
+        <input id="search" class="search" type="search" placeholder="חיפוש נושא, מונח או פקודה…" aria-label="חיפוש" />
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="החלפת ערכת נושא">🌓</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="view" class="container view" tabindex="-1"></main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© CCNP בעברית · אפליקציית למידה לא רשמית</span>
+      <span>נבנה לתרגול ENCOR (350-401) ו-ENARSI (300-410)</span>
+    </div>
+  </footer>
+
+  <template id="tpl-home">
+    <section class="hero">
+      <div class="hero__copy">
+        <h1>ללמוד ולתרגל CCNP — בעברית</h1>
+        <p class="lede">קורס מקוצר, חידונים ממוקדים ופלאשקארדס לכל הנושאים העיקריים של ENCOR ו-ENARSI: ניתוב מתקדם, מיתוג, אבטחה, אוטומציה ותשתיות מודרניות.</p>
+        <div class="cta">
+          <a class="btn btn--primary" href="#/topics">התחלת לימוד</a>
+          <a class="btn" href="#/quiz">חידון מהיר</a>
+          <a class="btn btn--ghost" href="#/flashcards">פלאשקארדס</a>
+        </div>
+        <ul class="hero__stats" id="heroStats"></ul>
+      </div>
+      <aside class="hero__panel" aria-label="התקדמות">
+        <h2>ההתקדמות שלי</h2>
+        <div class="progress-ring" id="progressRing" role="img" aria-label="אחוזי התקדמות"></div>
+        <ul class="progress-list" id="progressList"></ul>
+        <a class="btn btn--ghost btn--block" href="#/progress">לכל ההתקדמות</a>
+      </aside>
+    </section>
+
+    <section>
+      <h2 class="section-title">נושאים מומלצים</h2>
+      <div class="grid" id="featuredTopics"></div>
+    </section>
+
+    <section class="kbd-tip">
+      <h3>טיפים מהירים</h3>
+      <ul>
+        <li><kbd>/</kbd> — מעבר לחיפוש</li>
+        <li><kbd>1</kbd>–<kbd>4</kbd> — בחירת תשובה בחידון</li>
+        <li><kbd>רווח</kbd> — היפוך פלאשקארד</li>
+        <li><kbd>חצים</kbd> — מעבר בין כרטיסים</li>
+      </ul>
+    </section>
+  </template>
+
+  <template id="tpl-topics">
+    <header class="page-head">
+      <h1>נושאי CCNP</h1>
+      <p class="muted">בחרו קטגוריה כדי לראות שיעורים. כל שיעור כולל הסבר, פקודות לדוגמה והפניה לחידון.</p>
+    </header>
+    <div class="filters" id="categoryFilters"></div>
+    <div class="grid" id="topicsGrid"></div>
+  </template>
+
+  <template id="tpl-topic">
+    <article class="lesson" id="lessonRoot"></article>
+  </template>
+
+  <template id="tpl-quiz-home">
+    <header class="page-head">
+      <h1>חידון</h1>
+      <p class="muted">בחרו מסלול: חידון לפי נושא, חידון מעורב או מבחן סימולציה.</p>
+    </header>
+    <div class="grid" id="quizModes"></div>
+  </template>
+
+  <template id="tpl-quiz-run">
+    <section class="quiz" id="quizRoot"></section>
+  </template>
+
+  <template id="tpl-flashcards">
+    <header class="page-head">
+      <h1>פלאשקארדס</h1>
+      <p class="muted">הקליקו על כרטיס כדי להפוך אותו. סמנו "ידעתי" כדי לעקוב אחר ההתקדמות.</p>
+    </header>
+    <div class="filters" id="deckFilters"></div>
+    <div class="flashcard-stage" id="flashStage"></div>
+  </template>
+
+  <template id="tpl-glossary">
+    <header class="page-head">
+      <h1>מונחון</h1>
+      <p class="muted">מונחים חיוניים ב-CCNP — בעברית ובאנגלית.</p>
+    </header>
+    <input id="glossarySearch" class="search search--block" type="search" placeholder="חיפוש מונח…" />
+    <div class="glossary" id="glossaryList"></div>
+  </template>
+
+  <template id="tpl-progress">
+    <header class="page-head">
+      <h1>ההתקדמות שלי</h1>
+      <p class="muted">הנתונים נשמרים מקומית בדפדפן בלבד.</p>
+    </header>
+    <div class="progress-grid" id="progressGrid"></div>
+    <div class="danger-zone">
+      <button id="resetProgress" class="btn btn--danger" type="button">איפוס התקדמות</button>
+    </div>
+  </template>
+
+  <template id="tpl-404">
+    <section class="empty">
+      <h1>404</h1>
+      <p>הדף לא נמצא.</p>
+      <a class="btn btn--primary" href="#/">חזרה לבית</a>
+    </section>
+  </template>
+
+  <script src="data/topics.js"></script>
+  <script src="data/quiz.js"></script>
+  <script src="data/flashcards.js"></script>
+  <script src="data/glossary.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
