@@ -3,11 +3,12 @@
    A 3D open-world driving game built on Three.js / WebGL.
    Focus: graphics & lighting — PBR materials, soft shadows, dynamic
    day/night cycle, glowing-window city, fog, tone mapping, chase camera.
+
+   Loaded as a CLASSIC script (not an ES module): Three.js is pulled in via a
+   plain <script> tag that defines the global `THREE`. This avoids ES-module
+   `import`, which breaks on hosts like htmlpreview that re-inject scripts and
+   strip type="module".
    ========================================================================= */
-/* Imported directly from a CDN URL (no import map) so the game works when
-   opened via htmlpreview, GitHub Pages, or a plain file:// — import maps are
-   not honored when the HTML is injected after page load (e.g. htmlpreview). */
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 // ----------------------------------------------------------------------------
 // Layout constants (world units ~ meters)
@@ -41,8 +42,17 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+// Color-space API differs across Three.js versions — set it whichever exists.
+if ("outputColorSpace" in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+else if ("outputEncoding" in renderer) renderer.outputEncoding = THREE.sRGBEncoding;
 wrap.appendChild(renderer.domElement);
+
+// Tag a CanvasTexture as sRGB across Three.js versions.
+function texSRGB(t) {
+  if ("colorSpace" in t) t.colorSpace = THREE.SRGBColorSpace;
+  else if ("encoding" in t) t.encoding = THREE.sRGBEncoding;
+  return t;
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.5, 2000);
@@ -165,8 +175,7 @@ function makeGroundTexture() {
     }
   }));
 
-  const tex = new THREE.CanvasTexture(cv);
-  tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = texSRGB(new THREE.CanvasTexture(cv));
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
   return tex;
 }
@@ -182,8 +191,7 @@ function makeWindowTexture() {
   if (Math.random() > 0.35) {
     g.fillRect(10, 8, 44, 48);
   }
-  const tex = new THREE.CanvasTexture(cv);
-  tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = texSRGB(new THREE.CanvasTexture(cv));
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   return tex;
 }
