@@ -295,9 +295,9 @@ function buildKart(bodyColor, accentColor) {
     : new THREE.MeshStandardMaterial({ color: 0x10141c, roughness: 0.08, metalness: 0.6, transparent: true, opacity: 0.78 });
 
   // smooth body via extruded silhouette with beveled (rounded) edges
-  const WIDTH = 1.95;
+  const WIDTH = 2.0;
   const bodyGeo = new THREE.ExtrudeGeometry(carBodyShape(), {
-    depth: WIDTH, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.12, bevelSegments: 3, steps: 1,
+    depth: WIDTH, bevelEnabled: true, bevelThickness: 0.16, bevelSize: 0.16, bevelSegments: 4, steps: 1,
   });
   bodyGeo.translate(0, 0, -WIDTH / 2);
   bodyGeo.computeVertexNormals();
@@ -306,71 +306,92 @@ function buildKart(bodyColor, accentColor) {
   shell.castShadow = true; shell.receiveShadow = true;
   g.add(shell);
 
-  // dark glass greenhouse (windshield + cabin) sitting slightly proud of the roof
-  const cabin = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.45, 0.42, 1.9), glass);
-  cabin.position.set(0, 0.98, -0.25); g.add(cabin);
-  // sloped windshield
-  const ws = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.5, 0.5, 0.12), glass);
-  ws.position.set(0, 0.95, 0.78); ws.rotation.x = -0.7; g.add(ws);
+  // muscular fender flares over each wheel (flattened spheres) so the wheels
+  // read as part of the bodywork instead of bolted-on cylinders
+  const flareGeo = new THREE.SphereGeometry(0.78, 16, 12);
+  [[-0.92, 1.45], [0.92, 1.45], [-0.96, -1.45], [0.96, -1.45]].forEach(([x, z]) => {
+    const f = new THREE.Mesh(flareGeo, body);
+    f.position.set(x, 0.58, z);
+    f.scale.set(0.62, 0.7, 1.05);
+    f.castShadow = true; g.add(f);
+  });
+
+  // low, tapered cockpit canopy (clearly narrower than the body)
+  const cabinShape = new THREE.Shape();
+  cabinShape.moveTo(0.55, 0); cabinShape.lineTo(0.05, 0.46);
+  cabinShape.lineTo(-0.95, 0.5); cabinShape.lineTo(-1.25, 0);
+  cabinShape.closePath();
+  const cabinGeo = new THREE.ExtrudeGeometry(cabinShape, {
+    depth: WIDTH - 0.7, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.08, bevelSegments: 2, steps: 1,
+  });
+  cabinGeo.translate(0, 0, -(WIDTH - 0.7) / 2);
+  cabinGeo.computeVertexNormals();
+  const cabin = new THREE.Mesh(cabinGeo, glass);
+  cabin.rotation.y = -Math.PI / 2;
+  cabin.position.set(0, 0.74, 0.1);
+  g.add(cabin);
 
   // hood accent stripe (kept to the flat hood so it doesn't clip the body)
-  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 1.4), accent);
-  stripe.position.set(0, 0.735, 1.25); g.add(stripe);
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 1.3), accent);
+  stripe.position.set(0, 0.735, 1.35); g.add(stripe);
+
+  // front grille / intake
+  const grille = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.22, 0.1), dark);
+  grille.position.set(0, 0.42, 2.32); g.add(grille);
 
   // front splitter + rear diffuser
-  const splitter = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.05, 0.06, 0.5), dark);
-  splitter.position.set(0, 0.2, 2.25); g.add(splitter);
-  const diffuser = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.05, 0.18, 0.4), dark);
-  diffuser.position.set(0, 0.22, -2.25); g.add(diffuser);
+  const splitter = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.06, 0.5), dark);
+  splitter.position.set(0, 0.18, 2.3); g.add(splitter);
+  const diffuser = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.2, 0.4), dark);
+  diffuser.position.set(0, 0.22, -2.3); g.add(diffuser);
 
   // rear wing (accent) on two uprights
-  const wing = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.08, 0.55), accent);
-  wing.position.set(0, 1.0, -2.15); wing.castShadow = true; g.add(wing);
-  [-0.75, 0.75].forEach((x) => {
-    const up = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.32, 0.12), dark);
-    up.position.set(x, 0.82, -2.1); g.add(up);
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.05, 0.08, 0.5), accent);
+  wing.position.set(0, 1.02, -2.1); wing.castShadow = true; g.add(wing);
+  [-0.78, 0.78].forEach((x) => {
+    const up = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.34, 0.12), dark);
+    up.position.set(x, 0.84, -2.05); g.add(up);
   });
 
   // side mirrors
-  [-1.05, 1.05].forEach((x) => {
-    const mir = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.28), body);
-    mir.position.set(x, 0.92, 0.55); g.add(mir);
+  [-1.0, 1.0].forEach((x) => {
+    const mir = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.24), body);
+    mir.position.set(x, 0.9, 0.7); g.add(mir);
   });
 
   // headlights (emissive) + taillight bar
   const hlMat = new THREE.MeshStandardMaterial({ color: 0xfff6e0, emissive: 0xfff6e0, emissiveIntensity: 1.2 });
-  [-0.62, 0.62].forEach((x) => {
-    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.16, 0.12), hlMat);
-    hl.position.set(x, 0.58, 2.3); g.add(hl);
+  [-0.66, 0.66].forEach((x) => {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.13, 0.1), hlMat);
+    hl.position.set(x, 0.6, 2.32); g.add(hl);
   });
-  const tl = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.3, 0.14, 0.08),
+  const tl = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.25, 0.12, 0.08),
     new THREE.MeshStandardMaterial({ color: 0x550000, emissive: 0xff2200, emissiveIntensity: 0.9 }));
-  tl.position.set(0, 0.7, -2.32); g.add(tl);
+  tl.position.set(0, 0.74, -2.34); g.add(tl);
 
   // wheels — fat low-profile tyres with metallic multi-spoke rims
   const tyreMat = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, roughness: 0.85 });
-  const rimMat = new THREE.MeshStandardMaterial({ color: 0xcfd3da, roughness: 0.25, metalness: 0.9, envMapIntensity: 1.5 });
+  const rimMat = new THREE.MeshStandardMaterial({ color: 0xd6dae1, roughness: 0.22, metalness: 0.95, envMapIntensity: 1.6 });
   const caliper = new THREE.MeshStandardMaterial({ color: accentColor, roughness: 0.5, metalness: 0.3 });
   const frontWheels = [], rearWheels = [];
   function wheel(x, z, r, w, store) {
     const grp = new THREE.Group();
-    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 22), tyreMat);
+    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 24), tyreMat);
     tyre.rotation.z = Math.PI / 2; tyre.castShadow = true; grp.add(tyre);
-    const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.62, r * 0.62, w + 0.04, 10), rimMat);
+    const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.66, r * 0.66, w + 0.05, 14), rimMat);
     rim.rotation.z = Math.PI / 2; grp.add(rim);
-    // spokes
-    for (let k = 0; k < 5; k++) {
-      const sp = new THREE.Mesh(new THREE.BoxGeometry(w + 0.05, r * 1.05, 0.06), rimMat);
-      sp.rotation.x = (k / 5) * Math.PI; grp.add(sp);
+    for (let k = 0; k < 6; k++) {
+      const sp = new THREE.Mesh(new THREE.BoxGeometry(w + 0.06, r * 1.15, 0.05), rimMat);
+      sp.rotation.x = (k / 6) * Math.PI; grp.add(sp);
     }
-    const brake = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.5, r * 0.5, w * 0.5, 12), caliper);
-    brake.rotation.z = Math.PI / 2; grp.add(brake);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.18, r * 0.18, w + 0.07, 10), caliper);
+    hub.rotation.z = Math.PI / 2; grp.add(hub);
     grp.position.set(x, r, z); g.add(grp); store.push(grp);
   }
-  wheel(-0.98, 1.45, 0.5, 0.48, frontWheels);
-  wheel(0.98, 1.45, 0.5, 0.48, frontWheels);
-  wheel(-1.0, -1.45, 0.54, 0.56, rearWheels);
-  wheel(1.0, -1.45, 0.54, 0.56, rearWheels);
+  wheel(-0.9, 1.45, 0.52, 0.46, frontWheels);
+  wheel(0.9, 1.45, 0.52, 0.46, frontWheels);
+  wheel(-0.94, -1.45, 0.56, 0.54, rearWheels);
+  wheel(0.94, -1.45, 0.56, 0.54, rearWheels);
 
   const spots = []; // headlight spotlights (player only — added separately)
   g.userData = { frontWheels, rearWheels, spots, bodyColor };
@@ -406,11 +427,12 @@ let raceState = "idle"; // idle | countdown | racing | done
 let countdownT = 0;
 
 function startPositionFor(slot) {
-  // line them up behind the start line, staggered across the road
-  const back = (SAMPLES - 18 - slot * 8) % SAMPLES;
-  const c = centers[back], n = normals[back];
+  // Grid sits just AFTER the start line. The player (slot 0) is frontmost, so
+  // larger track-param = further ahead, and the standings metric stays monotonic.
+  const gi = (44 - slot * 11 + SAMPLES) % SAMPLES;
+  const c = centers[gi], n = normals[gi];
   const off = (slot % 2 === 0 ? 1 : -1) * 4.5;
-  return { x: c.x + n.x * off, z: c.z + n.z * off, heading: Math.atan2(tangents[back].x, tangents[back].z) };
+  return { x: c.x + n.x * off, z: c.z + n.z * off, heading: Math.atan2(tangents[gi].x, tangents[gi].z), index: gi };
 }
 
 function spawnRacers() {
@@ -420,10 +442,11 @@ function spawnRacers() {
   addPlayerHeadlights(player.mesh);
   scene.add(player.mesh);
   Object.assign(player, { x: sp.x, z: sp.z, heading: sp.heading, speed: 0,
-    idx: SAMPLES - 18, lap: 1, passedHalf: false, finished: false,
+    idx: sp.index, lap: 1, passedHalf: false, finished: false,
     drifting: false, driftCharge: 0, boost: 0, boostTier: 0 });
   player.mesh.position.set(sp.x, 0, sp.z);
   player.mesh.rotation.y = sp.heading;
+  playerSearch = sp.index;
 
   // 3 AI rivals
   ai = [];
@@ -435,7 +458,7 @@ function spawnRacers() {
     m.rotation.y = sp.heading;
     ai.push({
       mesh: m,
-      u: ((SAMPLES - 18 - i * 8) % SAMPLES) / SAMPLES,
+      u: sp.index / SAMPLES,
       lane: (i % 2 === 0 ? 1 : -1) * rand(2, 5),
       speed: 0,
       targetSpeed: rand(46, 54),
