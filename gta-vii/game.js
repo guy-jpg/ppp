@@ -59,6 +59,15 @@ sky.frustumCulled = false;
 scene.add(sky);
 scene.fog = new THREE.Fog(0xcfe6ff, 220, 1100);
 
+// Reflection environment for glossy car paint — capture the sky gradient into a
+// pre-filtered cube map so metallic/clearcoat materials reflect the world.
+function buildEnvironment() {
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = pmrem.fromScene(scene, 0.04, 0.1, 5000).texture;
+  scene.environment = env;
+  pmrem.dispose();
+}
+
 // ----------------------------------------------------------------------------
 // Lights
 // ----------------------------------------------------------------------------
@@ -248,91 +257,122 @@ function placeBoostPads() {
 }
 
 // ----------------------------------------------------------------------------
-// Kart model (built from primitives)
+// Sports-car model (smooth extruded coupe body + reflective paint)
 // ----------------------------------------------------------------------------
-function buildKart(bodyColor, helmetColor) {
+function paintMat(color) {
+  const m = THREE.MeshPhysicalMaterial
+    ? new THREE.MeshPhysicalMaterial({ color, metalness: 0.55, roughness: 0.3 })
+    : new THREE.MeshStandardMaterial({ color, metalness: 0.6, roughness: 0.35 });
+  if ("clearcoat" in m) { m.clearcoat = 1.0; m.clearcoatRoughness = 0.22; }
+  m.envMapIntensity = 1.35;
+  return m;
+}
+
+// side-profile silhouette of a coupe (X = length, nose at +X; Y = height)
+function carBodyShape() {
+  const s = new THREE.Shape();
+  s.moveTo(-2.35, 0.12);   // tail bottom
+  s.lineTo(2.4, 0.12);     // nose bottom
+  s.lineTo(2.4, 0.5);      // nose tip
+  s.lineTo(1.65, 0.6);     // hood front
+  s.lineTo(0.65, 0.72);    // hood
+  s.lineTo(0.15, 1.12);    // windshield top (A-pillar)
+  s.lineTo(-0.8, 1.18);    // roof rear
+  s.lineTo(-1.4, 0.95);    // rear glass
+  s.lineTo(-2.05, 0.84);   // decklid
+  s.lineTo(-2.35, 0.7);    // tail top
+  s.closePath();
+  return s;
+}
+
+function buildKart(bodyColor, accentColor) {
   const g = new THREE.Group();
+  const body = paintMat(bodyColor);
+  const accent = paintMat(accentColor);
+  const dark = new THREE.MeshStandardMaterial({ color: 0x111317, roughness: 0.55, metalness: 0.2 });
+  const glass = THREE.MeshPhysicalMaterial
+    ? new THREE.MeshPhysicalMaterial({ color: 0x10141c, roughness: 0.08, metalness: 0.2, transparent: true, opacity: 0.78 })
+    : new THREE.MeshStandardMaterial({ color: 0x10141c, roughness: 0.08, metalness: 0.6, transparent: true, opacity: 0.78 });
 
-  const bodyMat = new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.3, metalness: 0.55 });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x14161b, roughness: 0.7 });
+  // smooth body via extruded silhouette with beveled (rounded) edges
+  const WIDTH = 1.95;
+  const bodyGeo = new THREE.ExtrudeGeometry(carBodyShape(), {
+    depth: WIDTH, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.12, bevelSegments: 3, steps: 1,
+  });
+  bodyGeo.translate(0, 0, -WIDTH / 2);
+  bodyGeo.computeVertexNormals();
+  const shell = new THREE.Mesh(bodyGeo, body);
+  shell.rotation.y = -Math.PI / 2;   // map length onto +Z (forward)
+  shell.castShadow = true; shell.receiveShadow = true;
+  g.add(shell);
 
-  // floor pan
-  const pan = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.18, 3.6), darkMat);
-  pan.position.y = 0.45; pan.castShadow = true; g.add(pan);
+  // dark glass greenhouse (windshield + cabin) sitting slightly proud of the roof
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.45, 0.42, 1.9), glass);
+  cabin.position.set(0, 0.98, -0.25); g.add(cabin);
+  // sloped windshield
+  const ws = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.5, 0.5, 0.12), glass);
+  ws.position.set(0, 0.95, 0.78); ws.rotation.x = -0.7; g.add(ws);
 
-  // side pods
+  // hood accent stripe (kept to the flat hood so it doesn't clip the body)
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.04, 1.4), accent);
+  stripe.position.set(0, 0.735, 1.25); g.add(stripe);
+
+  // front splitter + rear diffuser
+  const splitter = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.05, 0.06, 0.5), dark);
+  splitter.position.set(0, 0.2, 2.25); g.add(splitter);
+  const diffuser = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.05, 0.18, 0.4), dark);
+  diffuser.position.set(0, 0.22, -2.25); g.add(diffuser);
+
+  // rear wing (accent) on two uprights
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(WIDTH + 0.1, 0.08, 0.55), accent);
+  wing.position.set(0, 1.0, -2.15); wing.castShadow = true; g.add(wing);
+  [-0.75, 0.75].forEach((x) => {
+    const up = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.32, 0.12), dark);
+    up.position.set(x, 0.82, -2.1); g.add(up);
+  });
+
+  // side mirrors
   [-1.05, 1.05].forEach((x) => {
-    const pod = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 2.0), bodyMat);
-    pod.position.set(x, 0.6, 0.1); pod.castShadow = true; g.add(pod);
+    const mir = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.28), body);
+    mir.position.set(x, 0.92, 0.55); g.add(mir);
   });
 
-  // nose cone (tapered using a 4-sided cylinder)
-  const nose = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.7, 1.6, 4), bodyMat);
-  nose.rotation.x = Math.PI / 2; nose.rotation.y = Math.PI / 4;
-  nose.position.set(0, 0.6, 2.3); nose.castShadow = true; g.add(nose);
-
-  // front wing
-  const fw = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.1, 0.6), bodyMat);
-  fw.position.set(0, 0.45, 2.7); fw.castShadow = true; g.add(fw);
-
-  // engine block behind seat
-  const engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.7, 1.0), darkMat);
-  engine.position.set(0, 0.8, -1.3); engine.castShadow = true; g.add(engine);
-
-  // rear wing on stalks
-  const wing = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.12, 0.7),
-    new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.4, metalness: 0.4 }));
-  wing.position.set(0, 1.5, -1.9); wing.castShadow = true; g.add(wing);
-  [-0.7, 0.7].forEach((x) => {
-    const stalk = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.7, 0.12), darkMat);
-    stalk.position.set(x, 1.15, -1.9); g.add(stalk);
+  // headlights (emissive) + taillight bar
+  const hlMat = new THREE.MeshStandardMaterial({ color: 0xfff6e0, emissive: 0xfff6e0, emissiveIntensity: 1.2 });
+  [-0.62, 0.62].forEach((x) => {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.16, 0.12), hlMat);
+    hl.position.set(x, 0.58, 2.3); g.add(hl);
   });
+  const tl = new THREE.Mesh(new THREE.BoxGeometry(WIDTH - 0.3, 0.14, 0.08),
+    new THREE.MeshStandardMaterial({ color: 0x550000, emissive: 0xff2200, emissiveIntensity: 0.9 }));
+  tl.position.set(0, 0.7, -2.32); g.add(tl);
 
-  // seat
-  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.9), darkMat);
-  seat.position.set(0, 0.85, -0.4); g.add(seat);
-
-  // driver: torso, head, helmet visor
-  const suitMat = new THREE.MeshStandardMaterial({ color: 0x222831, roughness: 0.8 });
-  // CapsuleGeometry was added after r137 — fall back to a cylinder if absent.
-  const torsoGeo = THREE.CapsuleGeometry
-    ? new THREE.CapsuleGeometry(0.34, 0.5, 4, 8)
-    : new THREE.CylinderGeometry(0.34, 0.34, 0.9, 8);
-  const torso = new THREE.Mesh(torsoGeo, suitMat);
-  torso.position.set(0, 1.2, -0.35); torso.castShadow = true; g.add(torso);
-  const helmetMat = new THREE.MeshStandardMaterial({ color: helmetColor, roughness: 0.25, metalness: 0.3 });
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), helmetMat);
-  head.position.set(0, 1.75, -0.3); head.castShadow = true; g.add(head);
-  const visor = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 0.34),
-    new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.1, metalness: 0.6 }));
-  visor.position.set(0, 1.76, -0.05); g.add(visor);
-
-  // steering wheel
-  const sw = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16),
-    new THREE.MeshStandardMaterial({ color: 0x111, roughness: 0.5 }));
-  sw.position.set(0, 1.15, 0.35); sw.rotation.x = Math.PI / 3; g.add(sw);
-
-  // wheels — small front, big rear
-  const tyreMat = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, roughness: 0.9 });
-  const rimMat = new THREE.MeshStandardMaterial({ color: 0xcfd3da, roughness: 0.3, metalness: 0.8 });
+  // wheels — fat low-profile tyres with metallic multi-spoke rims
+  const tyreMat = new THREE.MeshStandardMaterial({ color: 0x0c0c0e, roughness: 0.85 });
+  const rimMat = new THREE.MeshStandardMaterial({ color: 0xcfd3da, roughness: 0.25, metalness: 0.9, envMapIntensity: 1.5 });
+  const caliper = new THREE.MeshStandardMaterial({ color: accentColor, roughness: 0.5, metalness: 0.3 });
   const frontWheels = [], rearWheels = [];
   function wheel(x, z, r, w, store) {
     const grp = new THREE.Group();
-    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 18), tyreMat);
+    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 22), tyreMat);
     tyre.rotation.z = Math.PI / 2; tyre.castShadow = true; grp.add(tyre);
-    const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.55, r * 0.55, w + 0.02, 10), rimMat);
+    const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.62, r * 0.62, w + 0.04, 10), rimMat);
     rim.rotation.z = Math.PI / 2; grp.add(rim);
+    // spokes
+    for (let k = 0; k < 5; k++) {
+      const sp = new THREE.Mesh(new THREE.BoxGeometry(w + 0.05, r * 1.05, 0.06), rimMat);
+      sp.rotation.x = (k / 5) * Math.PI; grp.add(sp);
+    }
+    const brake = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.5, r * 0.5, w * 0.5, 12), caliper);
+    brake.rotation.z = Math.PI / 2; grp.add(brake);
     grp.position.set(x, r, z); g.add(grp); store.push(grp);
-    return grp;
   }
-  wheel(-1.15, 1.35, 0.45, 0.4, frontWheels);
-  wheel(1.15, 1.35, 0.45, 0.4, frontWheels);
-  wheel(-1.25, -1.35, 0.7, 0.7, rearWheels);
-  wheel(1.25, -1.35, 0.7, 0.7, rearWheels);
+  wheel(-0.98, 1.45, 0.5, 0.48, frontWheels);
+  wheel(0.98, 1.45, 0.5, 0.48, frontWheels);
+  wheel(-1.0, -1.45, 0.54, 0.56, rearWheels);
+  wheel(1.0, -1.45, 0.54, 0.56, rearWheels);
 
-  // headlight spotlights (player only — toggled at night)
-  const spots = [];
-
+  const spots = []; // headlight spotlights (player only — added separately)
   g.userData = { frontWheels, rearWheels, spots, bodyColor };
   return g;
 }
@@ -777,6 +817,7 @@ window.addEventListener("resize", () => {
 // Boot + loop
 // ----------------------------------------------------------------------------
 function boot() {
+  buildEnvironment();   // capture sky into a reflection map for the car paint
   buildTrack();
   // show a kart idling on the start line behind the menu
   spawnRacers();
