@@ -544,7 +544,12 @@ function buildKart(bodyColor, accentColor) {
 // ----------------------------------------------------------------------------
 // Real sports-car model (glTF) with procedural fallback
 // ----------------------------------------------------------------------------
-const CAR_MODEL_URL = "https://threejs.org/examples/models/gltf/ferrari.glb";
+// Try jsDelivr (serves GitHub files with reliable CORS) first, then fall back to
+// threejs.org. This fixes the intermittent failures that left the procedural car.
+const CAR_MODEL_URLS = [
+  "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r137/examples/models/gltf/ferrari.glb",
+  "https://threejs.org/examples/models/gltf/ferrari.glb",
+];
 const MODEL_SCALE = 1.0;
 let MODEL_YAW = Math.PI;    // model faces -Z by default; flip it to point forward (+Z)
 let CAR_PROTO = null;       // loaded model template (null => use procedural)
@@ -557,12 +562,16 @@ function loadCarModel() {
     draco.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
     loader.setDRACOLoader(draco);
   }
-  loader.load(CAR_MODEL_URL, (gltf) => {
-    CAR_PROTO = gltf.scene;
-    CAR_PROTO.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    if (raceState === "idle") spawnRacers();   // refresh the menu car with the model
-    flash("🚗 מודל רכב נטען");
-  }, undefined, (err) => { console.warn("Car model failed to load — using procedural car.", err); });
+  const tryUrl = (i) => {
+    if (i >= CAR_MODEL_URLS.length) { console.warn("All car-model sources failed — using procedural car."); return; }
+    loader.load(CAR_MODEL_URLS[i], (gltf) => {
+      CAR_PROTO = gltf.scene;
+      CAR_PROTO.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      if (raceState === "idle") spawnRacers();   // refresh the menu car with the model
+      flash("🚗 מודל רכב נטען");
+    }, undefined, (err) => { console.warn("Car model source failed, trying next…", err); tryUrl(i + 1); });
+  };
+  tryUrl(0);
 }
 
 function makeModelCar(bodyColor, accentColor) {
