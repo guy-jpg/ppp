@@ -307,16 +307,19 @@ function addCrowd(base, ang) {
   }
 }
 
-// low-poly hills ringing the circuit so the horizon isn't empty
+// soft rounded hills ringing the circuit so the horizon isn't empty
 function addBackdrop() {
-  const hillMat = new THREE.MeshStandardMaterial({ color: 0x4a7d4f, roughness: 1, flatShading: true });
-  const farMat = new THREE.MeshStandardMaterial({ color: 0x6f8fa6, roughness: 1, flatShading: true });
-  for (let i = 0; i < 26; i++) {
-    const a = (i / 26) * Math.PI * 2 + rand(-0.1, 0.1);
-    const r = rand(560, 720);
-    const h = rand(40, 110);
-    const hill = new THREE.Mesh(new THREE.ConeGeometry(rand(70, 140), h, 6), i % 3 === 0 ? farMat : hillMat);
-    hill.position.set(Math.cos(a) * r, h / 2 - 6, Math.sin(a) * r);
+  const hillMat = new THREE.MeshStandardMaterial({ color: 0x5b9e5f, roughness: 1 });
+  const farMat = new THREE.MeshStandardMaterial({ color: 0x86a7bf, roughness: 1 });
+  for (let i = 0; i < 32; i++) {
+    const a = (i / 32) * Math.PI * 2 + rand(-0.08, 0.08);
+    const r = rand(560, 770);
+    const rad = rand(80, 180);
+    // smooth dome (upper hemisphere) instead of a sharp cone -> rolling hills
+    const geo = new THREE.SphereGeometry(rad, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.55);
+    const hill = new THREE.Mesh(geo, i % 3 === 0 ? farMat : hillMat);
+    hill.position.set(Math.cos(a) * r, -6, Math.sin(a) * r);
+    hill.scale.y = rand(0.5, 0.95);
     hill.rotation.y = rand(0, Math.PI);
     scene.add(hill);
   }
@@ -352,7 +355,7 @@ function makeCheckerTexture() {
 
 function scatterScenery() {
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5a3d24, roughness: 1 });
-  const leafMat = new THREE.MeshStandardMaterial({ color: 0x2f7a38, roughness: 1, flatShading: true });
+  const leafMat = new THREE.MeshStandardMaterial({ color: 0x3a8f47, roughness: 0.95 });
   for (let i = 0; i < 170; i++) {
     // pick a random spot, keep it off the track
     const x = rand(-520, 520), z = rand(-520, 520);
@@ -361,7 +364,7 @@ function scatterScenery() {
     if (near) continue;
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.9, 5, 6), trunkMat);
     trunk.position.set(x, 2.5, z); trunk.castShadow = true; scene.add(trunk);
-    const leaves = new THREE.Mesh(new THREE.SphereGeometry(rand(3, 5), 8, 6), leafMat);
+    const leaves = new THREE.Mesh(new THREE.SphereGeometry(rand(3, 5), 14, 10), leafMat);
     leaves.position.set(x, rand(6, 7), z); leaves.castShadow = true; scene.add(leaves);
   }
   // a couple of grandstands near a straight
@@ -641,6 +644,7 @@ function startPositionFor(slot) {
 }
 
 function spawnRacers() {
+  clearRacers();   // remove any existing cars first (prevents leftover grid cars)
   // player
   const sp = startPositionFor(0);
   player.mesh = makeCar(KART_COLORS[0], HELMETS[0]);
