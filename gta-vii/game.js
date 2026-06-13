@@ -35,7 +35,8 @@ function texSRGB(t) {
 }
 
 const scene = new THREE.Scene();
-let BASE_FOV = 64;
+let BASE_FOV = 60;
+const MAX_FOV = 86;
 const camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.5, 3000);
 camera.position.set(0, 20, -30);
 
@@ -44,16 +45,30 @@ camera.position.set(0, 20, -30);
 let composer = null, bloomPass = null;
 function setupComposer() {
   try {
-    if (THREE.EffectComposer && THREE.RenderPass && THREE.UnrealBloomPass) {
-      composer = new THREE.EffectComposer(renderer);
-      composer.addPass(new THREE.RenderPass(scene, camera));
-      // high threshold + modest strength: only lights/boost/emissives glow,
-      // not the whole sunlit scene
+    if (!(THREE.EffectComposer && THREE.RenderPass)) return;
+    composer = new THREE.EffectComposer(renderer);
+    composer.addPass(new THREE.RenderPass(scene, camera));
+
+    // Bloom — subtle glow on lights/boost/emissives. Threshold nudged a touch
+    // above the spec's 0.85 so the bright sunlit grass/sky doesn't bloom too.
+    if (THREE.UnrealBloomPass) {
       bloomPass = new THREE.UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight), 0.32, 0.4, 0.92);
+        new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.6, 0.88);
       composer.addPass(bloomPass);
     }
-  } catch (e) { console.warn("Bloom disabled:", e); composer = null; }
+    // SMAA — smooth anti-aliased edges (optional)
+    if (THREE.SMAAPass) {
+      composer.addPass(new THREE.SMAAPass(
+        window.innerWidth * renderer.getPixelRatio(), window.innerHeight * renderer.getPixelRatio()));
+    }
+    // Vignette — gentle darkening at the frame edges (last pass -> to screen)
+    if (THREE.ShaderPass && THREE.VignetteShader) {
+      const vig = new THREE.ShaderPass(THREE.VignetteShader);
+      vig.uniforms.offset.value = 1.05;
+      vig.uniforms.darkness.value = 1.15;
+      composer.addPass(vig);
+    }
+  } catch (e) { console.warn("Post-processing disabled:", e); composer = null; }
 }
 
 // ----------------------------------------------------------------------------
@@ -695,11 +710,11 @@ function applyDayNight() {
     if (player.mesh) player.mesh.userData.spots.forEach((s) => s.intensity = 5);
     dayNightBtn.firstChild.textContent = "🌙 ";
   } else {
-    sun.intensity = 2.3; sun.color.set(0xfff2dc);
-    hemi.intensity = 0.7; hemi.color.set(0xdcecff); hemi.groundColor.set(0x53624a);
+    sun.intensity = 3.0; sun.color.set(0xfff2dc);
+    hemi.intensity = 0.65; hemi.color.set(0xdcecff); hemi.groundColor.set(0x53624a);
     skyUniforms.top.value.set(0x2a72c0); skyUniforms.bottom.value.set(0xbfdcf2);
     scene.fog.color.set(0xbcd6ec); scene.fog.near = 320; scene.fog.far = 1500;
-    renderer.toneMappingExposure = 0.95;
+    renderer.toneMappingExposure = 1.05;
     if (player.mesh) player.mesh.userData.spots.forEach((s) => s.intensity = 0);
     dayNightBtn.firstChild.textContent = "☀️ ";
   }
@@ -796,6 +811,7 @@ const SFX = {
 // ----------------------------------------------------------------------------
 let camMode = 0;
 const camCurrent = new THREE.Vector3(0, 20, -30);
+const camLook = new THREE.Vector3(0, 0, 0);
 function updateCamera(dt) {
   const fwd = new THREE.Vector3(Math.sin(player.heading), 0, Math.cos(player.heading));
   const pos = new THREE.Vector3(player.x, 0, player.z);
@@ -810,13 +826,26 @@ function updateCamera(dt) {
     desired = pos.clone().addScaledVector(fwd, 1.0).add(new THREE.Vector3(0, 2.0, 0));
     look = pos.clone().addScaledVector(fwd, 14).add(new THREE.Vector3(0, 1.6, 0));
   }
-  const t = 1 - Math.pow(0.0016, dt);
-  camCurrent.lerp(desired, t);
-  camera.position.copy(camCurrent);
-  camera.lookAt(look);
-  // FOV kick on boost for a sense of speed
-  const targetFov = BASE_FOV + (player.boost > 0 ? 10 : 0) + Math.abs(player.speed) * 0.06;
-  camera.fov = lerp(camera.fov, targetFov, 1 - Math.pow(0.01, dt));
+  // smooth follow for both position and look target (gives the camera weight)
+  const tp = 1 - Math.pow(0.0016, dt);
+  const tl = 1 - Math.pow(0.0006, dt);
+  camCurrent.lerp(desired, tp);
+  camLook.lerp(look, tl);
+
+  // speed-based camera shake (subtle, grows with speed + boost)
+  const sr = clamp(Math.abs(player.speed) / 85, 0, 1);
+  const amp = sr * 0.14 + (player.boost > 0 ? 0.12 : 0);
+  const tms = performance.now() * 0.04;
+  camera.position.set(
+    camCurrent.x + Math.sin(tms * 1.3) * amp,
+    camCurrent.y + Math.cos(tms * 1.7) * amp,
+    camCurrent.z + Math.sin(tms * 2.1) * amp * 0.5
+  );
+  camera.lookAt(camLook);
+
+  // dynamic FOV: 60 at rest -> ~86 flat-out, plus a boost kick
+  const targetFov = lerp(BASE_FOV, MAX_FOV, sr) + (player.boost > 0 ? 4 : 0);
+  camera.fov = lerp(camera.fov, targetFov, 1 - Math.pow(0.02, dt));
   camera.updateProjectionMatrix();
 }
 
@@ -1052,9 +1081,9 @@ function updateHUD(dt) {
   boostBar.className = "bar-fill boost-fill " + cls + (firing ? " firing" : "");
   boostBar.style.color = firing ? "#" + TIER[player.boostTier].color.toString(16) : "";
 
-  // engine note tracks speed; screen speed-lines while boosting
+  // engine note tracks speed; speed-lines while boosting or going fast
   SFX.setEngine(clamp(Math.abs(player.speed) / 90, 0, 1));
-  wrap.classList.toggle("boosting", player.boost > 0);
+  wrap.classList.toggle("boosting", player.boost > 0 || Math.abs(player.speed) > 66);
 
   if (toastTimer > 0) { toastTimer -= dt; if (toastTimer <= 0) toast.classList.remove("show"); }
 }
@@ -1092,6 +1121,7 @@ function startRace() {
   overlay.classList.add("hidden");
   hud.classList.remove("hidden");
   camCurrent.set(player.x, 20, player.z - 30);
+  camLook.set(player.x, 1.3, player.z);
   SFX.init(); SFX.startEngine(); SFX.startMusic();
 }
 startBtn.addEventListener("click", () => { if (!startBtn.disabled) { SFX.init(); startRace(); } });
