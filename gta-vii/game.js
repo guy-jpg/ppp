@@ -39,6 +39,21 @@ let BASE_FOV = 64;
 const camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.5, 3000);
 camera.position.set(0, 20, -30);
 
+// Optional bloom post-processing — gives the glossy "AAA" glow on lights, the
+// sky and the boost. Falls back to plain rendering if the passes aren't loaded.
+let composer = null, bloomPass = null;
+function setupComposer() {
+  try {
+    if (THREE.EffectComposer && THREE.RenderPass && THREE.UnrealBloomPass) {
+      composer = new THREE.EffectComposer(renderer);
+      composer.addPass(new THREE.RenderPass(scene, camera));
+      bloomPass = new THREE.UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight), 0.55, 0.55, 0.82);
+      composer.addPass(bloomPass);
+    }
+  } catch (e) { console.warn("Bloom disabled:", e); composer = null; }
+}
+
 // ----------------------------------------------------------------------------
 // Sky dome
 // ----------------------------------------------------------------------------
@@ -649,6 +664,7 @@ window.addEventListener("keydown", (e) => {
   if ([" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(k)) e.preventDefault();
   if (k === "n" || k === "N") toggleDayNight();
   if (k === "c" || k === "C") camMode = (camMode + 1) % 3;
+  if (k === "m" || k === "M") flash(SFX.toggleMute() ? "🔇 הושתק" : "🔊 קול פעיל");
 }, { passive: false });
 window.addEventListener("keyup", (e) => { keys[normKey(e.key)] = false; });
 
@@ -686,6 +702,84 @@ function applyDayNight() {
   }
 }
 function toggleDayNight() { isNight = !isNight; applyDayNight(); }
+
+// ----------------------------------------------------------------------------
+// Sound — fully synthesized via WebAudio (no external files)
+// ----------------------------------------------------------------------------
+const SFX = {
+  ctx: null, master: null, muted: false,
+  engineOsc: null, engineGain: null, engineFilter: null,
+  noiseBuf: null, musicTimer: null, musicStep: 0,
+  init() {
+    try {
+      if (!this.ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        this.ctx = new AC();
+        this.master = this.ctx.createGain();
+        this.master.gain.value = 0.5;
+        this.master.connect(this.ctx.destination);
+        // white-noise buffer for whooshes
+        const len = this.ctx.sampleRate * 1.0;
+        this.noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+        const d = this.noiseBuf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (this.ctx.state === "suspended") this.ctx.resume();
+    } catch (e) { console.warn("audio init failed", e); }
+  },
+  startEngine() {
+    if (!this.ctx || this.engineOsc) return;
+    const o = this.ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = 60;
+    const f = this.ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 800;
+    const g = this.ctx.createGain(); g.gain.value = 0.0;
+    o.connect(f); f.connect(g); g.connect(this.master); o.start();
+    this.engineOsc = o; this.engineGain = g; this.engineFilter = f;
+  },
+  setEngine(s) { // s in 0..1
+    if (!this.engineGain) return;
+    this.engineGain.gain.value = 0.05 + 0.13 * s;
+    this.engineOsc.frequency.value = 55 + 230 * s;
+    this.engineFilter.frequency.value = 600 + 2600 * s;
+  },
+  stopEngine() { if (this.engineOsc) { try { this.engineOsc.stop(); } catch (e) {} this.engineOsc = null; this.engineGain = null; } },
+  boost() {
+    if (!this.ctx || !this.noiseBuf) return;
+    const t = this.ctx.currentTime;
+    const src = this.ctx.createBufferSource(); src.buffer = this.noiseBuf;
+    const f = this.ctx.createBiquadFilter(); f.type = "bandpass"; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(400, t); f.frequency.exponentialRampToValueAtTime(3500, t + 0.4);
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    src.connect(f); f.connect(g); g.connect(this.master); src.start(t); src.stop(t + 0.65);
+  },
+  tone(freq, dur, type, vol) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const o = this.ctx.createOscillator(); o.type = type || "triangle"; o.frequency.value = freq;
+    const g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol || 0.25, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (dur || 0.25));
+    o.connect(g); g.connect(this.master); o.start(t); o.stop(t + (dur || 0.25) + 0.02);
+  },
+  beep(go) { this.tone(go ? 880 : 440, go ? 0.5 : 0.22, "square", 0.3); },
+  jingle() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.tone(f, 0.3, "triangle", 0.3), i * 130)); },
+  startMusic() {
+    if (!this.ctx || this.musicTimer) return;
+    const scale = [220, 277, 330, 415, 440, 415, 330, 277];
+    this.musicStep = 0;
+    this.musicTimer = setInterval(() => {
+      if (this.muted) return;
+      const f = scale[this.musicStep % scale.length];
+      this.tone(f, 0.22, "sawtooth", 0.05);
+      if (this.musicStep % 2 === 0) this.tone(f / 2, 0.3, "sine", 0.06); // bass
+      this.musicStep++;
+    }, 260);
+  },
+  stopMusic() { if (this.musicTimer) { clearInterval(this.musicTimer); this.musicTimer = null; } },
+  toggleMute() { this.muted = !this.muted; if (this.master) this.master.gain.value = this.muted ? 0 : 0.5; return this.muted; },
+};
 
 // ----------------------------------------------------------------------------
 // Camera
@@ -856,6 +950,7 @@ function fireBoost(tier, fromPad) {
   player.boostSpeed = def.speed + (fromPad ? 6 : 0);
   player.boostColor = def.color;
   player.boostTier = tier;
+  SFX.boost();
   if (fromPad) flash("⚡ בוסט!");
 }
 
@@ -942,6 +1037,10 @@ function updateHUD(dt) {
   boostBar.className = "bar-fill boost-fill " + cls + (firing ? " firing" : "");
   boostBar.style.color = firing ? "#" + TIER[player.boostTier].color.toString(16) : "";
 
+  // engine note tracks speed; screen speed-lines while boosting
+  SFX.setEngine(clamp(Math.abs(player.speed) / 90, 0, 1));
+  wrap.classList.toggle("boosting", player.boost > 0);
+
   if (toastTimer > 0) { toastTimer -= dt; if (toastTimer <= 0) toast.classList.remove("show"); }
 }
 
@@ -950,6 +1049,7 @@ function showCountdown(text) {
   countdownEl.classList.remove("show");
   void countdownEl.offsetWidth; // restart animation
   countdownEl.classList.add("show");
+  SFX.beep(text === "GO!");
 }
 
 // boost pad glow pulse
@@ -976,18 +1076,22 @@ function startRace() {
   overlay.classList.add("hidden");
   hud.classList.remove("hidden");
   camCurrent.set(player.x, 20, player.z - 30);
+  SFX.init(); SFX.startEngine(); SFX.startMusic();
 }
-startBtn.addEventListener("click", () => { if (!startBtn.disabled) startRace(); });
+startBtn.addEventListener("click", () => { if (!startBtn.disabled) { SFX.init(); startRace(); } });
 
 function finishPlayer() {
   player.finished = true;
   player.finishTime = raceTime;
   const place = updateStandings();
   raceState = "done";
+  SFX.jingle();
   setTimeout(() => showResults(place), 800);
 }
 
 function showResults(place) {
+  SFX.stopEngine(); SFX.stopMusic();
+  wrap.classList.remove("boosting");
   const medals = ["🥇", "🥈", "🥉", "🏁"];
   hud.classList.add("hidden");
   overlay.classList.remove("hidden");
@@ -1005,6 +1109,7 @@ window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  if (composer) composer.setSize(window.innerWidth, window.innerHeight);
 });
 
 // ----------------------------------------------------------------------------
@@ -1012,6 +1117,7 @@ window.addEventListener("resize", () => {
 // ----------------------------------------------------------------------------
 function boot() {
   buildEnvironment();   // capture sky into a reflection map for the car paint
+  setupComposer();      // bloom post-processing (optional)
   buildTrack();
   // show a kart idling on the start line behind the menu
   spawnRacers();
@@ -1051,7 +1157,7 @@ function loop() {
   // keep the sun following the action for crisp shadows
   sun.position.set(player.x + 180, 240, player.z + 120);
   sun.target.position.set(player.x, 0, player.z);
-  renderer.render(scene, camera);
+  if (composer) composer.render(dt); else renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 

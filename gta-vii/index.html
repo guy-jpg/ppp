@@ -19,6 +19,10 @@
   <div id="game-wrap">
     <!-- Three.js renderer canvas is injected here -->
 
+    <!-- screen-space FX overlays (pure CSS, no WebGL cost) -->
+    <div id="fx-vignette"></div>
+    <div id="fx-speed"></div>
+
     <!-- HUD -->
     <div id="hud" class="hidden">
       <div class="hud-top">
@@ -60,8 +64,7 @@
           <ul class="controls-list">
             <li><b>חיצים / WASD</b> — גז, בלם והיגוי</li>
             <li><b>רווח</b> — דריפט (צובר בוסט) → שחרר לזינוק</li>
-            <li><b>N</b> — יום / לילה</li>
-            <li><b>C</b> — החלפת זווית מצלמה</li>
+            <li><b>N</b> — יום / לילה · <b>C</b> — מצלמה · <b>M</b> — קול</li>
           </ul>
         </div>
         <button id="start-btn" class="big-btn" disabled>טוען מסלול…</button>
@@ -77,6 +80,13 @@
        falls back to a procedural car if these or the model fail to load. -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js"></script>
+  <!-- post-processing (bloom) — optional; the game renders normally if absent -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/UnrealBloomPass.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
