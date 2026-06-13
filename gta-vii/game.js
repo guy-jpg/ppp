@@ -733,19 +733,26 @@ const SFX = {
   },
   startEngine() {
     if (!this.ctx || this.engineOsc) return;
-    const o = this.ctx.createOscillator(); o.type = "sawtooth"; o.frequency.value = 60;
-    const f = this.ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 800;
+    // soft engine: triangle + a sub sine, heavily low-passed (no harsh buzz)
+    const o = this.ctx.createOscillator(); o.type = "triangle"; o.frequency.value = 48;
+    const sub = this.ctx.createOscillator(); sub.type = "sine"; sub.frequency.value = 24;
+    const f = this.ctx.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = 500; f.Q.value = 0.7;
     const g = this.ctx.createGain(); g.gain.value = 0.0;
-    o.connect(f); f.connect(g); g.connect(this.master); o.start();
-    this.engineOsc = o; this.engineGain = g; this.engineFilter = f;
+    o.connect(f); sub.connect(f); f.connect(g); g.connect(this.master);
+    o.start(); sub.start();
+    this.engineOsc = o; this.engineSub = sub; this.engineGain = g; this.engineFilter = f;
   },
-  setEngine(s) { // s in 0..1
+  setEngine(s) { // s in 0..1 — gentle and quiet
     if (!this.engineGain) return;
-    this.engineGain.gain.value = 0.05 + 0.13 * s;
-    this.engineOsc.frequency.value = 55 + 230 * s;
-    this.engineFilter.frequency.value = 600 + 2600 * s;
+    const tc = 0.08, t = this.ctx.currentTime;
+    this.engineGain.gain.setTargetAtTime(0.02 + 0.05 * s, t, tc);
+    this.engineOsc.frequency.setTargetAtTime(46 + 80 * s, t, tc);
+    this.engineSub.frequency.setTargetAtTime(23 + 40 * s, t, tc);
+    this.engineFilter.frequency.setTargetAtTime(420 + 1100 * s, t, tc);
   },
-  stopEngine() { if (this.engineOsc) { try { this.engineOsc.stop(); } catch (e) {} this.engineOsc = null; this.engineGain = null; } },
+  stopEngine() {
+    if (this.engineOsc) { try { this.engineOsc.stop(); this.engineSub.stop(); } catch (e) {} this.engineOsc = null; this.engineSub = null; this.engineGain = null; }
+  },
   boost() {
     if (!this.ctx || !this.noiseBuf) return;
     const t = this.ctx.currentTime;
@@ -775,8 +782,8 @@ const SFX = {
     this.musicTimer = setInterval(() => {
       if (this.muted) return;
       const f = scale[this.musicStep % scale.length];
-      this.tone(f, 0.22, "sawtooth", 0.05);
-      if (this.musicStep % 2 === 0) this.tone(f / 2, 0.3, "sine", 0.06); // bass
+      this.tone(f, 0.22, "triangle", 0.035);
+      if (this.musicStep % 2 === 0) this.tone(f / 2, 0.3, "sine", 0.05); // bass
       this.musicStep++;
     }, 260);
   },
@@ -975,13 +982,11 @@ function updateAI(dt) {
   const racing = raceState === "racing";
   const pp = playerProgress();
   for (const a of ai) {
-    // rubber-banding: rivals ahead ease off, rivals behind catch up, so the
-    // player can realistically fight for 1st (arcade-racer style).
+    // strong rubber-banding keeps the pack tight around the player so the race
+    // stays a fight: rivals ahead back off hard, rivals behind surge to catch up.
     const gap = progressOf(a.lap, a.u) - pp;   // >0 => ahead of player
-    let target = a.baseSpeed;
-    if (gap > 0.03) target -= 12;
-    else if (gap < -0.03) target += 16;
-    if (racing) a.speed = lerp(a.speed, target, 0.05);
+    const target = clamp(a.baseSpeed - gap * 320, a.baseSpeed - 16, a.baseSpeed + 26);
+    if (racing) a.speed = lerp(a.speed, target, 0.06);
     else a.speed = lerp(a.speed, 0, 0.1);
     a.prevU = a.u;
     a.u += (a.speed * dt) / TRACK_LEN;
@@ -1013,6 +1018,7 @@ function updateStandings() {
 // ----------------------------------------------------------------------------
 // HUD
 // ----------------------------------------------------------------------------
+let lastPlace = 4;
 const placeEl = document.getElementById("place");
 const lapEl = document.getElementById("lap");
 const speedEl = document.getElementById("speed");
@@ -1026,7 +1032,13 @@ document.getElementById("laps").textContent = LAPS;
 function updateHUD(dt) {
   speedEl.textContent = Math.round(Math.abs(player.speed) * 3.6);
   lapEl.textContent = Math.min(player.lap, LAPS);
-  placeEl.textContent = updateStandings();
+  const place = updateStandings();
+  placeEl.textContent = place;
+  if (place !== lastPlace) {
+    if (place < lastPlace && !player.finished) flash(place === 1 ? "🥇 תפסת את ההובלה!" : "⬆️ עקפת — מקום " + place);
+    else if (place > lastPlace) flash("⬇️ נעקפת — מקום " + place);
+    lastPlace = place;
+  }
 
   // boost meter: show drift charge (filling) or active boost (firing)
   let pct = 0, cls = "", firing = false;
@@ -1076,6 +1088,7 @@ function startRace() {
   raceTime = 0;
   raceState = "countdown";
   countdownT = 3.999;
+  lastPlace = 4;
   overlay.classList.add("hidden");
   hud.classList.remove("hidden");
   camCurrent.set(player.x, 20, player.z - 30);

@@ -67,21 +67,29 @@ html, body {
   position: absolute;
   left: 0; right: 0;
   display: flex;
-  gap: 10px;
-  padding: 14px 18px;
+  gap: 12px;
+  padding: 18px 22px;
   align-items: flex-start;
 }
 .hud-top { top: 0; justify-content: space-between; }
 .hud-bottom { bottom: 0; justify-content: space-between; align-items: flex-end; }
 
 .hud-box {
-  background: var(--panel);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 8px 14px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  background: linear-gradient(160deg, rgba(28,32,44,0.92), rgba(12,14,20,0.92));
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 10px 18px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
 }
+.hud-box::before {
+  content: ""; position: absolute; top: 0; right: 0; bottom: 0; width: 4px;
+  background: var(--accent);
+}
+.lap::before { background: var(--accent2); }
+.place::before { background: #4ade80; }
 
 .money {
   color: var(--hp);
@@ -224,13 +232,16 @@ html, body {
 .actions .fire { background: rgba(255,93,143,0.85); }
 
 .speed-cluster { display: flex; gap: 10px; align-items: flex-end; }
-.speedo { font-size: 14px; color: var(--accent); text-align: center; }
-.speedo #speed { font-size: 28px; font-weight: 800; }
-.speedo small { display: block; opacity: 0.7; font-size: 11px; }
-.place, .lap { font-size: 18px; font-weight: 800; }
-.place small, .lap small { font-size: 13px; opacity: 0.6; font-weight: 600; }
-.place #place { color: var(--accent); font-size: 26px; }
-.lap #lap { color: var(--accent2); font-size: 26px; }
+.speedo { font-size: 13px; color: var(--accent); text-align: center; min-width: 96px; }
+.speedo #speed { font-size: 38px; font-weight: 900; line-height: 1; font-style: italic; }
+.speedo small { display: block; opacity: 0.65; font-size: 11px; letter-spacing: 1px; }
+.place, .lap {
+  font-size: 13px; font-weight: 700; opacity: 0.75;
+  display: flex; align-items: baseline; gap: 6px; letter-spacing: 1px;
+}
+.place small, .lap small { font-size: 14px; opacity: 0.55; font-weight: 700; }
+.place #place { color: #6ee79b; font-size: 34px; font-weight: 900; font-style: italic; opacity: 1; }
+.lap #lap { color: var(--accent2); font-size: 34px; font-weight: 900; font-style: italic; opacity: 1; }
 
 .boost { min-width: 220px; }
 .boost .bar { width: 200px; height: 14px; }
