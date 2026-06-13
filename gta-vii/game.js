@@ -514,7 +514,7 @@ function buildKart(bodyColor, accentColor) {
 // ----------------------------------------------------------------------------
 const CAR_MODEL_URL = "https://threejs.org/examples/models/gltf/ferrari.glb";
 const MODEL_SCALE = 1.0;
-let MODEL_YAW = 0;          // tweakable if the model faces the wrong way
+let MODEL_YAW = Math.PI;    // model faces -Z by default; flip it to point forward (+Z)
 let CAR_PROTO = null;       // loaded model template (null => use procedural)
 
 function loadCarModel() {
