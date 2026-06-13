@@ -113,7 +113,7 @@ function buildTrack() {
   // grass ground
   const grass = new THREE.Mesh(
     new THREE.PlaneGeometry(1600, 1600, 1, 1),
-    new THREE.MeshStandardMaterial({ color: 0x3c8a45, roughness: 1 })
+    new THREE.MeshStandardMaterial({ map: makeGroundTexture(), roughness: 1 })
   );
   grass.rotation.x = -Math.PI / 2;
   grass.receiveShadow = true;
@@ -177,8 +177,117 @@ function buildTrack() {
 
   // decorative scenery: trees + grandstands away from the track
   scatterScenery();
+  // track furniture: gantry, tyre walls, billboards, crowd
+  dressTrack();
+  // distant hills to fill the horizon
+  addBackdrop();
   // boost pads on the tarmac
   placeBoostPads();
+}
+
+function makeGroundTexture() {
+  const cv = document.createElement("canvas"); cv.width = cv.height = 512;
+  const g = cv.getContext("2d");
+  g.fillStyle = "#3a8a42"; g.fillRect(0, 0, 512, 512);
+  // patchy grass tones so the ground isn't a flat colour
+  for (let i = 0; i < 2600; i++) {
+    const gr = 110 + (rand(-26, 26) | 0);
+    g.fillStyle = `rgba(${46 + (rand(-12, 12) | 0)},${gr},${58 + (rand(-10, 10) | 0)},0.5)`;
+    g.fillRect(rand(0, 512), rand(0, 512), rand(2, 7), rand(2, 7));
+  }
+  const tex = texSRGB(new THREE.CanvasTexture(cv));
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(34, 34);
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return tex;
+}
+
+// start/finish gantry, tyre-stack barriers, billboards and crowd
+function dressTrack() {
+  const c0 = centers[0], n0 = normals[0], t0 = tangents[0];
+  const ang = Math.atan2(t0.x, t0.z);
+  const span = (HALF_W + 1.5);
+
+  // gantry: two posts + a beam carrying a checkered banner
+  const postMat = new THREE.MeshStandardMaterial({ color: 0x20242c, roughness: 0.6, metalness: 0.4 });
+  [span, -span].forEach((off) => {
+    const p = new THREE.Mesh(new THREE.BoxGeometry(1, 9, 1), postMat);
+    p.position.copy(c0).addScaledVector(n0, off); p.position.y = 4.5; p.rotation.y = ang;
+    p.castShadow = true; scene.add(p);
+  });
+  const beam = new THREE.Mesh(new THREE.BoxGeometry(span * 2 + 1, 1.8, 1.4),
+    new THREE.MeshStandardMaterial({ color: 0x14171c, roughness: 0.6 }));
+  beam.position.copy(c0); beam.position.y = 9.3; beam.rotation.y = ang; beam.castShadow = true; scene.add(beam);
+  const banner = new THREE.Mesh(new THREE.PlaneGeometry(span * 2, 1.5),
+    new THREE.MeshBasicMaterial({ map: makeCheckerTexture(), side: THREE.DoubleSide }));
+  banner.position.copy(c0).addScaledVector(t0, -0.75); banner.position.y = 8.4; banner.rotation.y = ang; scene.add(banner);
+
+  // tyre-stack barriers at the corners
+  const tyreMat = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.95 });
+  [110, 250, 430, 560, 760].forEach((si) => {
+    const c = centers[si % SAMPLES], n = normals[si % SAMPLES];
+    [1, -1].forEach((side) => {
+      for (let s = 0; s < 4; s++) {
+        const base = c.clone().addScaledVector(n, side * (HALF_W + 2.4 + s * 1.3));
+        for (let h = 0; h < 2; h++) {
+          const tyre = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.26, 8, 14), tyreMat);
+          tyre.position.set(base.x, 0.3 + h * 0.55, base.z); tyre.rotation.x = Math.PI / 2;
+          scene.add(tyre);
+        }
+      }
+    });
+  });
+
+  // advertising billboards along the straights
+  const adColors = [0xff5d5d, 0x4c8ee8, 0x46c46a, 0xffd23f, 0xb14cff];
+  [70, 210, 360, 520, 680, 820].forEach((si, k) => {
+    const c = centers[si % SAMPLES], n = normals[si % SAMPLES], t = tangents[si % SAMPLES];
+    const base = c.clone().addScaledVector(n, (k % 2 ? 1 : -1) * (HALF_W + 7));
+    const a = Math.atan2(t.x, t.z);
+    const col = adColors[k % adColors.length];
+    [-3, 3].forEach((dx) => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.4, 4, 0.4),
+        new THREE.MeshStandardMaterial({ color: 0x2a2e36, roughness: 0.8 }));
+      post.position.set(base.x + Math.cos(a) * dx, 2, base.z + Math.sin(a) * dx); scene.add(post);
+    });
+    const board = new THREE.Mesh(new THREE.BoxGeometry(9, 3, 0.4),
+      new THREE.MeshStandardMaterial({ color: col, roughness: 0.5, emissive: col, emissiveIntensity: 0.18 }));
+    board.position.set(base.x, 4.6, base.z); board.rotation.y = a; board.castShadow = true; scene.add(board);
+  });
+}
+
+// rows of tiny coloured boxes = crowd in the grandstands
+function addCrowd(base, ang) {
+  const colors = [0xff6b6b, 0xffe066, 0x6bd1ff, 0xff9f43, 0xa29bfe, 0xffffff, 0x55efc4];
+  for (let row = 0; row < 4; row++) {
+    for (let s = -8; s <= 8; s++) {
+      if (Math.random() < 0.15) continue;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.7),
+        new THREE.MeshStandardMaterial({ color: colors[(Math.random() * colors.length) | 0], roughness: 0.9 }));
+      const dx = s * 2.1, dy = 6 + row * 1.1, dz = -row * 1.6 - 2;
+      m.position.set(
+        base.x + Math.cos(ang) * dx + Math.sin(ang) * dz,
+        dy,
+        base.z + Math.sin(ang) * dx - Math.cos(ang) * dz
+      );
+      scene.add(m);
+    }
+  }
+}
+
+// low-poly hills ringing the circuit so the horizon isn't empty
+function addBackdrop() {
+  const hillMat = new THREE.MeshStandardMaterial({ color: 0x4a7d4f, roughness: 1, flatShading: true });
+  const farMat = new THREE.MeshStandardMaterial({ color: 0x6f8fa6, roughness: 1, flatShading: true });
+  for (let i = 0; i < 26; i++) {
+    const a = (i / 26) * Math.PI * 2 + rand(-0.1, 0.1);
+    const r = rand(560, 720);
+    const h = rand(40, 110);
+    const hill = new THREE.Mesh(new THREE.ConeGeometry(rand(70, 140), h, 6), i % 3 === 0 ? farMat : hillMat);
+    hill.position.set(Math.cos(a) * r, h / 2 - 6, Math.sin(a) * r);
+    hill.rotation.y = rand(0, Math.PI);
+    scene.add(hill);
+  }
 }
 
 function makeRoadTexture() {
@@ -212,9 +321,9 @@ function makeCheckerTexture() {
 function scatterScenery() {
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5a3d24, roughness: 1 });
   const leafMat = new THREE.MeshStandardMaterial({ color: 0x2f7a38, roughness: 1, flatShading: true });
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < 170; i++) {
     // pick a random spot, keep it off the track
-    const x = rand(-500, 500), z = rand(-500, 500);
+    const x = rand(-520, 520), z = rand(-520, 520);
     let near = false;
     for (let k = 0; k < SAMPLES; k += 12) if (dist2(x, z, centers[k].x, centers[k].z) < (HALF_W + 16) ** 2) { near = true; break; }
     if (near) continue;
@@ -226,15 +335,17 @@ function scatterScenery() {
   // a couple of grandstands near a straight
   const standMat = new THREE.MeshStandardMaterial({ color: 0x9aa3b2, roughness: 0.9 });
   const roofMat = new THREE.MeshStandardMaterial({ color: 0xd23b5b, roughness: 0.8 });
-  [120, 480].forEach((si) => {
+  [120, 480, 700].forEach((si) => {
     const c = centers[si % SAMPLES], n = normals[si % SAMPLES], t = tangents[si % SAMPLES];
     const base = c.clone().addScaledVector(n, HALF_W + 18);
+    const ang = Math.atan2(t.x, t.z);
     const stand = new THREE.Mesh(new THREE.BoxGeometry(40, 10, 14), standMat);
-    stand.position.set(base.x, 5, base.z); stand.rotation.y = Math.atan2(t.x, t.z);
+    stand.position.set(base.x, 5, base.z); stand.rotation.y = ang;
     stand.castShadow = true; stand.receiveShadow = true; scene.add(stand);
     const roof = new THREE.Mesh(new THREE.BoxGeometry(42, 1, 16), roofMat);
-    roof.position.set(base.x, 11, base.z); roof.rotation.y = stand.rotation.y;
+    roof.position.set(base.x, 11, base.z); roof.rotation.y = ang;
     roof.castShadow = true; scene.add(roof);
+    addCrowd(c.clone().addScaledVector(n, HALF_W + 13), ang);
   });
 }
 
@@ -514,7 +625,7 @@ function spawnRacers() {
       u: sp.index / SAMPLES,
       lane: (i % 2 === 0 ? 1 : -1) * rand(2, 5),
       speed: 0,
-      targetSpeed: rand(46, 54),
+      baseSpeed: rand(40, 46),
       lap: 1, prevU: 0, wheelSpin: 0,
     });
   }
@@ -764,8 +875,15 @@ function nearestPlayerIndex(x, z) {
 // ----------------------------------------------------------------------------
 function updateAI(dt) {
   const racing = raceState === "racing";
+  const pp = playerProgress();
   for (const a of ai) {
-    if (racing) a.speed = lerp(a.speed, a.targetSpeed, 0.04);
+    // rubber-banding: rivals ahead ease off, rivals behind catch up, so the
+    // player can realistically fight for 1st (arcade-racer style).
+    const gap = progressOf(a.lap, a.u) - pp;   // >0 => ahead of player
+    let target = a.baseSpeed;
+    if (gap > 0.03) target -= 12;
+    else if (gap < -0.03) target += 16;
+    if (racing) a.speed = lerp(a.speed, target, 0.05);
     else a.speed = lerp(a.speed, 0, 0.1);
     a.prevU = a.u;
     a.u += (a.speed * dt) / TRACK_LEN;
