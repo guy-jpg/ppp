@@ -47,8 +47,10 @@ function setupComposer() {
     if (THREE.EffectComposer && THREE.RenderPass && THREE.UnrealBloomPass) {
       composer = new THREE.EffectComposer(renderer);
       composer.addPass(new THREE.RenderPass(scene, camera));
+      // high threshold + modest strength: only lights/boost/emissives glow,
+      // not the whole sunlit scene
       bloomPass = new THREE.UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight), 0.55, 0.55, 0.82);
+        new THREE.Vector2(window.innerWidth, window.innerHeight), 0.32, 0.4, 0.92);
       composer.addPass(bloomPass);
     }
   } catch (e) { console.warn("Bloom disabled:", e); composer = null; }
@@ -693,10 +695,11 @@ function applyDayNight() {
     if (player.mesh) player.mesh.userData.spots.forEach((s) => s.intensity = 5);
     dayNightBtn.firstChild.textContent = "🌙 ";
   } else {
-    sun.intensity = 2.6; sun.color.set(0xfff2dc);
-    hemi.intensity = 0.95; hemi.color.set(0xeaf4ff); hemi.groundColor.set(0x5a6a4a);
-    skyUniforms.top.value.set(0x2472c8); skyUniforms.bottom.value.set(0xd6ecff);
-    scene.fog.color.set(0xcfe6ff); renderer.toneMappingExposure = 1.05;
+    sun.intensity = 2.3; sun.color.set(0xfff2dc);
+    hemi.intensity = 0.7; hemi.color.set(0xdcecff); hemi.groundColor.set(0x53624a);
+    skyUniforms.top.value.set(0x2a72c0); skyUniforms.bottom.value.set(0xbfdcf2);
+    scene.fog.color.set(0xbcd6ec); scene.fog.near = 320; scene.fog.far = 1500;
+    renderer.toneMappingExposure = 0.95;
     if (player.mesh) player.mesh.userData.spots.forEach((s) => s.intensity = 0);
     dayNightBtn.firstChild.textContent = "☀️ ";
   }
