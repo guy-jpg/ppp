@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>GTA VII — Speed Rivals (Kart Racing)</title>
   <meta name="description" content="משחק מירוצי קארטינג תלת-ממדי בסגנון ארקייד: דריפט-בוסט, הקפות ויריבים. נבנה ב-Three.js / WebGL.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
   <script>
     // Surface load/runtime errors on the start screen instead of a silent hang.
@@ -57,18 +60,22 @@
     <!-- Loading / Start / Results -->
     <div id="overlay" class="overlay">
       <div class="panel">
-        <h1 class="logo">SPEED <span>RIVALS</span></h1>
-        <p class="subtitle">Kart Racing · 3D</p>
-        <div id="overlay-body">
-          <p class="how">מירוץ קארטינג ארקייד. החזק דריפט בפניות כדי לצבור בוסט, שחרר לזינוק — ועקוף את היריבים ל-3 הקפות.</p>
-          <ul class="controls-list">
-            <li><b>חיצים / WASD</b> — גז, בלם והיגוי</li>
-            <li><b>רווח</b> — דריפט (צובר בוסט) → שחרר לזינוק</li>
-            <li><b>N</b> — יום / לילה · <b>C</b> — מצלמה · <b>M</b> — קול</li>
-          </ul>
+        <div class="logo-wrap">
+          <span class="badge">3D · ARCADE RACING</span>
+          <h1 class="logo">SPEED <span>RIVALS</span></h1>
+          <p class="subtitle">Liberty Shores Grand Prix</p>
         </div>
-        <button id="start-btn" class="big-btn" disabled>טוען מסלול…</button>
-        <p id="load-note" class="load-note">מאתחל מנוע גרפי…</p>
+        <div id="overlay-body">
+          <p class="how">החזק דריפט בפניות כדי לצבור בוסט, שחרר לזינוק — ועקוף את היריבים ל-3 הקפות.</p>
+          <div class="controls-grid">
+            <div class="ctl"><kbd>↑↓←→ / WASD</kbd><span>נהיגה</span></div>
+            <div class="ctl"><kbd>רווח</kbd><span>דריפט · בוסט</span></div>
+            <div class="ctl"><kbd>N</kbd><span>יום / לילה</span></div>
+            <div class="ctl"><kbd>C</kbd><span>מצלמה</span></div>
+          </div>
+        </div>
+        <button id="start-btn" class="big-btn" disabled><span class="btn-label">טוען מסלול…</span></button>
+        <p id="load-note" class="load-note"><span class="spinner"></span>מאתחל מנוע גרפי…</p>
       </div>
     </div>
   </div>
