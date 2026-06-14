@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GTA VII — Speed Rivals (Kart Racing)</title>
+  <meta name="description" content="משחק מירוצי קארטינג תלת-ממדי בסגנון ארקייד: דריפט-בוסט, הקפות ויריבים. נבנה ב-Three.js / WebGL.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+  <script>
+    // Surface load/runtime errors on the start screen instead of a silent hang.
+    window.addEventListener("error", (e) => {
+      var n = document.getElementById("load-note");
+      if (n) n.textContent = "שגיאה בטעינה: " + (e.message || e.type) +
+        " — ודא חיבור אינטרנט (Three.js נטען מ-CDN).";
+    });
+  </script>
+</head>
+<body>
+  <div id="game-wrap">
+    <!-- Three.js renderer canvas is injected here -->
+
+    <!-- screen-space FX overlays (pure CSS, no WebGL cost) -->
+    <div id="fx-vignette"></div>
+    <div id="fx-speed"></div>
+
+    <!-- HUD -->
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="hud-box place">מקום <span id="place">1</span><small>/<span id="total">4</span></small></div>
+        <div class="hud-box lap">הקפה <span id="lap">1</span><small>/<span id="laps">3</span></small></div>
+        <div class="hud-box speedo"><span id="speed">0</span><small>קמ"ש</small></div>
+      </div>
+      <div class="hud-bottom">
+        <div class="hud-box boost">
+          <span class="hud-label">בוסט</span>
+          <div class="bar"><div id="boost-bar" class="bar-fill boost-fill"></div></div>
+        </div>
+        <div class="hud-box daynight" id="daynight">☀️ <span class="hint">N</span></div>
+      </div>
+      <div id="countdown"></div>
+      <div id="toast"></div>
+    </div>
+
+    <!-- Mobile controls -->
+    <div id="touch-controls" class="hidden">
+      <div class="pedals">
+        <button class="tc gas" data-key="ArrowUp">⛽</button>
+        <button class="tc drift" data-key=" ">DRIFT</button>
+        <button class="tc brake" data-key="ArrowDown">⊟</button>
+      </div>
+      <div class="steer">
+        <button class="tc left" data-key="ArrowLeft">◀</button>
+        <button class="tc right" data-key="ArrowRight">▶</button>
+      </div>
+    </div>
+
+    <!-- Loading / Start / Results -->
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <div class="logo-wrap">
+          <span class="badge">3D · ARCADE RACING</span>
+          <h1 class="logo">SPEED <span>RIVALS</span></h1>
+          <p class="subtitle">Liberty Shores Grand Prix</p>
+        </div>
+        <div id="overlay-body">
+          <p class="how">החזק דריפט בפניות כדי לצבור בוסט, שחרר לזינוק — ועקוף את היריבים ל-3 הקפות.</p>
+          <div class="controls-grid">
+            <div class="ctl"><kbd>↑↓←→ / WASD</kbd><span>נהיגה</span></div>
+            <div class="ctl"><kbd>רווח</kbd><span>דריפט · בוסט</span></div>
+            <div class="ctl"><kbd>N</kbd><span>יום / לילה</span></div>
+            <div class="ctl"><kbd>C</kbd><span>מצלמה</span></div>
+          </div>
+        </div>
+        <button id="start-btn" class="big-btn" disabled><span class="btn-label">טוען מסלול…</span></button>
+        <p id="load-note" class="load-note"><span class="spinner"></span>מאתחל מנוע גרפי…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js UMD build (r137) — defines the global `THREE` for the classic
+       script below. Newer versions (r160+) dropped the UMD build. -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js"></script>
+  <!-- glTF model loaders (UMD) — used to load a real sports-car model; the game
+       falls back to a procedural car if these or the model fail to load. -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js"></script>
+  <!-- post-processing (bloom) — optional; the game renders normally if absent -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/shaders/VignetteShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/postprocessing/SMAAPass.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
