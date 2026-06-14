@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Speed Rivals v2 — Babylon.js Engine</title>
+  <meta name="description" content="מירוצי קארטינג תלת-ממדי על מנוע Babylon.js: PBR, IBL, ו-pipeline פוסט מלא.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    #renderCanvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
+  </style>
+  <script>
+    window.addEventListener("error", (e) => {
+      var n = document.getElementById("load-note");
+      if (n) n.textContent = "שגיאה בטעינה: " + (e.message || e.type) + " — ודא חיבור אינטרנט.";
+    });
+  </script>
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="renderCanvas"></canvas>
+
+    <div id="fx-vignette"></div>
+    <div id="fx-speed"></div>
+
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div class="hud-box place">מקום <span id="place">1</span><small>/<span id="total">4</span></small></div>
+        <div class="hud-box lap">הקפה <span id="lap">1</span><small>/<span id="laps">3</span></small></div>
+        <div class="hud-box speedo"><span id="speed">0</span><small>קמ"ש</small></div>
+      </div>
+      <div class="hud-bottom">
+        <div class="hud-box boost">
+          <span class="hud-label">בוסט</span>
+          <div class="bar"><div id="boost-bar" class="bar-fill boost-fill"></div></div>
+        </div>
+        <div class="hud-box daynight" id="enginetag">⚡ Babylon</div>
+      </div>
+      <div id="countdown"></div>
+      <div id="toast"></div>
+    </div>
+
+    <div id="touch-controls" class="hidden">
+      <div class="pedals">
+        <button class="tc gas" data-key="ArrowUp">⛽</button>
+        <button class="tc drift" data-key=" ">DRIFT</button>
+        <button class="tc brake" data-key="ArrowDown">⊟</button>
+      </div>
+      <div class="steer">
+        <button class="tc left" data-key="ArrowLeft">◀</button>
+        <button class="tc right" data-key="ArrowRight">▶</button>
+      </div>
+    </div>
+
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <div class="logo-wrap">
+          <span class="badge">POWERED BY BABYLON.JS</span>
+          <h1 class="logo">SPEED <span>RIVALS</span></h1>
+          <p class="subtitle">Engine Edition · v2</p>
+        </div>
+        <div id="overlay-body">
+          <p class="how">בנוי מחדש על מנוע משחק אמיתי — PBR, תאורת סביבה (IBL) ו-pipeline פוסט מלא. החזק דריפט בפניות לבוסט.</p>
+          <div class="controls-grid">
+            <div class="ctl"><kbd>↑↓←→ / WASD</kbd><span>נהיגה</span></div>
+            <div class="ctl"><kbd>רווח</kbd><span>דריפט · בוסט</span></div>
+            <div class="ctl"><kbd>C</kbd><span>מצלמה</span></div>
+            <div class="ctl"><kbd>M</kbd><span>קול</span></div>
+          </div>
+        </div>
+        <button id="start-btn" class="big-btn" disabled><span class="btn-label">טוען מנוע…</span></button>
+        <p id="load-note" class="load-note"><span class="spinner"></span>מאתחל את Babylon.js…</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="racer.js"></script>
+</body>
+</html>
