@@ -208,7 +208,7 @@
 
   // --- Racers -----------------------------------------------------------------
   const LAPS = 3;
-  const MODEL_YAW = Math.PI;   // tune if the model faces the wrong way
+  const MODEL_YAW = 0;   // model faces +Z forward (Babylon glTF import)
   const player = { node: null, x: 0, z: 0, heading: 0, speed: 0,
     drifting: false, driftDir: 0, driftCharge: 0, boost: 0, boostSpeed: 0, boostTier: 0,
     idx: 44, lap: 1, passedHalf: false, finished: false, finishTime: 0 };
@@ -398,7 +398,9 @@
     else { player.speed -= Math.sign(player.speed) * Math.min(Math.abs(player.speed), 12) * 0.8 * dt; if (Math.abs(player.speed) < 0.3) player.speed = 0; }
     player.speed = clamp(player.speed, -16, boostMax);
 
-    const steer = (keys.ArrowLeft ? 1 : 0) - (keys.ArrowRight ? 1 : 0);
+    // +Z forward in Babylon's left-handed space: pressing right must raise the
+    // heading (turn toward +X), left must lower it — otherwise steering inverts.
+    const steer = (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0);
     const sf = clamp(Math.abs(player.speed) / 12, 0, 1);
     const wantDrift = driving && keys[" "] && Math.abs(player.speed) > 22 && steer !== 0;
     if (wantDrift && !player.drifting) { player.drifting = true; player.driftDir = Math.sign(steer); player.driftCharge = 0; }
