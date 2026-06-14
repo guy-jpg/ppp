@@ -1,0 +1,12 @@
+{
+  "appId": "com.dailyroutine.app",
+  "appName": "שגרת היום",
+  "webDir": "www",
+  "backgroundColor": "#0f172aff",
+  "android": {
+    "backgroundColor": "#0f172aff"
+  },
+  "ios": {
+    "backgroundColor": "#0f172aff"
+  }
+}

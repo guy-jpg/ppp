@@ -5,7 +5,7 @@ const zlib = require('zlib');
 const fs = require('fs');
 const path = require('path');
 
-const OUT = path.join(__dirname, '..', 'icons');
+const OUT = path.join(__dirname, '..', 'www', 'icons');
 fs.mkdirSync(OUT, { recursive: true });
 
 /* ---- CRC32 ל-PNG ---- */

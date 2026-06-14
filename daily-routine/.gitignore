@@ -1,0 +1,10 @@
+# תלויות
+node_modules/
+
+# פרויקטים נייטיב שנוצרים ע"י Capacitor CLI (לא נשמרים בריפו)
+android/
+ios/
+
+# לוגים וזמניים
+*.log
+.DS_Store
