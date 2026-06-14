@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ניהול שגרת היום - תכנון משימות יומיות, מעקב התקדמות ורצף הרגלים" />
+  <title>שגרת היום – ניהול משימות יומיות</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">🌅</span>
+          <span class="logo-text">שגרת היום</span>
+          <span class="logo-sub">תכנון ומעקב יומי</span>
+        </div>
+        <div class="header-date">
+          <span id="today-date"></span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <!-- סיכום היום -->
+      <section class="summary-card">
+        <div class="summary-top">
+          <div>
+            <h2 id="greeting">שלום!</h2>
+            <p class="summary-sub" id="summary-sub">בוא נתחיל את היום</p>
+          </div>
+          <div class="streak-badge" title="רצף ימים שבהם השלמת את כל המשימות">
+            <span class="streak-flame">🔥</span>
+            <span class="streak-num" id="streak-num">0</span>
+            <span class="streak-label">רצף</span>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <span class="progress-text" id="progress-text">0 / 0</span>
+        </div>
+      </section>
+
+      <!-- הוספת משימה -->
+      <section class="add-card">
+        <form id="add-form" autocomplete="off">
+          <div class="add-row">
+            <input type="text" id="task-title" placeholder="מה צריך לעשות?" maxlength="80" required />
+            <input type="time" id="task-time" />
+          </div>
+          <div class="add-row add-row-bottom">
+            <div class="icon-picker" id="icon-picker"></div>
+            <button type="submit" class="btn-add">➕ הוסף משימה</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- רשימת משימות -->
+      <section class="tasks-section">
+        <div class="tasks-header">
+          <h3>המשימות שלי</h3>
+          <div class="filter-tabs" id="filter-tabs">
+            <button class="filter-tab active" data-filter="all">הכל</button>
+            <button class="filter-tab" data-filter="active">פעילות</button>
+            <button class="filter-tab" data-filter="done">הושלמו</button>
+          </div>
+        </div>
+        <ul id="task-list" class="task-list"></ul>
+        <div id="empty-state" class="empty-state" hidden>
+          <span class="empty-icon">📝</span>
+          <p>אין משימות עדיין — הוסף את המשימה הראשונה שלך!</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>שגרת היום &copy; 2026 · הנתונים נשמרים במכשיר שלך בלבד</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
