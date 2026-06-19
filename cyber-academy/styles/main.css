@@ -108,6 +108,18 @@ footer { text-align: center; padding: 24px; color: var(--text-muted); font-size:
 .timeline-card ul { padding-right: 20px; }
 .timeline-card li { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; }
 .timeline-card li::marker { color: var(--stage-color, var(--primary)); }
+.weeks-list { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 4px; }
+.week-item { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color var(--transition); }
+.week-item.open { border-color: var(--stage-color, var(--primary)); }
+.week-header { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+.week-header:hover { background: rgba(255,255,255,0.03); }
+.week-title { font-size: 0.9rem; color: var(--text); }
+.week-title strong { color: var(--text-bright); }
+.week-item.open .subtopic-chevron { transform: rotate(180deg); }
+.week-body { padding: 0 14px 12px; display: none; }
+.week-item.open .week-body { display: block; animation: slideDown 0.2s ease; }
+.week-body p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
+.week-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; color: var(--stage-color, var(--primary)); margin-left: 6px; }
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .chip {
   background: var(--bg-card2); border: 1px solid var(--border); color: var(--text);

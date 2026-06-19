@@ -116,6 +116,18 @@ footer { text-align: center; padding: 24px; color: var(--text-muted); font-size:
 .timeline-card ul { padding-right: 20px; }
 .timeline-card li { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; }
 .timeline-card li::marker { color: var(--stage-color, var(--primary)); }
+.weeks-list { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 4px; }
+.week-item { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color var(--transition); }
+.week-item.open { border-color: var(--stage-color, var(--primary)); }
+.week-header { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+.week-header:hover { background: rgba(255,255,255,0.03); }
+.week-title { font-size: 0.9rem; color: var(--text); }
+.week-title strong { color: var(--text-bright); }
+.week-item.open .subtopic-chevron { transform: rotate(180deg); }
+.week-body { padding: 0 14px 12px; display: none; }
+.week-item.open .week-body { display: block; animation: slideDown 0.2s ease; }
+.week-body p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.6; }
+.week-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; color: var(--stage-color, var(--primary)); margin-left: 6px; }
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .chip {
   background: var(--bg-card2); border: 1px solid var(--border); color: var(--text);
@@ -1208,29 +1220,119 @@ const QUESTIONS_BY_TOPIC = QUESTIONS.reduce((acc, q) => {
 
 const STORAGE_KEY = 'cyber_progress';
 
-// תוכנית הלימוד – מסלול מובנה
+// תוכנית הלימוד – מסלול מובנה ל-18 שבועות
+// כל נושא בונה על הקודם: יסודות → תשתית → זיהוי והגנה → תקיפה ואינטגרציה → פרויקט גמר
 const ROADMAP = [
-  { phase: "שלב 0 – חימום", weeks: "שבוע 1", color: "#94a3b8",
-    items: ["הקמת מעבדה ביתית (VirtualBox/VMware)", "Cyberium Arena – זירת האימון", "Git ותיעוד"],
-    topics: ["cyberium"] },
-  { phase: "שלב 1 – מערכות הפעלה", weeks: "שבועות 2–5", color: "#f59e0b",
-    items: ["Linux: shell, הרשאות, רשת, scripting", "Windows Forensics: artifacts, זיכרון, timeline"],
-    topics: ["linux", "winforensics"] },
-  { phase: "שלב 2 – Python", weeks: "שבועות 6–8", color: "#3b82f6",
-    items: ["יסודות → אוטומציה", "sockets, scapy, requests", "פרויקט: מנתח לוגים"],
-    topics: ["python"] },
-  { phase: "שלב 3 – הגנה היקפית", weeks: "שבועות 9–12", color: "#dc2626",
-    items: ["pfSense: Firewall, NAT, VPN, VLAN", "IDS/IPS: Snort/Suricata, כתיבת חוקים"],
-    topics: ["pfsense", "idsips"] },
-  { phase: "שלב 4 – חשיבה התקפית", weeks: "שבועות 13–17", color: "#7c3aed",
-    items: ["Metasploit: exploitation, Meterpreter", "MITRE ATT&CK: מיפוי TTPs"],
-    topics: ["metasploit", "mitre"] },
-  { phase: "שלב 5 – ענן ועתיד", weeks: "שבועות 18–22", color: "#f97316",
-    items: ["AWS: IAM, VPC, אבטחת ענן", "AI in Cyber: הגנה, איומים, אבטחת LLM"],
-    topics: ["aws", "ai"] },
-  { phase: "שלב 6 – פרויקט גמר", weeks: "שבועות 23–28", color: "#10b981",
-    items: ["תרחיש Red vs Blue מלא בזירה", "דוח חקירה + portfolio ב-GitHub"],
-    topics: [] }
+  {
+    phase: "שלב 1 – יסודות", weeks: "שבועות 1–4", color: "#f59e0b",
+    topics: ["linux", "python"],
+    weeksDetail: [
+      { n: "שבוע 1", title: "Linux בסיסי",
+        focus: "ניווט בshell, היררכיית מערכת הקבצים, הרשאות (chmod/chown), משתמשים וקבוצות, ניהול חבילות.",
+        exercise: "הקם Linux VM מאפס, צור משתמשים ברמות הרשאה שונות, שבור ותקן בעיות הרשאה.",
+        deliverable: "Cheat-sheet אישי של כל פקודה שהשתמשת בה." },
+      { n: "שבוע 2", title: "Linux מתקדם",
+        focus: "תהליכים, שירותים (systemd), cron, פקודות רשת (ip, ss, netstat, tcpdump), מיקומי לוגים (/var/log).",
+        exercise: "תזמן cron job, בדוק שירותים רצים, לכוד תעבורה עם tcpdump תוך כדי גלישה.",
+        deliverable: "Runbook: 'איך לחקור מה Linux box עושה'." },
+      { n: "שבוע 3", title: "יסודות Python",
+        focus: "משתנים, סוגי נתונים, רשימות/מילונים, לולאות, פונקציות, קלט/פלט קבצים, טיפול בשגיאות.",
+        exercise: "כתוב סקריפט שקורא קובץ לוג וסופר כמה פעמים מופיעה כל כתובת IP.",
+        deliverable: "סקריפט מנתח הלוגים, מתועד בהערות." },
+      { n: "שבוע 4", title: "Python לאבטחה",
+        focus: "ספריית requests, פענוח JSON, argparse לכלי CLI, ביטויים רגולריים (regex).",
+        exercise: "כתוב כלי ששואל API ציבורי (למשל שירות מוניטין IP) ומדפיס תוצאות.",
+        deliverable: "כלי CLI קטן שבאמת תשתמש בו שוב." }
+    ]
+  },
+  {
+    phase: "שלב 2 – רשתות ותשתית", weeks: "שבועות 5–8", color: "#dc2626",
+    topics: ["pfsense", "aws"],
+    weeksDetail: [
+      { n: "שבוע 5", title: "רענון רשתות + התקנת pfSense",
+        focus: "מודל OSI, TCP/IP, subnetting, NAT, DNS. התקנת pfSense במעבדה.",
+        exercise: "בנה רשת עם pfSense כשער (gateway) בין שתי תת-רשתות VM.",
+        deliverable: "דיאגרמת רשת של המעבדה שלך." },
+      { n: "שבוע 6", title: "חוקים ושירותים ב-pfSense",
+        focus: "חוקי Firewall, NAT/port forwarding, VLANs, DHCP, VPN בסיסי.",
+        exercise: "כתוב חוקים שמאפשרים לתת-רשת אחת לגלוש באינטרנט אך חוסמים אותה מתת-רשת אחרת; אמת בבדיקה.",
+        deliverable: "ruleset מתועד עם ההיגיון מאחורי כל חוק." },
+      { n: "שבוע 7", title: "יסודות AWS",
+        focus: "IAM (משתמשים, roles, policies), מודל האחריות המשותפת, regions/AZs, EC2, S3.",
+        exercise: "הפעל EC2 instance, צרף role בעקרון least-privilege, שמור ושלוף קובץ מ-S3.",
+        deliverable: "הסבר כתוב על מדיניות ה-IAM שכתבת." },
+      { n: "שבוע 8", title: "רשת ואבטחה ב-AWS",
+        focus: "VPCs, subnets, Security Groups מול NACLs, CloudTrail, יסודות GuardDuty.",
+        exercise: "בנה VPC עם subnets ציבורי ופרטי, נעל גישה עם Security Groups, הפעל CloudTrail.",
+        deliverable: "דיאגרמת ארכיטקטורה + הערות על מה כל בקרה מגנה." }
+    ]
+  },
+  {
+    phase: "שלב 3 – זיהוי והגנה", weeks: "שבועות 9–13", color: "#10b981",
+    topics: ["idsips", "mitre", "winforensics"],
+    weeksDetail: [
+      { n: "שבוע 9", title: "מושגי IDS/IPS + הקמה",
+        focus: "זיהוי signature מול anomaly, inline מול passive; התקנת Snort או Suricata.",
+        exercise: "גרום לחיישן לראות תעבורה ולירות על חוקי ברירת המחדל.",
+        deliverable: "תיאור היכן החיישן יושב ולמה." },
+      { n: "שבוע 10", title: "כתיבה וכיוונון חוקים",
+        focus: "תחביר חוקים, צמצום false positives, מיון התראות (triage).",
+        exercise: "כתוב חוק מותאם לזיהוי תבנית ספציפית, צור תעבורה תואמת, אמת את ההתראה.",
+        deliverable: "3–5 חוקים מותאמים עם הסברים." },
+      { n: "שבוע 11", title: "MITRE ATT&CK",
+        focus: "טקטיקות, טכניקות, תת-טכניקות; המטריצה; מיפוי התנהגות למזהי טכניקה.",
+        exercise: "קח דוח אירוע ציבורי ומפה כל פעולה לטכניקות ATT&CK.",
+        deliverable: "המיפוי כטבלה." },
+      { n: "שבוע 12", title: "Windows Forensics – חלק 1",
+        focus: "Event logs, registry, scheduled tasks, מיקומי persistence, artifacts של תוקף.",
+        exercise: "בצע פעולה על Windows VM, ואז מצא את הראיות בלוגים/registry.",
+        deliverable: "Timeline של מה שעשית מול ה-artifacts שהוכיחו זאת." },
+      { n: "שבוע 13", title: "Windows Forensics – חלק 2",
+        focus: "ניתוח זיכרון (יסודות Volatility), timelines של מערכת הקבצים, טיפול בראיות ו-chain of custody.",
+        exercise: "לכוד image של זיכרון וזהה ממנו תהליכים רצים וחיבורי רשת.",
+        deliverable: "דוח פורנזי קצר." }
+    ]
+  },
+  {
+    phase: "שלב 4 – תקיפה (לטובת הגנה) ואינטגרציה", weeks: "שבועות 14–17", color: "#7c3aed",
+    topics: ["metasploit", "ai"],
+    weeksDetail: [
+      { n: "שבוע 14", title: "טכניקות תקיפה – מנקודת מבט המגן",
+        focus: "שימוש ב-Metasploit במעבדה מבודדת כדי להבין recon, exploitation ו-post-exploitation — בדגש על איך כל שלב נראה בלוגים וברשת.",
+        exercise: "הרץ טכניקה בסיסית נגד VM פגיע במכוון (כמו Metasploitable) ולכוד את התראות ה-IDS וה-artifacts שנוצרים.",
+        deliverable: "טבלת 'פעולת תוקף → אות זיהוי'." },
+      { n: "שבוע 15", title: "מיפוי תקיפות לזיהוי",
+        focus: "מפה את טכניקות שבוע 14 ל-MITRE ATT&CK, ואז לכיסוי הזיהוי שלך משבועות 9–13.",
+        exercise: "זהה פערים שבהם פעולה לא הפיקה שום התראה.",
+        deliverable: "מטריצת כיסוי שמראה מה זוהה מול נקודות עיוורות." },
+      { n: "שבוע 16", title: "AI בסייבר – חלק 1",
+        focus: "יישומי ML: זיהוי אנומליות, סיווג נוזקות, סינון spam/phishing, מיון התראות ב-SOC.",
+        exercise: "אמן מסווג פשוט על dataset מתויג (למשל URLs של phishing מול לגיטימיים) ב-Python.",
+        deliverable: "ה-notebook + תוצאות דיוק." },
+      { n: "שבוע 17", title: "AI בסייבר – חלק 2",
+        focus: "סיכונים ומגבלות: adversarial examples, model poisoning, evasion, עלות false-positive, ולמה AI מחזק ולא מחליף אנליסטים.",
+        exercise: "נסה לגרום למסווג משבוע 16 לטעות בסיווג, ותעד כיצד.",
+        deliverable: "סיכום קצר על חולשות המודל." }
+    ]
+  },
+  {
+    phase: "שלב 5 – פרויקט גמר", weeks: "שבוע 18", color: "#ef4444",
+    topics: ["cyberium"],
+    weeksDetail: [
+      { n: "שבוע 18", title: "פרויקט גמר – Cyberium Arena",
+        focus: "תרגילים מבוססי תרחיש שמשלבים הכל: זיהוי, חקירה, ניתוח פורנזי, מיפוי ל-ATT&CK, ותגובה.",
+        exercise: "השלם אירוע מלא — מהתראה ועד דוח.",
+        deliverable: "דוח תגובה לאירוע (IR) מלא שמחבר רשתות, זיהוי, פורנזיקה ומיון בסיוע AI." }
+    ]
+  }
+];
+
+// הרגלים שכדאי לשמר לאורך כל המסלול
+const ROADMAP_HABITS = [
+  "נהל קובץ הערות אחד לכל נושא.",
+  "בצע כל תרגיל ידנית במעבדה, לא רק בקריאה.",
+  "שמור את המעבדות מבודדות (host-only networking) כך ששום דבר לא נוגע במערכות אמיתיות.",
+  "בסוף כל שלב, כתוב סיכום בן עמוד אחד על מה אתה יכול לעשות עכשיו שלא יכולת קודם."
 ];
 
 const App = {
@@ -1354,9 +1456,15 @@ const App = {
     const div = document.createElement('div');
     div.className = 'page';
     div.innerHTML = `
-      <div class="section-title">🗺️ מסלול "Cyber Warrior" – תוכנית הלימוד המלאה</div>
-      <p style="color:var(--text-muted);margin-bottom:24px">מסע מובנה של כ-28 שבועות. לחץ על תחום כדי לקפוץ לחומר הלימוד שלו.</p>
+      <div class="section-title">🗺️ מסלול לימוד – 18 שבועות</div>
+      <p style="color:var(--text-muted);margin-bottom:24px">תוכנית מובנית המכסה עשרה נושאי ליבה, מסודרת כך שכל נושא בונה על הקודם. לחץ על שבוע כדי לפתוח את הפירוט, ועל תחום כדי לקפוץ לחומר הלימוד שלו.</p>
       <div class="timeline" id="timeline"></div>
+      <div class="section-title" style="margin-top:32px">🔁 הרגלים לשמר לאורך כל המסלול</div>
+      <div class="progress-card">
+        <ul style="padding-right:20px;margin:0">
+          ${ROADMAP_HABITS.map(h => `<li style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px">${h}</li>`).join('')}
+        </ul>
+      </div>
     `;
     const tl = div.querySelector('#timeline');
     ROADMAP.forEach(stage => {
@@ -1367,6 +1475,19 @@ const App = {
         const t = TOPICS.find(x => x.id === id);
         return t ? `<span class="chip" data-topic="${id}">${t.icon} ${t.name}</span>` : '';
       }).join('');
+      const weeksHtml = stage.weeksDetail.map(w => `
+        <div class="week-item">
+          <div class="week-header">
+            <span class="week-title"><strong>${w.n}</strong> · ${w.title}</span>
+            <span class="subtopic-chevron">⌄</span>
+          </div>
+          <div class="week-body">
+            <p><span class="week-tag">🎯 מיקוד</span> ${w.focus}</p>
+            <p><span class="week-tag">🧪 תרגיל</span> ${w.exercise}</p>
+            <p><span class="week-tag">📦 תוצר</span> ${w.deliverable}</p>
+          </div>
+        </div>
+      `).join('');
       node.innerHTML = `
         <div class="timeline-dot"></div>
         <div class="timeline-card">
@@ -1374,11 +1495,16 @@ const App = {
             <span class="timeline-phase">${stage.phase}</span>
             <span class="timeline-weeks">${stage.weeks}</span>
           </div>
-          <ul>${stage.items.map(i => `<li>${i}</li>`).join('')}</ul>
+          <div class="weeks-list">${weeksHtml}</div>
           ${topicChips ? `<div class="chip-row">${topicChips}</div>` : ''}
         </div>
       `;
       tl.appendChild(node);
+    });
+    // toggle week details
+    tl.querySelectorAll('.week-item').forEach(item => {
+      item.querySelector('.week-header').addEventListener('click', () =>
+        item.classList.toggle('open'));
     });
     div.querySelectorAll('.chip').forEach(chip =>
       chip.addEventListener('click', () => this.navigate('topic', chip.dataset.topic)));
