@@ -127,6 +127,17 @@ footer { text-align: center; padding: 24px; color: var(--text-muted); font-size:
 }
 .chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
 
+/* ===== CAREER PAGE ===== */
+.cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.cert-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: block; text-decoration: none; color: inherit; }
+.cert-top { margin-bottom: 8px; }
+.cert-tier { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.cert-name { font-size: 1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 4px; }
+.cert-topics { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+.cert-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+.practice-card { transition: all var(--transition); }
+.practice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+
 /* ===== TOPIC DETAIL ===== */
 .topic-detail { animation: fadeIn 0.3s ease; }
 .back-btn {

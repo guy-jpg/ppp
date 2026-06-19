@@ -135,6 +135,17 @@ footer { text-align: center; padding: 24px; color: var(--text-muted); font-size:
 }
 .chip:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); }
 
+/* ===== CAREER PAGE ===== */
+.cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.cert-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: block; text-decoration: none; color: inherit; }
+.cert-top { margin-bottom: 8px; }
+.cert-tier { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.cert-name { font-size: 1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 4px; }
+.cert-topics { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+.cert-note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+.practice-card { transition: all var(--transition); }
+.practice-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+
 /* ===== TOPIC DETAIL ===== */
 .topic-detail { animation: fadeIn 0.3s ease; }
 .back-btn {
@@ -290,6 +301,7 @@ footer { text-align: center; padding: 24px; color: var(--text-muted); font-size:
           <button class="nav-btn active" data-page="home">🏠 בית</button>
           <button class="nav-btn" data-page="roadmap">🗺️ מסלול</button>
           <button class="nav-btn" data-page="topics">🎓 תחומים</button>
+          <button class="nav-btn" data-page="career">🎯 קריירה</button>
           <button class="nav-btn" data-page="quiz">✏️ תרגול</button>
           <button class="nav-btn" data-page="progress">📊 התקדמות</button>
         </nav>
@@ -1205,7 +1217,74 @@ const QUESTIONS = [
     question: "איזה מקור הוא נקודת התחלה ללימוד אבטחת מערכות LLM?",
     answers: ["RFC 2328", "OWASP Top 10 for LLMs", "MITRE CVE", "ISO 9001"],
     correct: 1,
-    explanation: "OWASP Top 10 for LLMs מרכז את סיכוני האבטחה המרכזיים במערכות מבוססות מודלי שפה." }
+    explanation: "OWASP Top 10 for LLMs מרכז את סיכוני האבטחה המרכזיים במערכות מבוססות מודלי שפה." },
+
+  // ===== ADVANCED / EXAM-GRADE =====
+  { id: 110, topic: "linux", topicName: "Linux",
+    question: "מה תעשה הפקודה: nc -lvnp 4444 ?",
+    answers: ["סורקת פורטים", "פותחת listener מאזין על פורט 4444", "מתחברת לשרת web", "מציגה תהליכים"],
+    correct: 1,
+    explanation: "netcat במצב listen (-l) verbose (-v) ללא DNS (-n) על פורט (-p) 4444 — מאזין נפוץ לקבלת reverse shell." },
+  { id: 111, topic: "linux", topicName: "Linux",
+    question: "תוקף מוצא ש-/usr/bin/find הוא SUID root. כיצד ינצל זאת להסלמה?",
+    answers: ["find . -exec /bin/sh \\; -quit", "אי אפשר לנצל find", "chmod 777 find", "rm find"],
+    correct: 0,
+    explanation: "בינארי SUID שמריץ פקודות (כמו find עם -exec) מאפשר להריץ shell בהרשאות הבעלים (root). זו טכניקת GTFOBins קלאסית." },
+  { id: 112, topic: "python", topicName: "Python",
+    question: "מדוע מסוכן להשתמש ב-pickle.loads() על נתונים לא מהימנים?",
+    answers: ["איטי", "מאפשר הרצת קוד שרירותי (RCE)", "צורך זיכרון", "לא תואם JSON"],
+    correct: 1,
+    explanation: "pickle יכול לשחזר אובייקטים שמריצים קוד בעת deserialization — קלט זדוני מוביל ל-Remote Code Execution. השתמש ב-JSON לנתונים לא מהימנים." },
+  { id: 113, topic: "metasploit", topicName: "Metasploit",
+    question: "מה ההבדל בין payload מסוג staged ל-stageless (reverse_tcp מול reverse_tcp inline)?",
+    answers: ["אין הבדל", "staged שולח stager קטן שמוריד את שאר ה-payload; stageless שולח הכל בבת אחת", "stageless מוצפן תמיד", "staged לא עובד ב-Windows"],
+    correct: 1,
+    explanation: "staged (windows/meterpreter/reverse_tcp) שולח stager זעיר שמושך את הליבה; stageless (windows/meterpreter_reverse_tcp) כולל הכל — גדול יותר אך אמין יותר ברשתות לא יציבות." },
+  { id: 114, topic: "winforensics", topicName: "Windows Forensics",
+    question: "תוקף ביצע Timestomping. כיצד תחשוף זאת ב-MFT?",
+    answers: ["אי אפשר", "השוואת חותמות $STANDARD_INFO מול $FILE_NAME", "בדיקת גודל הקובץ", "ספירת קבצים"],
+    correct: 1,
+    explanation: "כלים רבים משנים רק את $STANDARD_INFO (גלוי ב-Explorer) אך לא את $FILE_NAME. אי-התאמה ביניהם חושפת מניפולציה של זמנים." },
+  { id: 115, topic: "winforensics", topicName: "Windows Forensics",
+    question: "איזה מנגנון Windows מתעד אילו בינאריים הורצו לאחרונה ומתי?",
+    answers: ["Recycle Bin", "Prefetch + ShimCache/Amcache", "Cookies", "Hosts file"],
+    correct: 1,
+    explanation: "Prefetch (.pf), ShimCache (AppCompatCache) ו-Amcache שומרים ראיות להרצת תוכניות — מקור מפתח להוכחת execution גם אם הקובץ נמחק." },
+  { id: 116, topic: "idsips", topicName: "IDS/IPS",
+    question: "מהו השדה flow:established,to_server בחוק Suricata?",
+    answers: ["מצפין תעבורה", "מגביל את החוק לחיבור TCP שכבר נוצר, בכיוון הלקוח→שרת", "חוסם את החיבור", "מגדיר פורט"],
+    correct: 1,
+    explanation: "flow מצמצם בדיקה רק לתעבורה בכיוון ובמצב הרלוונטיים — מפחית false positives ומשפר ביצועים על ידי דילוג על חבילות לא רלוונטיות." },
+  { id: 117, topic: "mitre", topicName: "MITRE ATT&CK",
+    question: "תוקף יצר Scheduled Task כדי לשרוד אתחול. לאיזו טקטיקה זה ממופה?",
+    answers: ["Exfiltration", "Persistence (T1053)", "Discovery", "Impact"],
+    correct: 1,
+    explanation: "Scheduled Task/Job (T1053) היא טכניקת Persistence (ולעיתים Privilege Escalation/Execution). מאפשרת לקוד לרוץ שוב גם אחרי reboot." },
+  { id: 118, topic: "aws", topicName: "AWS",
+    question: "EC2 ב-private subnet צריך לגשת לאינטרנט להורדת עדכונים מבלי להיות נגיש מבחוץ. מה תשתמש?",
+    answers: ["Internet Gateway ישיר", "NAT Gateway", "Security Group בלבד", "S3 bucket"],
+    correct: 1,
+    explanation: "NAT Gateway (ב-public subnet) מאפשר יציאה לאינטרנט מ-private subnet בלי לאפשר חיבורים נכנסים — בדיוק לתרחיש של עדכונים." },
+  { id: 119, topic: "aws", topicName: "AWS",
+    question: "מהי הדרך המאובטחת לתת ל-EC2 גישה ל-S3 ללא אחסון מפתחות במכונה?",
+    answers: ["לשמור Access Key בקוד", "IAM Role מצורף ל-instance (instance profile)", "סיסמה בקובץ", "לפתוח את ה-bucket לציבור"],
+    correct: 1,
+    explanation: "IAM Role מספק credentials זמניים ומתחלפים אוטומטית דרך metadata service — אין צורך לאחסן מפתחות קבועים, שזה anti-pattern מסוכן." },
+  { id: 120, topic: "pfsense", topicName: "pfSense",
+    question: "מהו ההבדל המעשי בין מצב Firewall ל-stateful ל-stateless?",
+    answers: ["אין הבדל", "stateful עוקב אחר מצב החיבור ומתיר תשובות אוטומטית", "stateless מהיר יותר תמיד", "stateful לא תומך NAT"],
+    correct: 1,
+    explanation: "pfSense (pf) הוא stateful — מנהל state table של חיבורים, כך שתעבורת תשובה מותרת אוטומטית ואין צורך בחוק נגדי לכל כיוון." },
+  { id: 121, topic: "cyberium", topicName: "Cyberium Arena",
+    question: "מהי הדרך הנכונה לבודד נוזקה חיה לניתוח במעבדה?",
+    answers: ["להריץ על המחשב הראשי", "VM עם snapshot + רשת Host-Only/מנותקת", "להעלות לענן הציבורי", "לשלוח במייל"],
+    correct: 1,
+    explanation: "ניתוח נוזקות מחייב VM מבודד (Host-Only או ללא רשת) עם snapshot לשחזור מהיר — כדי שהנוזקה לא תתפשט ולא 'תברח' לרשת אמיתית." },
+  { id: 122, topic: "ai", topicName: "AI in Cyber",
+    question: "מהי ההגנה המרכזית נגד Prompt Injection במערכת LLM שמחוברת לכלים?",
+    answers: ["להאריך את ה-prompt", "הפרדת הוראות מקלט, least-privilege לכלים, ואימות פלט", "להשתמש במודל גדול יותר", "אין הגנה"],
+    correct: 1,
+    explanation: "מפרידים בין הוראות מערכת לקלט משתמש, מגבילים את הרשאות הכלים שה-LLM יכול להפעיל (least-privilege), ומאמתים/מסננים פלט לפני ביצוע פעולות רגישות." }
 ];
 
 // קיבוץ שאלות לפי נושא
@@ -1213,6 +1292,126 @@ const QUESTIONS_BY_TOPIC = QUESTIONS.reduce((acc, q) => {
   (acc[q.topic] = acc[q.topic] || []).push(q);
   return acc;
 }, {});
+
+</script>
+  <script>
+// ===== Cyber Academy – Real-World Career Readiness =====
+// מודול המכין לעולם האמיתי: הסמכות, תפקידים, כלים, ראיונות ופרויקטים
+
+const CAREER = {
+  // ---- מסלול הסמכות (Certifications) ----
+  certifications: [
+    { tier: "כניסה", color: "#10b981", name: "CompTIA Security+", topics: "יסודות אבטחה, רשתות, איומים",
+      note: "ההסמכה הקלאסית לכניסה לתחום. דרישת סף בהרבה משרות junior." },
+    { tier: "כניסה", color: "#10b981", name: "CompTIA Network+", topics: "רשתות, TCP/IP, ניתוב",
+      note: "בסיס רשתי חזק — קריטי לפני שעוברים להגנה/תקיפה." },
+    { tier: "כניסה", color: "#10b981", name: "Linux Essentials / LPIC-1", topics: "Linux, shell, ניהול מערכת",
+      note: "כי כמעט כל כלי סייבר רץ על Linux." },
+    { tier: "מקצועי", color: "#f59e0b", name: "eJPT (INE)", topics: "Penetration Testing מעשי",
+      note: "מבחן מעשי 100% — מצוין כדי להוכיח יכולת אמיתית בתקיפה מבוקרת." },
+    { tier: "מקצועי", color: "#f59e0b", name: "CySA+ / Blue Team Level 1", topics: "SOC, זיהוי, ניתוח",
+      note: "למסלול ההגנה (Blue Team) ו-SOC Analyst." },
+    { tier: "מקצועי", color: "#f59e0b", name: "AWS Security Specialty", topics: "אבטחת ענן",
+      note: "ביקוש עצום למאבטחי ענן. דורש ידע AWS מוצק קודם." },
+    { tier: "מומחה", color: "#ef4444", name: "OSCP (Offensive Security)", topics: "Pen-Testing מתקדם",
+      note: "תקן הזהב לבודקי חדירה. מבחן מעשי 24 שעות — קשה ויוקרתי." },
+    { tier: "מומחה", color: "#ef4444", name: "GCFA / GCIH (SANS)", topics: "Forensics & Incident Response",
+      note: "ההסמכות המובילות ל-DFIR. יקרות אך מוערכות מאוד בתעשייה." },
+    { tier: "מומחה", color: "#ef4444", name: "CISSP (ISC²)", topics: "ניהול אבטחת מידע",
+      note: "ניהולי/ארכיטקטוני. דורש 5 שנות ניסיון — יעד לטווח ארוך." }
+  ],
+
+  // ---- תפקידים בשוק (Job Roles) ----
+  roles: [
+    { title: "SOC Analyst (Tier 1/2)", icon: "🛰️", color: "#10b981",
+      desc: "קו ההגנה הראשון — מנטר התראות, מתעדף ומסלים אירועים.",
+      skills: ["IDS/IPS", "SIEM", "Linux", "MITRE ATT&CK", "ניתוח לוגים"],
+      entry: "נקודת כניסה מצוינת לתחום ההגנה." },
+    { title: "Penetration Tester", icon: "💥", color: "#7c3aed",
+      desc: "תוקף מערכות בהרשאה כדי לחשוף חולשות לפני הרעים.",
+      skills: ["Metasploit", "Python", "Linux", "רשתות", "Web/AD"],
+      entry: "דורש ניסיון מעשי + OSCP/eJPT." },
+    { title: "DFIR Analyst", icon: "🔍", color: "#06b6d4",
+      desc: "חוקר אירועי אבטחה — מי נכנס, מה עשה, ומה דלף.",
+      skills: ["Windows Forensics", "Volatility", "Timeline", "לוגים", "Python"],
+      entry: "מסלול חקירתי, ביקוש גבוה." },
+    { title: "Cloud Security Engineer", icon: "☁️", color: "#f97316",
+      desc: "מאבטח תשתיות ענן — IAM, רשת, ניטור והקשחה.",
+      skills: ["AWS", "IAM", "VPC", "IaC", "אוטומציה"],
+      entry: "אחד התפקידים המבוקשים והמתוגמלים ביותר." },
+    { title: "Security Engineer / Blue Team", icon: "🛡️", color: "#ef4444",
+      desc: "בונה ומתחזק הגנות — Firewall, זיהוי, הקשחה ואוטומציה.",
+      skills: ["pfSense", "IDS/IPS", "Linux", "Python", "SIEM"],
+      entry: "מהנדס הגנה רחב — דורש ידע מערכתי." },
+    { title: "Detection / ML Security Engineer", icon: "🤖", color: "#8b5cf6",
+      desc: "בונה זיהוי מבוסס נתונים ו-ML, ומאבטח מערכות AI.",
+      skills: ["AI/ML", "Python", "Detection Eng", "ATT&CK", "data"],
+      entry: "תחום עתידי וצומח במהירות." }
+  ],
+
+  // ---- כלים שחייבים לשלוט בהם (Must-Know Tools) ----
+  toolkits: [
+    { area: "מערכת ורשת", icon: "🐧", tools: ["Linux CLI", "tcpdump", "Wireshark", "nmap", "netcat", "SSH"] },
+    { area: "תקיפה", icon: "💥", tools: ["Metasploit", "Burp Suite", "Hydra", "John/Hashcat", "Gobuster", "sqlmap"] },
+    { area: "הגנה / SOC", icon: "🚨", tools: ["Snort/Suricata", "Wazuh", "Splunk/Elastic", "Security Onion", "Sysmon"] },
+    { area: "פורנזיקה", icon: "🔍", tools: ["Volatility", "Autopsy", "FTK Imager", "Eric Zimmerman Tools", "plaso"] },
+    { area: "ענן ותשתית", icon: "☁️", tools: ["AWS CLI", "Terraform", "Docker", "ScoutSuite", "Prowler"] },
+    { area: "פיתוח ואוטומציה", icon: "🐍", tools: ["Python", "Bash", "Git", "VS Code", "Jupyter", "regex"] }
+  ],
+
+  // ---- שאלות ראיון עבודה נפוצות (Interview Prep) ----
+  interview: [
+    { q: "הסבר את ההבדל בין IDS ל-IPS, ומתי תעדיף כל אחד.",
+      a: "IDS מזהה ומתריע (פסיבי, out-of-band); IPS מזהה וגם חוסם (inline). IPS כשרוצים מניעה אקטיבית אך עם סיכון ל-false positive שיחסום תעבורה לגיטימית; IDS כשרוצים נראות בלי לסכן זמינות." },
+    { q: "מהו עקרון ה-Least Privilege ולמה הוא חשוב?",
+      a: "מתן ההרשאות המינימליות הנדרשות בלבד. מצמצם את 'משטח התקיפה' ואת הנזק האפשרי אם זהות נפרצת — תוקף שמשיג חשבון מוגבל לא משיג שליטה מלאה." },
+    { q: "תאר את שלבי תגובה לאירוע (Incident Response).",
+      a: "לפי NIST: הכנה → זיהוי וניתוח → הכלה, מיגור והתאוששות → לקחים. או SANS PICERL: Preparation, Identification, Containment, Eradication, Recovery, Lessons learned." },
+    { q: "מה תבדוק ראשון בחקירת מכונת Windows חשודה?",
+      a: "סדר התנודתיות: קודם זיכרון (RAM) — תהליכים, חיבורים, סיסמאות. אחר כך Event Logs (4624/4625/4688), משימות מתוזמנות, מפתחות Run ב-Registry (persistence), וחיבורי רשת חריגים." },
+    { q: "כיצד עובד TCP three-way handshake?",
+      a: "SYN מהלקוח → SYN-ACK מהשרת → ACK מהלקוח. סריקת SYN (half-open) שולחת SYN ובודקת אם מתקבל SYN-ACK בלי להשלים, כדי לזהות פורטים פתוחים בשקט." },
+    { q: "מהו MITRE ATT&CK ואיך תשתמש בו בעבודה?",
+      a: "בסיס ידע של TTPs של תוקפים אמיתיים. בהגנה: ממפים אילו טכניקות אנו מזהים (gap analysis) וצובעים ב-Navigator; כל התראה ממופה לטכניקה כדי לדבר בשפה אחת." },
+    { q: "הבדל בין Symmetric ל-Asymmetric encryption?",
+      a: "סימטרי: מפתח אחד לשני הצדדים (AES) — מהיר, אך בעיית הפצת מפתח. א-סימטרי: זוג מפתחות ציבורי/פרטי (RSA) — פותר הפצה ומאפשר חתימות. TLS משלב: א-סימטרי להחלפת מפתח, סימטרי לתעבורה." },
+    { q: "מה ההבדל בין Security Group ל-NACL ב-AWS?",
+      a: "Security Group = stateful, ברמת ה-instance, allow-only. NACL = stateless, ברמת ה-subnet, תומך גם ב-deny. SG זוכר חיבור ומחזיר תשובה אוטומטית; NACL דורש חוק לכל כיוון." },
+    { q: "איך תזהה ותגיב להתקפת Brute-Force?",
+      a: "ריבוי אירועי 4625 (Windows) או 'Failed password' (Linux auth.log) מאותו מקור. תגובה: account lockout, rate-limiting/fail2ban, חסימת IP ב-Firewall, MFA, והתראת SIEM." },
+    { q: "מהי הגנה לעומק (Defense in Depth)?",
+      a: "ריבוד הגנות כך שכשל בשכבה אחת לא חושף הכל: פילוח רשת, Firewall, IDS/IPS, EDR, הקשחה, הרשאות, גיבוי וניטור — שכבות שמשלימות זו את זו." }
+  ],
+
+  // ---- פרויקטים לתיק עבודות (Portfolio Projects) ----
+  projects: [
+    { title: "מעבדת SOC ביתית", icon: "🏠",
+      desc: "הקם Security Onion/Wazuh, חבר Sysmon ממכונת Windows, צור התקפה וזהה אותה מקצה לקצה.",
+      deliverable: "צילומי מסך + תיעוד של ה-detection pipeline ב-GitHub." },
+    { title: "כלי אוטומציה ב-Python", icon: "🐍",
+      desc: "כתוב כלי שמנתח לוגים, שואל API מוניטין IP, ומפיק דוח התראות.",
+      deliverable: "ריפו עם README, argparse, ובדיקות." },
+    { title: "Pentest לסביבת מעבדה", icon: "💥",
+      desc: "תקוף Metasploitable/VulnHub מקצה לקצה: recon → exploitation → post → דוח.",
+      deliverable: "דוח pentest מקצועי (כולל מיפוי ל-ATT&CK ותיקונים מומלצים)." },
+    { title: "ארכיטקטורת ענן מאובטחת", icon: "☁️",
+      desc: "בנה VPC עם subnets ציבורי/פרטי, IAM least-privilege, CloudTrail+GuardDuty.",
+      deliverable: "דיאגרמה + הסבר על כל בקרה (אפשר עם Terraform)." },
+    { title: "חקירה פורנזית", icon: "🔍",
+      desc: "נתח memory dump ו-disk image, בנה timeline וזהה את פעולות התוקף.",
+      deliverable: "דוח DFIR עם ראיות, timeline ומסקנות." }
+  ],
+
+  // ---- אימון מתמשך (Practice Platforms) ----
+  practice: [
+    { name: "TryHackMe", desc: "מסלולים מודרכים — מצוין למתחילים. learning paths לפי תפקיד.", url: "https://tryhackme.com" },
+    { name: "Hack The Box", desc: "מכונות ו-labs מאתגרים יותר. Academy למסלול מובנה.", url: "https://hackthebox.com" },
+    { name: "LetsDefend", desc: "תרגול Blue Team / SOC אמיתי עם התראות.", url: "https://letsdefend.io" },
+    { name: "CyberDefenders", desc: "אתגרי DFIR ו-Blue Team מבוססי תרחיש.", url: "https://cyberdefenders.org" },
+    { name: "OverTheWire", desc: "Wargames ללימוד Linux ו-security מהיסוד.", url: "https://overthewire.org" },
+    { name: "PortSwigger Web Security Academy", desc: "תרגול Web security חינמי ומצוין.", url: "https://portswigger.net/web-security" }
+  ]
+};
 
 </script>
   <script>
@@ -1358,6 +1557,7 @@ const App = {
       case 'home':         main.appendChild(this.renderHome()); break;
       case 'roadmap':      main.appendChild(this.renderRoadmap()); break;
       case 'topics':       main.appendChild(this.renderTopics()); break;
+      case 'career':       main.appendChild(this.renderCareer()); break;
       case 'topic':        main.appendChild(this.renderTopicDetail(data)); break;
       case 'quiz':         main.appendChild(this.renderQuizSetup()); break;
       case 'quiz-run':     main.appendChild(this.renderQuiz(data)); break;
@@ -1508,6 +1708,86 @@ const App = {
     });
     div.querySelectorAll('.chip').forEach(chip =>
       chip.addEventListener('click', () => this.navigate('topic', chip.dataset.topic)));
+    return div;
+  },
+
+  // ===== CAREER / REAL-WORLD READINESS =====
+  renderCareer() {
+    const div = document.createElement('div');
+    div.className = 'page';
+    const c = CAREER;
+    div.innerHTML = `
+      <div class="home-hero" style="padding:40px 20px 28px">
+        <h1 style="font-size:2rem">🎯 מוכנות לעולם האמיתי</h1>
+        <p>לא רק ללמוד — להפוך למועסק. הסמכות, תפקידים, כלים, ראיונות ופרויקטים לתיק עבודות.</p>
+      </div>
+
+      <div class="section-title">📜 מסלול הסמכות</div>
+      <div class="cert-grid">
+        ${c.certifications.map(cert => `
+          <div class="cert-card" style="border-right:4px solid ${cert.color}">
+            <div class="cert-top"><span class="cert-tier" style="background:${cert.color}22;color:${cert.color}">${cert.tier}</span></div>
+            <div class="cert-name">${cert.name}</div>
+            <div class="cert-topics">${cert.topics}</div>
+            <div class="cert-note">${cert.note}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">💼 תפקידים בשוק</div>
+      <div class="topics-grid">
+        ${c.roles.map(r => `
+          <div class="topic-card" style="--card-color:${r.color};cursor:default">
+            <span class="tc-icon">${r.icon}</span>
+            <div class="tc-name">${r.title}</div>
+            <div class="tc-desc">${r.desc}</div>
+            <div class="topic-tags" style="margin:8px 0">${r.skills.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+            <div class="cert-note">${r.entry}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🧰 ארגז הכלים – מה חייבים לדעת</div>
+      <div class="cert-grid">
+        ${c.toolkits.map(t => `
+          <div class="cert-card">
+            <div class="cert-name">${t.icon} ${t.area}</div>
+            <div class="topic-tags" style="margin-top:10px">${t.tools.map(x => `<span class="tag">${x}</span>`).join('')}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🎤 שאלות ראיון עבודה</div>
+      <div class="subtopics-list" id="iv-list">
+        ${c.interview.map((it, i) => `
+          <div class="subtopic-item">
+            <div class="subtopic-header" data-iv="${i}">
+              <span class="subtopic-title">❓ ${it.q}</span>
+              <span class="subtopic-chevron">⌄</span>
+            </div>
+            <div class="subtopic-content"><p><strong>תשובה:</strong> ${it.a}</p></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">📦 פרויקטים לתיק עבודות</div>
+      <div class="topics-grid">
+        ${c.projects.map(p => `
+          <div class="topic-card" style="cursor:default">
+            <span class="tc-icon">${p.icon}</span>
+            <div class="tc-name">${p.title}</div>
+            <div class="tc-desc">${p.desc}</div>
+            <div class="cert-note" style="margin-top:8px">📦 תוצר: ${p.deliverable}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🏋️ פלטפורמות לאימון מתמשך</div>
+      <div class="cert-grid">
+        ${c.practice.map(p => `
+          <a class="cert-card practice-card" href="${p.url}" target="_blank" rel="noopener">
+            <div class="cert-name">${p.name} ↗</div>
+            <div class="cert-topics">${p.desc}</div>
+          </a>`).join('')}
+      </div>
+    `;
+    div.querySelectorAll('#iv-list .subtopic-header').forEach(h =>
+      h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
     return div;
   },
 

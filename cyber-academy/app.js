@@ -140,6 +140,7 @@ const App = {
       case 'home':         main.appendChild(this.renderHome()); break;
       case 'roadmap':      main.appendChild(this.renderRoadmap()); break;
       case 'topics':       main.appendChild(this.renderTopics()); break;
+      case 'career':       main.appendChild(this.renderCareer()); break;
       case 'topic':        main.appendChild(this.renderTopicDetail(data)); break;
       case 'quiz':         main.appendChild(this.renderQuizSetup()); break;
       case 'quiz-run':     main.appendChild(this.renderQuiz(data)); break;
@@ -290,6 +291,86 @@ const App = {
     });
     div.querySelectorAll('.chip').forEach(chip =>
       chip.addEventListener('click', () => this.navigate('topic', chip.dataset.topic)));
+    return div;
+  },
+
+  // ===== CAREER / REAL-WORLD READINESS =====
+  renderCareer() {
+    const div = document.createElement('div');
+    div.className = 'page';
+    const c = CAREER;
+    div.innerHTML = `
+      <div class="home-hero" style="padding:40px 20px 28px">
+        <h1 style="font-size:2rem">🎯 מוכנות לעולם האמיתי</h1>
+        <p>לא רק ללמוד — להפוך למועסק. הסמכות, תפקידים, כלים, ראיונות ופרויקטים לתיק עבודות.</p>
+      </div>
+
+      <div class="section-title">📜 מסלול הסמכות</div>
+      <div class="cert-grid">
+        ${c.certifications.map(cert => `
+          <div class="cert-card" style="border-right:4px solid ${cert.color}">
+            <div class="cert-top"><span class="cert-tier" style="background:${cert.color}22;color:${cert.color}">${cert.tier}</span></div>
+            <div class="cert-name">${cert.name}</div>
+            <div class="cert-topics">${cert.topics}</div>
+            <div class="cert-note">${cert.note}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">💼 תפקידים בשוק</div>
+      <div class="topics-grid">
+        ${c.roles.map(r => `
+          <div class="topic-card" style="--card-color:${r.color};cursor:default">
+            <span class="tc-icon">${r.icon}</span>
+            <div class="tc-name">${r.title}</div>
+            <div class="tc-desc">${r.desc}</div>
+            <div class="topic-tags" style="margin:8px 0">${r.skills.map(s => `<span class="tag">${s}</span>`).join('')}</div>
+            <div class="cert-note">${r.entry}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🧰 ארגז הכלים – מה חייבים לדעת</div>
+      <div class="cert-grid">
+        ${c.toolkits.map(t => `
+          <div class="cert-card">
+            <div class="cert-name">${t.icon} ${t.area}</div>
+            <div class="topic-tags" style="margin-top:10px">${t.tools.map(x => `<span class="tag">${x}</span>`).join('')}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🎤 שאלות ראיון עבודה</div>
+      <div class="subtopics-list" id="iv-list">
+        ${c.interview.map((it, i) => `
+          <div class="subtopic-item">
+            <div class="subtopic-header" data-iv="${i}">
+              <span class="subtopic-title">❓ ${it.q}</span>
+              <span class="subtopic-chevron">⌄</span>
+            </div>
+            <div class="subtopic-content"><p><strong>תשובה:</strong> ${it.a}</p></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">📦 פרויקטים לתיק עבודות</div>
+      <div class="topics-grid">
+        ${c.projects.map(p => `
+          <div class="topic-card" style="cursor:default">
+            <span class="tc-icon">${p.icon}</span>
+            <div class="tc-name">${p.title}</div>
+            <div class="tc-desc">${p.desc}</div>
+            <div class="cert-note" style="margin-top:8px">📦 תוצר: ${p.deliverable}</div>
+          </div>`).join('')}
+      </div>
+
+      <div class="section-title" style="margin-top:36px">🏋️ פלטפורמות לאימון מתמשך</div>
+      <div class="cert-grid">
+        ${c.practice.map(p => `
+          <a class="cert-card practice-card" href="${p.url}" target="_blank" rel="noopener">
+            <div class="cert-name">${p.name} ↗</div>
+            <div class="cert-topics">${p.desc}</div>
+          </a>`).join('')}
+      </div>
+    `;
+    div.querySelectorAll('#iv-list .subtopic-header').forEach(h =>
+      h.addEventListener('click', () => h.parentElement.classList.toggle('open')));
     return div;
   },
 
