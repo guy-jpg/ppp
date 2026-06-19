@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cyber Academy – מסלול לימוד מלא לעולם הסייבר בעברית: Linux, Python, Metasploit, AWS, MITRE ATT&CK ועוד" />
+  <title>Cyber Academy – מסלול לוחם סייבר</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">🛡️</span>
+          <span class="logo-text">Cyber Academy</span>
+          <span class="logo-sub">מסלול לוחם סייבר</span>
+        </div>
+        <nav id="main-nav">
+          <button class="nav-btn active" data-page="home">🏠 בית</button>
+          <button class="nav-btn" data-page="roadmap">🗺️ מסלול</button>
+          <button class="nav-btn" data-page="topics">🎓 תחומים</button>
+          <button class="nav-btn" data-page="quiz">✏️ תרגול</button>
+          <button class="nav-btn" data-page="progress">📊 התקדמות</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content"></main>
+
+    <footer>
+      <p>Cyber Academy &copy; 2026 – מסלול לימוד סייבר בעברית · לשימוש חינוכי ובדיקות מורשות בלבד</p>
+    </footer>
+  </div>
+
+  <script src="data/topics.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
