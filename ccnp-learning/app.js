@@ -25,6 +25,7 @@ const App = {
     switch (page) {
       case 'home':    main.appendChild(this.renderHome()); break;
       case 'topics':  main.appendChild(this.renderTopics()); break;
+      case 'videos':  main.appendChild(this.renderVideos()); break;
       case 'topic':   main.appendChild(this.renderTopicDetail(data)); break;
       case 'quiz':    main.appendChild(this.renderQuizSetup()); break;
       case 'quiz-run': main.appendChild(this.renderQuiz(data)); break;
@@ -80,6 +81,11 @@ const App = {
           <div class="tc-name">בחינת CCNP מלאה</div>
           <div class="tc-desc">40 שאלות מכל הנושאים – כמו בחינה אמיתית</div>
         </div>
+        <div class="topic-card" id="watch-videos" style="--card-color: #fbbc04">
+          <span class="tc-icon">🎬</span>
+          <div class="tc-name">סרטוני לימוד</div>
+          <div class="tc-desc">צפה בסדרת הסרטונים המלאה ללימוד CCNP</div>
+        </div>
       </div>
     `;
 
@@ -106,6 +112,7 @@ const App = {
     div.querySelector('#full-quiz').addEventListener('click', () => {
       this.navigate('quiz-run', { questions: this.shuffleArray([...QUESTIONS]), topicName: 'בחינה מלאה' });
     });
+    div.querySelector('#watch-videos').addEventListener('click', () => this.navigate('videos'));
 
     return div;
   },
@@ -142,6 +149,40 @@ const App = {
       card.addEventListener('click', () => this.navigate('topic', topic.id));
       grid.appendChild(card);
     });
+    return div;
+  },
+
+  // ===== VIDEOS PAGE =====
+  playlist: {
+    id: 'PLYmlEoSHldN7HJapyiQ8kFLUsk_a7EjCw',
+    firstVideo: 'ElWo5fd4rIU'
+  },
+
+  renderVideos() {
+    const div = document.createElement('div');
+    div.className = 'page';
+    const { id: listId, firstVideo } = this.playlist;
+    const watchAllUrl = `https://www.youtube.com/watch?v=${firstVideo}&list=${listId}`;
+    const embedUrl = `https://www.youtube.com/embed/${firstVideo}?list=${listId}&rel=0`;
+    div.innerHTML = `
+      <div class="section-title">🎬 סרטוני לימוד CCNP</div>
+      <p style="color:var(--text-muted);margin-bottom:20px">צפה בסדרת הסרטונים המלאה ללימוד רשתות CCNP. נגן את כל הסרטונים ברצף או בחר סרטון מהרשימה שמשמאל לנגן.</p>
+      <div class="video-wrap">
+        <iframe
+          src="${embedUrl}"
+          title="CCNP Academy – סרטוני לימוד"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen></iframe>
+      </div>
+      <div style="margin-top:20px;text-align:center">
+        <a class="btn-start" style="max-width:320px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none"
+           href="${watchAllUrl}" target="_blank" rel="noopener">
+          ▶️ להפעלת כל הסרטונים ב-YouTube
+        </a>
+      </div>
+    `;
     return div;
   },
 
