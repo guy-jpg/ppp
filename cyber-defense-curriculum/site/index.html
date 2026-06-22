@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>מסלול סייבר הגנתי — קורסים ברמה הגבוהה</title>
+<meta name="description" content="מסלול הכשרה לסייבר הגנתי: 11 נושאים, הקורס הטוב ביותר ביוטיוב לכל נושא, ותוכנית 4 חודשים." />
+<style>
+  :root{
+    --bg:#0a0e17; --bg2:#111827; --card:#161e2e; --card2:#1c2638;
+    --accent:#22d3ee; --accent2:#a855f7; --good:#34d399;
+    --text:#e5e9f0; --muted:#94a3b8; --border:#243049;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{background:linear-gradient(135deg,#0a0e17,#111827 60%,#1a1233);padding:48px 20px 36px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;inset:0;background:radial-gradient(600px 200px at 50% -40%,rgba(34,211,238,.18),transparent)}
+  header h1{font-size:2.2rem;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;position:relative}
+  header p{color:var(--muted);margin-top:10px;position:relative}
+  nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:22px;position:relative}
+  nav a{background:var(--card);border:1px solid var(--border);padding:8px 18px;border-radius:999px;color:var(--text);font-weight:600;font-size:.95rem}
+  nav a:hover{border-color:var(--accent);text-decoration:none;color:var(--accent)}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+  .card .num{position:absolute;top:-10px;left:-6px;font-size:5rem;font-weight:800;color:rgba(255,255,255,.04);line-height:1}
+  .card .ico{font-size:2rem;margin-bottom:8px}
+  .card h3{font-size:1.2rem;margin-bottom:6px}
+  .card .lvl{display:inline-block;font-size:.75rem;background:rgba(34,211,238,.12);color:var(--accent);padding:3px 10px;border-radius:999px;border:1px solid rgba(34,211,238,.3)}
+  .card p{color:var(--muted);font-size:.92rem;margin-top:10px}
+  .detail{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:32px;max-width:820px;margin:0 auto}
+  .detail .lvl{margin-bottom:14px}
+  .detail h2{font-size:1.8rem;margin-bottom:6px}
+  .detail .big-ico{font-size:3rem;margin-bottom:10px}
+  .btn{display:inline-block;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#0a0e17;font-weight:800;padding:14px 26px;border-radius:12px;margin:18px 0;font-size:1.05rem}
+  .btn:hover{text-decoration:none;filter:brightness(1.1)}
+  .sec{margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+  .sec h4{color:var(--accent2);margin-bottom:8px;font-size:1rem}
+  .back{display:inline-block;margin-bottom:18px;color:var(--muted)}
+  .label{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:1px}
+  ul{padding-right:22px;margin-top:6px}
+  li{margin:4px 0}
+  .plan-week{background:var(--card2);border-right:3px solid var(--accent);border-radius:8px;padding:14px 18px;margin:10px 0}
+  .plan-week b{color:var(--accent)}
+  .month-h{font-size:1.3rem;color:var(--accent2);margin:26px 0 6px}
+  .note{background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:12px;padding:16px;margin-top:18px;font-size:.92rem}
+  .warn{background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:16px;margin-top:18px;font-size:.92rem}
+  footer{text-align:center;color:var(--muted);padding:30px;border-top:1px solid var(--border);font-size:.85rem}
+  .intro{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:24px}
+  .intro b{color:var(--good)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ מסלול סייבר הגנתי</h1>
+  <p>11 נושאים · הקורס הטוב ביותר ביוטיוב לכל אחד · תוכנית 4 חודשים עד הגיוס</p>
+  <nav>
+    <a href="#/">🏠 בית</a>
+    <a href="#/plan">🗓️ תוכנית 4 חודשים</a>
+    <a href="#/lab">🧪 הקמת מעבדה</a>
+  </nav>
+</header>
+<div class="wrap" id="app"></div>
+<footer>נבנה כמסלול הכנה לחיל התקשוב וההגנה בסייבר · כל החומר הגנתי/חינוכי · תרגול ב-lab מבודד בלבד</footer>
+
+<script>
+const COURSES = [
+  {id:"foundations",num:"00",ico:"🌐",title:"יסודות רשתות",lvl:"בסיס → מתקדם",
+    course:"CompTIA Network+ (N10-009) — Professor Messer",
+    channel:"Professor Messer",
+    url:"https://www.youtube.com/playlist?list=PLG49S3nxzAnl_tQe3kvnmeMid0mjF8Le8",
+    why:"הסטנדרט העולמי ללימוד רשתות. OSI, TCP/IP, subnetting, routing ופרוטוקולים — הבסיס שעליו הכל נשען. בלי זה אי אפשר להגן.",
+    labs:["צייר את מודל OSI ומפה כל פרוטוקול לשכבה","התקן Wireshark ולכוד session של HTTP/DNS","תרגל subnetting עד שזה אוטומטי"]},
+  {id:"linux",num:"01",ico:"🐧",title:"Linux",lvl:"בסיס → מתקדם",
+    course:"Linux for Hackers — FREE Course",
+    channel:"NetworkChuck",
+    url:"https://www.youtube.com/playlist?list=PLIhvC56v63IL2OjFvv_PI0B2yAXGfJLMI",
+    why:"ממוקד בדיוק במה שצריך לסייבר — file system, הרשאות, ניהול שירותים ותהליכים, bash וטריקים בטרמינל. מערכת ההפעלה של כל כלי Blue/Red.",
+    labs:["הקם Ubuntu/Kali VM ועבוד רק מה-CLI שבוע","כתוב סקריפט bash שמסכם לוגים מ-/var/log","קשיח (harden) משתמשים, SSH, והרשאות"]},
+  {id:"python",num:"02",ico:"🐍",title:"Python לסייבר",lvl:"בסיס → מתקדם",
+    course:"Full-Length Hacking Courses (כולל Port Scanner ב-Python)",
+    channel:"The Cyber Mentor",
+    url:"https://www.youtube.com/playlist?list=PLLKT__MCUeixqHJ1TRqrHsEd6_EdEvo47",
+    why:"מלמד Python דרך עיניים של מגן/תוקף — sockets, אוטומציה ובניית כלים אמיתיים, לא תחביר יבש. שדרוג: TCM Python 101/201 for Hackers.",
+    labs:["בנה Port Scanner משלך עם sockets","כתוב parser ללוגים שמזהה כניסות כושלות","אוטמט משימה חוזרת ב-SOC עם Python"]},
+  {id:"mitre",num:"07",ico:"🎯",title:"MITRE ATT&CK",lvl:"מתקדם",
+    course:"MITRE ATT&CK for Cyber Threat Intelligence — Training (רשמי)",
+    channel:"MITRE ATT&CK (רשמי)",
+    url:"https://www.youtube.com/playlist?list=PLkTApXQou_8IlkPDzY8vroxBLLhbZbqqC",
+    why:"מהיוצרים עצמם. Tactics/Techniques, מיפוי TTPs, ו-operationalizing של ATT&CK ב-SOC — השפה המשותפת של כל עולם ה-Threat.",
+    labs:["מפה תקיפה שראית ל-Tactics/Techniques ב-ATT&CK Navigator","בחר APT והרץ עליו emulation plan תיאורטי","בנה heatmap של כיסוי ההגנה שלך"]},
+  {id:"ids",num:"08",ico:"🚨",title:"IDS / IPS",lvl:"מתקדם",
+    course:"Suricata IDS/IPS (התקנה) + HTB Academy: Working with IDS/IPS (עומק)",
+    channel:"YouTube + HTB Academy",
+    url:"https://www.youtube.com/watch?v=LaB6-Klnh7w",
+    extra:{label:"הקורס המעמיק (gold standard)",url:"https://academy.hackthebox.com/course/preview/working-with-idsips"},
+    why:"זיהוי וחסימה בזמן אמת. ביוטיוב אין פלייליסט אחד מושלם — לכן שילוב: וידאו להתקנה + HTB Academy לכתיבת חתימות ועומק. תרגל על Emerging Threats ruleset.",
+    labs:["התקן Suricata והרץ על תעבורת lab","כתוב חתימה מותאמת שתופסת מחרוזת בתעבורה","חבר התראות ל-SIEM (Wazuh/ELK)"]},
+  {id:"pfsense",num:"06",ico:"🧱",title:"pfSense",lvl:"בסיס → מתקדם",
+    course:"Lawrence pfSense — פלייליסט ההדרכות",
+    channel:"Lawrence Systems",
+    url:"https://www.youtube.com/playlist?list=PLBeTnHKxnB-EI23d8T89IKxVOF5mnspCV",
+    why:"הרפרנס מספר 1 ל-pfSense. התקנה, VLANs, חוקי firewall, VPN וסגמנטציה — מעשי לחלוטין.",
+    labs:["הקם pfSense כ-router בין רשתות ה-lab","הגדר VLAN וסגמנטציה בין יעדים","הקם VPN וכתוב חוקי firewall מדורגים"]},
+  {id:"forensics",num:"05",ico:"🔬",title:"Windows Forensics",lvl:"מתקדם",
+    course:"Introduction to Windows Forensics (22 פרקים)",
+    channel:"13Cubed (Richard Davis)",
+    url:"https://www.youtube.com/playlist?list=PLlv3b9B16ZadqDQH0lTRO4kqn2P1g9Mve",
+    why:"המקור הכי טוב בעולם ל-Windows DFIR. registry, prefetch, event logs, $MFT, USN journal — בדיוק מה שעושים ב-Incident Response אמיתי. המשך: Memory Forensics.",
+    labs:["נתח $MFT ו-Prefetch ממכונת Windows","חקור Event Logs לאיתור login חשוד","הרץ Volatility על memory dump"]},
+  {id:"metasploit",num:"04",ico:"💥",title:"Metasploit",lvl:"מתקדם",
+    course:"Ethical Hacking in 15 Hours (מכסה Metasploit מקצה לקצה)",
+    channel:"The Cyber Mentor",
+    url:"https://www.youtube.com/playlist?list=PLLKT__MCUeixqHJ1TRqrHsEd6_EdEvo47",
+    extra:{label:"ערוץ ייעודי ל-Metasploit",url:"https://www.youtube.com/@HackerSploit/playlists"},
+    why:"להבין את שרשרת התקיפה כדי לדעת מה לזהות ולחסום כמגן. אך ורק ב-lab מבודד וסגור לאינטרנט.",
+    labs:["הרץ exploit על Metasploitable ב-lab סגור","תעד את ה-IOCs שהתקיפה השאירה","שאל לכל שלב: איך מזהים? איך עוצרים?"]},
+  {id:"aws",num:"03",ico:"☁️",title:"AWS / ענן",lvl:"בסיס → מתקדם",
+    course:"AWS Certified Cloud Practitioner (CLF-C02) — Full Course",
+    channel:"freeCodeCamp (Andrew Brown)",
+    url:"https://www.youtube.com/watch?v=7HKot-brXFE",
+    why:"~14 שעות. IAM, רשת, אבטחה ו-shared responsibility model — היסודות לפני Cloud Security. מסיים אותך מוכן להסמכה. המשך הגנתי: CloudTrail, GuardDuty, Security Groups.",
+    labs:["הקם חשבון AWS חינמי והגדר IAM נכון (MFA, least privilege)","הפעל CloudTrail וצפה בלוגים","הגדר Security Group מצמצם ל-EC2"]},
+  {id:"ai",num:"10",ico:"🤖",title:"AI in Cyber Security",lvl:"מתקדם",
+    course:"Cybersecurity, Python & Threat Hunting w/ Agentic AI — Full Course",
+    channel:"Full Course (~12 שעות)",
+    url:"https://www.youtube.com/watch?v=dwo7rGI__F0",
+    why:"משלב Python, threat hunting ו-AI אופרטיבי. צד הגנתי אמיתי: זיהוי אנומליות ואוטומציה ב-SOC. עומק: Coursera AI for Cybersecurity, SANS SEC595.",
+    labs:["אמן מודל פשוט לזיהוי אנומליות בתעבורה","השתמש ב-LLM לסיכום והעשרת התראות","חקור איומי AI: prompt injection, deepfakes"]},
+  {id:"cyberium",num:"09",ico:"🎮",title:"Cyberium Arena",lvl:"סימולטור",
+    course:"פלטפורמת ThinkCyber (אין קורס יוטיוב — לימוד בתוך הסימולטור)",
+    channel:"ThinkCyber",
+    url:"https://www.cyberiumarena.com/",
+    warn:"Cyberium Arena היא פלטפורמת אימון מסחרית סגורה (ThinkCyber, ישראלית). אין לה קורס יוטיוב — הלימוד מתבצע בתוך הסימולטור (וידאו + textbook + labs + VMs). סביר שתיתקל בה בצבא/בקורס סייבר. עד אז, כל שאר הקורסים כאן מכסים את אותו תוכן בחינם.",
+    why:"סביבת אימון hands-on עם תרחישים אמיתיים ו-Specto-AI. מחולק ל-XE Basics, NX Defense (Blue), ZX Offensive (Red), CX ICS.",
+    labs:["אם תקבל גישה — נצל את ה-labs וה-lab tests בכל מודול","עד אז התקדם לפי 10 הנושאים האחרים כאן"]}
+];
+
+const PLAN = [
+  {m:"חודש 1 — תשתית (Foundations)",weeks:[
+    ["שבוע 1-2","יסודות רשתות (00) — TCP/IP, OSI, captures ב-Wireshark"],
+    ["שבוע 3-4","Linux (01) — CLI, הרשאות, שירותים, bash, hardening"]]},
+  {m:"חודש 2 — כלים והבנת תקיפה",weeks:[
+    ["שבוע 5-6","Python (02) — אוטומציה, sockets, פרסור לוגים, כלי משלך"],
+    ["שבוע 7","Metasploit (04) — ב-lab סגור, להבין שרשרת תקיפה"],
+    ["שבוע 8","MITRE ATT&CK (07) — מיפוי כל מה שלמדת לטכניקות"]]},
+  {m:"חודש 3 — הגנה אקטיבית (Blue Team)",weeks:[
+    ["שבוע 9-10","IDS/IPS (08) — Suricata/Snort, כתיבת חתימות"],
+    ["שבוע 11","pfSense (06) — firewall, סגמנטציה, VPN"],
+    ["שבוע 12","Windows Forensics (05) — חקירת אירוע מקצה לקצה"]]},
+  {m:"חודש 4 — ענן, AI ואינטגרציה",weeks:[
+    ["שבוע 13-14","AWS (03) — IAM, Security Groups, CloudTrail, GuardDuty"],
+    ["שבוע 15","AI in Cyber (10) — אנומליות, LLM ב-SOC, איומי AI"],
+    ["שבוע 16","Cyberium Arena (09) + פרויקט מסכם אינטגרטיבי"]]}
+];
+
+const ORDER = ["foundations","linux","python","mitre","ids","pfsense","forensics","metasploit","aws","ai","cyberium"];
+const app = document.getElementById("app");
+
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function home(){
+  const cards = ORDER.map(id=>{
+    const c = COURSES.find(x=>x.id===id);
+    return `<div class="card" onclick="location.hash='#/c/${c.id}'">
+      <span class="num">${c.num}</span>
+      <div class="ico">${c.ico}</div>
+      <h3>${esc(c.title)}</h3>
+      <span class="lvl">${esc(c.lvl)}</span>
+      <p>${esc(c.course)}</p>
+    </div>`;
+  }).join("");
+  app.innerHTML = `
+    <div class="intro">
+      <b>שלום וברוך הבא 👋</b> — זה מסלול ההכנה שלך לחיל התקשוב וההגנה בסייבר.
+      לכל אחד מ-11 הנושאים בחרתי את <b>הקורס הטוב ביותר ביוטיוב</b>. לחץ על כרטיס לפרטים, לקישור, ולתרגילי מעבדה.
+      מומלץ ללכת לפי <a href="#/plan">תוכנית 4 החודשים</a> ולהתחיל מ-<a href="#/c/foundations">יסודות רשתות</a>.
+    </div>
+    <div class="grid">${cards}</div>`;
+}
+
+function detail(id){
+  const c = COURSES.find(x=>x.id===id);
+  if(!c){home();return;}
+  const labs = c.labs.map(l=>`<li>${esc(l)}</li>`).join("");
+  const extra = c.extra?`<p style="margin-top:10px"><span class="label">${esc(c.extra.label)}:</span><br><a href="${c.extra.url}" target="_blank" rel="noopener">${esc(c.extra.url)}</a></p>`:"";
+  const warn = c.warn?`<div class="warn">⚠️ ${esc(c.warn)}</div>`:"";
+  app.innerHTML = `
+    <a class="back" href="#/">← חזרה לכל הנושאים</a>
+    <div class="detail">
+      <div class="big-ico">${c.ico}</div>
+      <span class="lvl">${esc(c.lvl)}</span>
+      <h2>${c.num} · ${esc(c.title)}</h2>
+      <p style="color:var(--muted)">${esc(c.channel)}</p>
+      <a class="btn" href="${c.url}" target="_blank" rel="noopener">▶️ פתח את הקורס</a>
+      <p><span class="label">הקורס:</span> ${esc(c.course)}</p>
+      ${extra}
+      <div class="sec"><h4>למה דווקא הקורס הזה</h4><p>${esc(c.why)}</p></div>
+      <div class="sec"><h4>🧪 תרגילי מעבדה</h4><ul>${labs}</ul></div>
+      ${warn}
+    </div>`;
+}
+
+function plan(){
+  const blocks = PLAN.map(b=>`
+    <div class="month-h">${esc(b.m)}</div>
+    ${b.weeks.map(w=>`<div class="plan-week"><b>${esc(w[0])}:</b> ${esc(w[1])}</div>`).join("")}
+  `).join("");
+  app.innerHTML = `<a class="back" href="#/">← חזרה</a>
+    <h2 style="margin-bottom:6px">🗓️ תוכנית 4 חודשים (16 שבועות)</h2>
+    <p style="color:var(--muted);margin-bottom:10px">סדר מומלץ: תשתית → כלים → הגנה אקטיבית → ענן ו-AI.</p>
+    ${blocks}
+    <div class="note">💡 לכל טכניקה התקפית שאתה לומד, שאל תמיד: <b>"איך מזהים את זה? איך עוצרים?"</b> — זו חשיבת ה-Blue Team.</div>`;
+}
+
+function lab(){
+  app.innerHTML = `<a class="back" href="#/">← חזרה</a>
+    <h2 style="margin-bottom:10px">🧪 הקמת מעבדה (לפני שמתחילים)</h2>
+    <div class="detail">
+      <div class="sec"><h4>Hypervisor</h4><p>VirtualBox / VMware / Proxmox — בחר אחד.</p></div>
+      <div class="sec"><h4>מכונות וירטואליות מומלצות</h4>
+        <ul>
+          <li><b>Kali Linux</b> — כלי תקיפה ובדיקה</li>
+          <li><b>Ubuntu Server</b> — יעד / שרת לוגים</li>
+          <li><b>Windows 10/11</b> — forensics + יעד</li>
+          <li><b>pfSense</b> — router/firewall בין הרשתות</li>
+          <li><b>Security Onion / Suricata</b> — ניטור IDS</li>
+        </ul></div>
+      <div class="sec"><h4>רשת</h4><p>Host-Only / Internal Network. <b>בלי גישה לאינטרנט בזמן תרגילי תקיפה.</b></p></div>
+      <div class="warn">⚖️ כל הטכניקות ההתקפיות נועדו להבנה הגנתית בלבד, על מערכות שבבעלותך/ברשותך, ב-lab מבודד. שימוש לרעה הוא עבירה פלילית.</div>
+    </div>`;
+}
+
+function router(){
+  const h = location.hash || "#/";
+  if(h.startsWith("#/c/")) return detail(h.slice(4));
+  if(h==="#/plan") return plan();
+  if(h==="#/lab") return lab();
+  return home();
+}
+window.addEventListener("hashchange",router);
+router();
+</script>
+</body>
+</html>
