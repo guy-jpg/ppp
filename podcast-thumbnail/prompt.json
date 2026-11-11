@@ -1,0 +1,36 @@
+{
+  "task": "Photorealistic YouTube podcast thumbnail of the 8 podcast hosts, built from each host's own reference photo (used with their consent)",
+  "aspect_ratio": "16:9",
+  "resolution": "1920x1080",
+  "reference_images": "8 separate photos, one per host (A-H). Use only the face and identity; ignore backgrounds, UI overlays, captions and clothing in the references",
+  "identity_preservation": {
+    "priority": "highest",
+    "rules": [
+      "Exactly 8 people, one per reference, no duplicates, no merged faces",
+      "Keep each person's face shape, skin tone, hairstyle, facial hair and glasses",
+      "Do not beautify, slim, age or change ethnicity"
+    ]
+  },
+  "people": [
+    {"id": "A", "row": "back", "position": "far left",     "looks": "young man, short brown curly hair, thin round wire glasses, light goatee", "outfit": "black oversized jersey", "expression": "laughing, glasses on"},
+    {"id": "B", "row": "back", "position": "center-left",  "looks": "man, dense black curly hair, light blue-grey eyes, thick dark eyebrows, thin silver chain", "outfit": "black t-shirt", "expression": "intense stare, slight smirk"},
+    {"id": "C", "row": "back", "position": "center-right", "looks": "man, very short dark hair, full dark beard, broad face", "outfit": "khaki/beige military-style shirt over white t-shirt", "expression": "mouth open mid-laugh"},
+    {"id": "D", "row": "back", "position": "far right",    "looks": "young man, very short dark buzz cut, thin goatee and moustache", "outfit": "black t-shirt", "expression": "smirk, one eyebrow raised, looking at camera"},
+    {"id": "E", "row": "front", "position": "far left",     "looks": "young woman, long straight dark hair with face-framing layers, brown eyes", "outfit": "black crew-neck t-shirt, fully covered", "expression": "laughing, head tilted back"},
+    {"id": "F", "row": "front", "position": "center-left",  "looks": "young woman, dark hair slicked back into a braid, wide smile", "outfit": "olive military shirt", "expression": "big warm smile at camera"},
+    {"id": "G", "row": "front", "position": "center-right", "looks": "young man, dark textured fringe with short faded sides, small ear stud, thin moustache", "outfit": "white knit open-collar shirt (buttoned up) or black t-shirt", "expression": "laughing hard, eyes squinting"},
+    {"id": "H", "row": "front", "position": "far right",    "looks": "young woman, dark hair slicked back with center part, clear safety glasses", "outfit": "olive military shirt", "expression": "shouting, mouth wide open, one hand raised"}
+  ],
+  "composition": {
+    "framing": "tight and crowded, shoulder to shoulder, faces fill ~85% of the frame",
+    "back_row": "A, B, C, D slightly higher and smaller, heads visible between front-row heads",
+    "front_row": "E, F, G, H larger and closer to camera, cropped at chest",
+    "title_area": "keep bottom-center (approx. x 610-1310, y 905-1055) clean for a title added later",
+    "layout_reference": "thumbnail-layout.png"
+  },
+  "props": "black over-ear studio headphones on all 8; four black podcast microphones on boom arms in front of the front row",
+  "background": "vivid orange-to-red gradient, blurred warm studio bokeh, rough purple paint-stroke accents, light vignette",
+  "lighting": "bright key light on faces, orange and magenta rim light, sharp eyes",
+  "style": "Israeli comedy podcast thumbnail, high saturation, punchy contrast, photorealistic, realistic skin texture",
+  "negative_prompt": "text, letters, logos, watermark, UI elements, speech bubble, distorted faces, merged faces, duplicated people, extra or missing people, extra fingers, nudity, shirtless, cleavage, lingerie, blurry, cut-out collage look"
+}
