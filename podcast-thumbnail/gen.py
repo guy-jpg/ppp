@@ -42,8 +42,13 @@ svg=f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" font-fa
 {''.join(person(i,x,560,1.45,l,"#2e130e") for i,x,l in front)}
 {mic(380,880,1)}{mic(800,890,1)}{mic(1120,890,-1)}{mic(1540,880,-1)}
 <rect width="{W}" height="{H}" fill="url(#vig)"/>
-<rect x="610" y="905" width="700" height="150" rx="18" fill="#000" fill-opacity=".25" stroke="#fff" stroke-width="4" stroke-dasharray="18 12"/>
-<text x="960" y="995" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">אזור כותרת</text>
+<g transform="rotate(-3 960 975)">
+<path d="M430,902 L1460,888 L1445,1062 L415,1072 Z" fill="#111" fill-opacity=".88"/>
+<path d="M430,902 L1460,888" stroke="#ffd60a" stroke-width="8"/>
+<text x="1010" y="1010" font-size="88" font-weight="900" text-anchor="middle" fill="#fff" stroke="#000" stroke-width="10" paint-order="stroke" letter-spacing="-1">בגג של הב״הדים</text>
+<rect x="455" y="925" width="150" height="110" rx="18" fill="#ffd60a" transform="rotate(4 530 980)"/>
+<text x="530" y="1012" font-size="80" font-weight="900" text-anchor="middle" fill="#111" transform="rotate(4 530 980)" direction="ltr">#29</text>
+</g>
 </svg>'''
-open("thumbnail-layout.svg","w").write(svg)
-open("thumbnail-layout.html","w").write(f'<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;800&display=swap" rel="stylesheet"><style>html,body{{margin:0;background:#000}}</style></head><body>{svg}</body></html>')
+open("thumbnail.svg","w").write(svg)
+open("thumbnail.html","w").write(f'<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;800;900&display=swap" rel="stylesheet"><style>html,body{{margin:0;background:#000}}</style></head><body>{svg}</body></html>')
