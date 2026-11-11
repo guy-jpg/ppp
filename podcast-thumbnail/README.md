@@ -7,3 +7,7 @@
 - `gen.py` – regenerates the template: `python3 gen.py`.
 
 Use only photos of the actual hosts, with their consent.
+
+## With real faces
+Put square crops `A_sq.jpg` … `H_sq.jpg` in a folder (not committed) and run:
+`FACES_DIR=/path/to/faces OUT=/path/to/out python3 gen.py`
