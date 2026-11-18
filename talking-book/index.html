@@ -78,6 +78,11 @@ label.file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
 .notice { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; background: var(--bg); }
 .notice strong { font-weight: 700; }
+details.notice summary { cursor: pointer; font-weight: 700; }
+details.notice ol { margin: 8px 0 0; padding-inline-start: 1.3em; display: grid; gap: 6px; }
+details.notice .lead { margin: 8px 0 0; }
+details.notice.warn { border-color: var(--accent); }
+.btn.small { padding: 5px 12px; font-size: 0.9rem; }
 
 /* Player */
 .player {
@@ -105,7 +110,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 @media (max-width: 480px) {
   h1 { font-size: 1.45rem; }
-  .app { padding-bottom: 230px; }
+  .app { padding-bottom: 270px; }
   .settings select { max-width: 100%; }
 }
 </style>
@@ -125,7 +130,15 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   </header>
 
   <div id="support-msg" class="notice" hidden></div>
-  <div id="voice-msg" class="notice" hidden></div>
+  <details id="voice-help" class="notice">
+    <summary>הקול נשמע רובוטי? כך משיגים קול טבעי בעברית, בחינם</summary>
+    <p id="voice-tip" class="lead" hidden></p>
+    <ol>
+      <li><strong>מחשב (ווינדוס או מק):</strong> פתחו את האתר בדפדפן <strong>Microsoft Edge</strong>. יש בו שני קולות עבריים טבעיים, <strong>אברי</strong> ו<strong>הילה</strong>, והאתר בוחר אותם לבד. הם דורשים חיבור לאינטרנט.</li>
+      <li><strong>אנדרואיד:</strong> הגדרות ← חפשו "המרת טקסט לדיבור" ← מנוע מועדף: <strong>Google</strong> ← גלגל השיניים ← התקנת נתוני קול ← עברית. אחר כך רעננו את הדף ובחרו קול מהרשימה.</li>
+      <li><strong>אייפון / אייפד:</strong> הגדרות ← נגישות ← תוכן מוקרא ← קולות ← עברית ← <strong>כרמית</strong> ← הורידו את הגרסה <strong>המשופרת</strong>. אחר כך סגרו ופתחו מחדש את הדפדפן.</li>
+    </ol>
+  </details>
 
   <section id="edit-view" class="panel" aria-label="הדבקת טקסט">
     <textarea id="text" spellcheck="false" placeholder="הדביקו כאן את הטקסט (Ctrl+V). אפשר גם ספר שלם."></textarea>
@@ -161,6 +174,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     <div class="settings">
       <label class="speed" for="rate">מהירות <input id="rate" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="rate-val" class="speed-val">1.0×</span></label>
       <label for="voice">קול <select id="voice"></select></label>
+      <button id="test-voice" class="btn small" type="button">השמע דוגמה</button>
     </div>
   </div>
 </div>
@@ -174,7 +188,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     edit: $('edit-view'), read: $('read-view'), reader: $('reader'), tabEdit: $('tab-edit'), tabRead: $('tab-read'),
     play: $('play'), playIcon: $('play-icon'), prev: $('prev'), next: $('next'), stop: $('stop'),
     seek: $('seek'), pos: $('pos'), left: $('left'), rate: $('rate'), rateVal: $('rate-val'), voice: $('voice'),
-    follow: $('follow'), resume: $('resume-msg'), support: $('support-msg'), voiceMsg: $('voice-msg')
+    follow: $('follow'), resume: $('resume-msg'), support: $('support-msg'), help: $('voice-help'), tip: $('voice-tip'), test: $('test-voice')
   };
 
   const SAMPLE = 'זהו טקסט לדוגמה. מחקו אותו והדביקו במקומו את הספר שלכם.\n\nהאתר מחלק את הטקסט למשפטים ומקריא אותם אחד אחרי השני, בקול שמותקן במכשיר. אפשר לשנות את המהירות, לדלג קדימה ואחורה, וללחוץ על כל משפט כדי להתחיל ממנו.\n\nכשתסגרו את הדף ותחזרו, הקריאה תמשיך מהמקום שבו עצרתם.';
@@ -313,25 +327,52 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   }
 
   // ---------- voices ----------
+  const UA = navigator.userAgent;
+  const platform = /Android/i.test(UA) ? 'android'
+    : (/iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1)) ? 'ios'
+    : 'desktop';
+  const isEdge = /Edg\//.test(UA);
   function isHebrew(v) { return /^(he|iw)/i.test(v.lang); }
+  function isNatural(v) { return /natural|neural|online|enhanced|premium|google/i.test(v.name + ' ' + v.voiceURI); }
+  function score(v) { return (isHebrew(v) ? 4 : 0) + (isNatural(v) ? 2 : 0) + (v.localService ? 0 : 1); }
+  function niceName(v) {
+    return v.name.replace(/^Microsoft\s+/, '').replace(/\s*-\s*Hebrew \(Israel\)/i, '').replace(/Online \(Natural\)/i, '').trim();
+  }
+  function bestVoice() { return voices.find(isHebrew) || null; }
   function loadVoices() {
     if (!synth) return;
-    voices = synth.getVoices().slice().sort((a, b) => (isHebrew(b) - isHebrew(a)) || a.name.localeCompare(b.name));
+    const all = synth.getVoices().slice().sort((a, b) => score(b) - score(a) || a.name.localeCompare(b.name));
+    const heb = all.filter(isHebrew);
+    voices = heb.length ? heb : all;   // a non-Hebrew voice can't read Hebrew, so hide them when Hebrew exists
     const saved = store.get('voice');
+    const best = bestVoice();
     els.voice.replaceChildren();
-    const auto = new Option('אוטומטי (עברית)', '');
-    els.voice.add(auto);
-    voices.forEach((v) => els.voice.add(new Option(`${v.name} (${v.lang})`, v.voiceURI)));
+    els.voice.add(new Option(best ? `אוטומטי: ${niceName(best)}${isNatural(best) ? ' ⭐' : ''}` : 'אוטומטי', ''));
+    voices.forEach((v) => els.voice.add(new Option(`${niceName(v)}${isNatural(v) ? ' ⭐ טבעי' : ''}`, v.voiceURI)));
     if (saved && voices.some((v) => v.voiceURI === saved)) els.voice.value = saved;
-    const heb = voices.some(isHebrew);
-    els.voiceMsg.hidden = heb || voices.length === 0;
-    els.voiceMsg.innerHTML = '<strong>לא נמצא קול בעברית במכשיר.</strong> ההקראה תעבוד אבל עלולה להישמע לא טוב. ' +
-      'בווינדוס: הגדרות ← זמן ושפה ← דיבור ← הוספת קולות ← עברית. באנדרואיד: הגדרות ← המרת טקסט לדיבור ← Google ← התקנת עברית. באייפון/מק הקול "כרמית" מובנה.';
+    if (!all.length) return;   // voices not loaded yet
+    let tip = '';
+    if (!heb.length) tip = 'לא נמצא במכשיר הזה קול בעברית, ולכן ההקראה לא תישמע טוב. ';
+    else if (!heb.some(isNatural)) tip = 'הקול העברי שיש כרגע במכשיר הוא קול ישן ורובוטי. ';
+    if (tip) {
+      if (platform === 'desktop') tip += isEdge ? 'אתם ב־Edge אבל הקולות הטבעיים לא נטענו: בדקו חיבור לאינטרנט ורעננו את הדף.' : 'הפתרון הכי מהיר: פתחו את האתר בדפדפן Microsoft Edge.';
+      else if (platform === 'android') tip += 'התקינו את הקול העברי של Google לפי ההוראות למטה.';
+      else tip += 'הורידו את הקול "כרמית (משופר)" לפי ההוראות למטה.';
+    }
+    els.tip.textContent = tip;
+    els.tip.hidden = !tip;
+    els.help.open = !!tip;
+    els.help.classList.toggle('warn', !!tip);
   }
   function currentVoice() {
     const uri = els.voice.value;
-    if (uri) return voices.find((v) => v.voiceURI === uri) || null;
-    return voices.find((v) => isHebrew(v) && /google|natural|online/i.test(v.name)) || voices.find(isHebrew) || null;
+    if (uri) return voices.find((v) => v.voiceURI === uri) || bestVoice();
+    return bestVoice();
+  }
+  function applyVoice(u) {
+    const v = currentVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'he-IL'; }
+    u.rate = rate;
   }
 
   // ---------- speech ----------
@@ -341,9 +382,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     stall = 0;
     synth.cancel();
     const u = new SpeechSynthesisUtterance(chunks[idx].t);
-    const v = currentVoice();
-    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'he-IL'; }
-    u.rate = rate;
+    applyVoice(u);
     u.onend = () => {
       if (my !== gen || !playing) return;
       idx++; store.set('idx', String(idx));
@@ -464,6 +503,14 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     clearTimeout(rateTimer); rateTimer = setTimeout(() => { if (playing) speakCurrent(); }, 350);
   });
   els.voice.addEventListener('change', () => { store.set('voice', els.voice.value); if (playing) speakCurrent(); });
+  els.test.addEventListener('click', () => {
+    if (!synth) return;
+    if (playing) pause();
+    gen++; synth.cancel();
+    const u = new SpeechSynthesisUtterance('שלום! ככה אני נשמע. אם הקול מתאים לך, לחץ על הפעלה ונתחיל לקרוא.');
+    applyVoice(u);
+    synth.speak(u);
+  });
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('textarea, input, select')) return;
     if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
