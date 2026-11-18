@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>הספר המדבר</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one reading column; a fixed player bar at the bottom like a car radio, text above it */
+:root {
+  --bg: #eef1f4;
+  --paper: #ffffff;
+  --ink: #1b2330;
+  --muted: #5f6b7a;
+  --line: #d5dbe3;
+  --accent: #2f5bd3;
+  --accent-ink: #ffffff;
+  --mark: #fff0b8;
+  --mark-ink: #1b2330;
+  --font-display: "Rubik", "Assistant", "Segoe UI", Arial, sans-serif;
+  --font-body: "Assistant", "Segoe UI", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --paper: #1a2029; --ink: #e6eaf0; --muted: #98a3b3; --line: #2c3441;
+    --accent: #7c9cff; --accent-ink: #0d1220; --mark: #4a3f12; --mark-ink: #fff6d6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --paper: #1a2029; --ink: #e6eaf0; --muted: #98a3b3; --line: #2c3441;
+  --accent: #7c9cff; --accent-ink: #0d1220; --mark: #4a3f12; --mark-ink: #fff6d6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.app {
+  max-width: 760px; margin: 0 auto;
+  padding-block: 20px 190px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 16px;
+}
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; font-size: 0.95rem; }
+.tabs { display: flex; gap: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+.tabs button { border: 0; background: transparent; color: var(--muted); font: 600 0.95rem var(--font-body); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+.tabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+textarea {
+  width: 100%; min-height: 46vh; resize: vertical; border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; font: 1.05rem/1.7 var(--font-body); color: var(--ink); background: var(--bg);
+}
+textarea:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, label.file:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.row .grow { flex: 1 1 auto; }
+.meta { color: var(--muted); font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.btn {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer;
+  font: 600 1rem var(--font-body); padding: 9px 16px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn:disabled { opacity: .5; cursor: default; }
+label.file { position: relative; overflow: hidden; }
+label.file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+.reader { font-size: 1.15rem; line-height: 1.9; max-height: 62vh; overflow-y: auto; padding-inline: 4px; }
+.reader p { margin: 0 0 0.9em; }
+.reader span { cursor: pointer; border-radius: 4px; transition: background .2s; }
+.reader span:hover { background: color-mix(in srgb, var(--mark) 50%, transparent); }
+.reader span.now { background: var(--mark); color: var(--mark-ink); box-shadow: 0 0 0 3px var(--mark); }
+.reader span.done { color: var(--muted); }
+
+.notice { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 0.95rem; background: var(--bg); }
+.notice strong { font-weight: 700; }
+
+/* Player */
+.player {
+  position: fixed; inset: auto 0 0 0; background: var(--paper); border-top: 1px solid var(--line);
+  box-shadow: 0 -6px 24px rgb(0 0 0 / .08);
+  padding-top: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.player-in { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+.controls { direction: ltr; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.round { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+.round.big { width: 62px; height: 62px; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.round svg { width: 22px; height: 22px; fill: currentColor; }
+.round.big svg { width: 28px; height: 28px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.settings { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 0.92rem; }
+.settings label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+.settings select { max-width: 220px; font: 0.92rem var(--font-body); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+.settings .speed { flex: 1 1 200px; }
+.settings .speed input { flex: 1; min-width: 80px; }
+.speed-val { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 700; min-width: 3.2em; }
+.status { display: flex; justify-content: space-between; gap: 10px; font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 480px) {
+  h1 { font-size: 1.45rem; }
+  .app { padding-bottom: 230px; }
+  .settings select { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="app" dir="rtl" lang="he">
+  <header>
+    <div>
+      <h1>הספר המדבר</h1>
+      <p class="sub">מדביקים טקסט, לוחצים על הפעלה, ומקשיבים.</p>
+    </div>
+    <div class="tabs" role="group" aria-label="תצוגה">
+      <button id="tab-edit" type="button" aria-pressed="true">טקסט</button>
+      <button id="tab-read" type="button" aria-pressed="false">הקראה</button>
+    </div>
+  </header>
+
+  <div id="support-msg" class="notice" hidden></div>
+  <div id="voice-msg" class="notice" hidden></div>
+
+  <section id="edit-view" class="panel" aria-label="הדבקת טקסט">
+    <textarea id="text" spellcheck="false" placeholder="הדביקו כאן את הטקסט (Ctrl+V). אפשר גם ספר שלם."></textarea>
+    <div class="row">
+      <button id="start" class="btn primary" type="button">▶ התחל להקריא</button>
+      <label class="btn file" for="file">פתח קובץ (txt / pdf)<input id="file" type="file" accept=".txt,.pdf,text/plain,application/pdf"></label>
+      <button id="clear" class="btn" type="button">נקה</button>
+      <span class="grow"></span>
+      <span id="count" class="meta"></span>
+    </div>
+  </section>
+
+  <section id="read-view" class="panel" aria-label="הטקסט המוקרא" hidden>
+    <div class="row">
+      <span id="resume-msg" class="meta grow"></span>
+      <label class="meta"><input id="follow" type="checkbox" checked> גלילה אוטומטית</label>
+    </div>
+    <div id="reader" class="reader"></div>
+    <p class="meta" style="margin:0">טיפ: לחיצה על משפט מתחילה לקרוא ממנו.</p>
+  </section>
+</div>
+
+<div class="player" dir="rtl" lang="he">
+  <div class="player-in">
+    <div class="controls">
+      <button id="stop" class="round" type="button" aria-label="עצור וחזור להתחלה" title="עצור וחזור להתחלה"><svg viewBox="0 0 24 24"><path d="M7 7h10v10H7z"/></svg></button>
+      <button id="prev" class="round" type="button" aria-label="המשפט הקודם" title="המשפט הקודם"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg></button>
+      <button id="play" class="round big" type="button" aria-label="הפעלה" title="הפעלה / השהיה (רווח)"><svg id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <button id="next" class="round" type="button" aria-label="המשפט הבא" title="המשפט הבא"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg></button>
+    </div>
+    <input id="seek" type="range" min="0" max="0" value="0" step="1" aria-label="מיקום בטקסט">
+    <div class="status"><span id="pos">—</span><span id="left"></span></div>
+    <div class="settings">
+      <label class="speed" for="rate">מהירות <input id="rate" type="range" min="0.5" max="3" step="0.1" value="1"> <span id="rate-val" class="speed-val">1.0×</span></label>
+      <label for="voice">קול <select id="voice"></select></label>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const synth = window.speechSynthesis;
+  const els = {
+    text: $('text'), start: $('start'), file: $('file'), clear: $('clear'), count: $('count'),
+    edit: $('edit-view'), read: $('read-view'), reader: $('reader'), tabEdit: $('tab-edit'), tabRead: $('tab-read'),
+    play: $('play'), playIcon: $('play-icon'), prev: $('prev'), next: $('next'), stop: $('stop'),
+    seek: $('seek'), pos: $('pos'), left: $('left'), rate: $('rate'), rateVal: $('rate-val'), voice: $('voice'),
+    follow: $('follow'), resume: $('resume-msg'), support: $('support-msg'), voiceMsg: $('voice-msg')
+  };
+
+  const SAMPLE = 'זהו טקסט לדוגמה. מחקו אותו והדביקו במקומו את הספר שלכם.\n\nהאתר מחלק את הטקסט למשפטים ומקריא אותם אחד אחרי השני, בקול שמותקן במכשיר. אפשר לשנות את המהירות, לדלג קדימה ואחורה, וללחוץ על כל משפט כדי להתחיל ממנו.\n\nכשתסגרו את הדף ותחזרו, הקריאה תמשיך מהמקום שבו עצרתם.';
+  const PLAY = '<path d="M8 5v14l11-7z"/>';
+  const PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  const MAX_CHUNK = 220;
+
+  let chunks = [];      // [{t: string, p: paragraphIndex}]
+  let spans = [];
+  let loadedText = null;
+  let idx = 0;
+  let playing = false;
+  let gen = 0;
+  let rate = 1;
+  let voices = [];
+  let wakeLock = null;
+  let stall = 0;
+
+  // ---------- storage (best effort) ----------
+  const store = {
+    get(k) { try { return localStorage.getItem('tb:' + k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem('tb:' + k, v); } catch (e) {} }
+  };
+
+  // ---------- text splitting ----------
+  const hasWord = /[\p{L}\p{N}]/u;
+  function splitLong(s) {
+    const out = [];
+    while (s.length > MAX_CHUNK) {
+      const slice = s.slice(0, MAX_CHUNK);
+      let cut = Math.max(slice.lastIndexOf(', '), slice.lastIndexOf('; '), slice.lastIndexOf(' – '), slice.lastIndexOf(' - '));
+      if (cut < MAX_CHUNK * 0.4) cut = slice.lastIndexOf(' ');
+      if (cut <= 0) cut = MAX_CHUNK;
+      out.push(s.slice(0, cut + 1).trim());
+      s = s.slice(cut + 1);
+    }
+    if (s.trim()) out.push(s.trim());
+    return out;
+  }
+  function buildChunks(text) {
+    const res = [];
+    const paras = text.replace(/\r\n?/g, '\n').split(/\n\s*\n|\n(?=\s*[-•*\d])/);
+    let p = 0;
+    for (const para of paras) {
+      const clean = para.replace(/\s+/g, ' ').trim();
+      if (!clean) continue;
+      const sentences = clean.match(/[^.!?…]+(?:[.!?…]+["'”’״)\]]*)?|[.!?…]+/g) || [clean];
+      let added = false;
+      for (const s of sentences) {
+        for (const c of splitLong(s.trim())) {
+          if (hasWord.test(c)) { res.push({ t: c, p }); added = true; }
+        }
+      }
+      if (added) p++;
+    }
+    return res;
+  }
+
+  // ---------- rendering ----------
+  function renderReader() {
+    const frag = document.createDocumentFragment();
+    spans = [];
+    let para = null, lastP = -1;
+    chunks.forEach((c, i) => {
+      if (c.p !== lastP) { para = document.createElement('p'); frag.appendChild(para); lastP = c.p; }
+      const s = document.createElement('span');
+      s.textContent = c.t + ' ';
+      s.dataset.i = i;
+      para.appendChild(s);
+      spans.push(s);
+    });
+    els.reader.replaceChildren(frag);
+    els.seek.max = Math.max(0, chunks.length - 1);
+  }
+  let lastMarked = -1;
+  function mark(scroll = true) {
+    if (lastMarked >= 0 && spans[lastMarked]) spans[lastMarked].classList.remove('now');
+    // mark everything before as done (cheaply: only range between old and new)
+    const from = Math.min(lastMarked < 0 ? 0 : lastMarked, idx), to = Math.max(lastMarked, idx);
+    for (let i = from; i <= to && i < spans.length; i++) spans[i].classList.toggle('done', i < idx);
+    if (lastMarked < 0) for (let i = 0; i < idx && i < spans.length; i++) spans[i].classList.add('done');
+    const s = spans[idx];
+    if (s) {
+      s.classList.add('now');
+      if (scroll && els.follow.checked && !els.read.hidden) {
+        const box = els.reader, top = s.offsetTop - box.offsetTop;
+        box.scrollTo({ top: top - box.clientHeight / 2 + s.offsetHeight / 2, behavior: 'smooth' });
+      }
+    }
+    lastMarked = idx;
+    els.seek.value = idx;
+    updateStatus();
+  }
+  function fmtTime(min) {
+    if (!isFinite(min)) return '';
+    const h = Math.floor(min / 60), m = Math.round(min % 60);
+    return h ? `${h} שע׳ ${m} דק׳` : `${Math.max(1, m)} דק׳`;
+  }
+  let wordsAfter = [];
+  function computeWords() {
+    wordsAfter = new Array(chunks.length + 1).fill(0);
+    for (let i = chunks.length - 1; i >= 0; i--) wordsAfter[i] = wordsAfter[i + 1] + chunks[i].t.split(' ').length;
+  }
+  function updateStatus() {
+    if (!chunks.length) { els.pos.textContent = '—'; els.left.textContent = ''; return; }
+    const pct = Math.round((idx / Math.max(1, chunks.length - 1)) * 100);
+    els.pos.textContent = `משפט ${(idx + 1).toLocaleString('he-IL')} מתוך ${chunks.length.toLocaleString('he-IL')} · ${pct}%`;
+    els.left.textContent = 'נשארו בערך ' + fmtTime(wordsAfter[idx] / (140 * rate));
+  }
+  function updateCount() {
+    const t = els.text.value.trim();
+    const words = t ? t.split(/\s+/).length : 0;
+    els.count.textContent = words ? `${words.toLocaleString('he-IL')} מילים · כ־${fmtTime(words / 140)} האזנה` : '';
+  }
+
+  // ---------- views ----------
+  function show(view) {
+    const reading = view === 'read';
+    els.edit.hidden = reading; els.read.hidden = !reading;
+    els.tabEdit.setAttribute('aria-pressed', String(!reading));
+    els.tabRead.setAttribute('aria-pressed', String(reading));
+    if (reading) requestAnimationFrame(() => mark(true));
+  }
+  function ensureLoaded() {
+    const t = els.text.value;
+    if (t === loadedText && chunks.length) return true;
+    chunks = buildChunks(t);
+    loadedText = t;
+    idx = 0; lastMarked = -1;
+    computeWords();
+    renderReader();
+    store.set('text', t);
+    store.set('idx', '0');
+    els.resume.textContent = '';
+    return chunks.length > 0;
+  }
+
+  // ---------- voices ----------
+  function isHebrew(v) { return /^(he|iw)/i.test(v.lang); }
+  function loadVoices() {
+    if (!synth) return;
+    voices = synth.getVoices().slice().sort((a, b) => (isHebrew(b) - isHebrew(a)) || a.name.localeCompare(b.name));
+    const saved = store.get('voice');
+    els.voice.replaceChildren();
+    const auto = new Option('אוטומטי (עברית)', '');
+    els.voice.add(auto);
+    voices.forEach((v) => els.voice.add(new Option(`${v.name} (${v.lang})`, v.voiceURI)));
+    if (saved && voices.some((v) => v.voiceURI === saved)) els.voice.value = saved;
+    const heb = voices.some(isHebrew);
+    els.voiceMsg.hidden = heb || voices.length === 0;
+    els.voiceMsg.innerHTML = '<strong>לא נמצא קול בעברית במכשיר.</strong> ההקראה תעבוד אבל עלולה להישמע לא טוב. ' +
+      'בווינדוס: הגדרות ← זמן ושפה ← דיבור ← הוספת קולות ← עברית. באנדרואיד: הגדרות ← המרת טקסט לדיבור ← Google ← התקנת עברית. באייפון/מק הקול "כרמית" מובנה.';
+  }
+  function currentVoice() {
+    const uri = els.voice.value;
+    if (uri) return voices.find((v) => v.voiceURI === uri) || null;
+    return voices.find((v) => isHebrew(v) && /google|natural|online/i.test(v.name)) || voices.find(isHebrew) || null;
+  }
+
+  // ---------- speech ----------
+  function speakCurrent() {
+    if (idx >= chunks.length) { finish(); return; }
+    const my = ++gen;
+    stall = 0;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(chunks[idx].t);
+    const v = currentVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'he-IL'; }
+    u.rate = rate;
+    u.onend = () => {
+      if (my !== gen || !playing) return;
+      idx++; store.set('idx', String(idx));
+      if (idx >= chunks.length) { finish(); return; }
+      mark(); speakCurrent();
+    };
+    u.onerror = (e) => {
+      if (my !== gen || !playing) return;
+      if (e.error === 'interrupted' || e.error === 'canceled') return;
+      if (e.error === 'not-allowed') { pause(); return; }
+      idx++; mark(); speakCurrent();
+    };
+    mark();
+    synth.speak(u);
+  }
+  function setPlayingUI() {
+    els.playIcon.innerHTML = playing ? PAUSE : PLAY;
+    els.play.setAttribute('aria-label', playing ? 'השהיה' : 'הפעלה');
+  }
+  async function lockScreen() {
+    try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { wakeLock = null; }
+  }
+  function unlockScreen() { try { wakeLock && wakeLock.release(); } catch (e) {} wakeLock = null; }
+  function play() {
+    if (!synth) return;
+    if (!ensureLoaded()) { els.text.focus(); return; }
+    if (idx >= chunks.length) idx = 0;
+    playing = true; setPlayingUI();
+    if (els.read.hidden) show('read');
+    speakCurrent();
+    lockScreen();
+  }
+  function pause() {
+    playing = false; gen++;
+    if (synth) synth.cancel();
+    setPlayingUI(); unlockScreen();
+    store.set('idx', String(idx));
+  }
+  function finish() {
+    pause(); idx = Math.max(0, chunks.length - 1); mark(false);
+    els.pos.textContent = 'סיימנו! ✓';
+    idx = chunks.length; store.set('idx', '0');
+  }
+  function jump(to) {
+    if (!chunks.length && !ensureLoaded()) return;
+    idx = Math.min(Math.max(0, to), chunks.length - 1);
+    store.set('idx', String(idx));
+    if (playing) speakCurrent(); else mark();
+  }
+
+  // watchdog: some browsers silently stop mid-way
+  setInterval(() => {
+    if (!playing || !synth) return;
+    if (!synth.speaking && !synth.pending) { if (++stall >= 2) speakCurrent(); }
+    else stall = 0;
+  }, 2000);
+
+  // ---------- file loading ----------
+  function loadScript(src) {
+    return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  }
+  async function readPdf(buf) {
+    const base = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+    if (!window.pdfjsLib) {
+      await loadScript(base + 'pdf.worker.min.js'); // runs in-page as fallback worker
+      await loadScript(base + 'pdf.min.js');
+    }
+    const pdf = await window.pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
+    const pages = [];
+    for (let n = 1; n <= pdf.numPages; n++) {
+      els.count.textContent = `קורא עמוד ${n} מתוך ${pdf.numPages}…`;
+      const tc = await (await pdf.getPage(n)).getTextContent();
+      let line = '';
+      for (const it of tc.items) { line += it.str; line += it.hasEOL ? '\n' : (it.str.endsWith(' ') ? '' : ' '); }
+      pages.push(line.replace(/[ \t]+\n/g, '\n'));
+    }
+    return pages.join('\n\n');
+  }
+  els.file.addEventListener('change', async () => {
+    const f = els.file.files[0];
+    if (!f) return;
+    pause();
+    try {
+      const buf = await f.arrayBuffer();
+      let text;
+      if (/\.pdf$/i.test(f.name) || f.type === 'application/pdf') {
+        text = await readPdf(buf);
+      } else {
+        text = new TextDecoder('utf-8').decode(buf);
+        if (text.includes('�')) text = new TextDecoder('windows-1255').decode(buf);
+      }
+      els.text.value = text;
+      updateCount();
+      show('edit');
+    } catch (e) {
+      els.count.textContent = 'לא הצלחתי לקרוא את הקובץ. נסו להעתיק ממנו את הטקסט ולהדביק כאן.';
+    }
+    els.file.value = '';
+  });
+
+  // ---------- events ----------
+  els.start.addEventListener('click', play);
+  els.clear.addEventListener('click', () => { pause(); els.text.value = ''; updateCount(); els.text.focus(); });
+  els.text.addEventListener('input', updateCount);
+  els.play.addEventListener('click', () => (playing ? pause() : play()));
+  els.prev.addEventListener('click', () => jump(idx - 1));
+  els.next.addEventListener('click', () => jump(idx + 1));
+  els.stop.addEventListener('click', () => { pause(); if (chunks.length) { idx = 0; mark(); store.set('idx', '0'); } });
+  els.seek.addEventListener('input', () => { idx = +els.seek.value; mark(true); });
+  els.seek.addEventListener('change', () => jump(+els.seek.value));
+  els.reader.addEventListener('click', (e) => { const s = e.target.closest('span'); if (s) { jump(+s.dataset.i); if (!playing) play(); } });
+  els.tabEdit.addEventListener('click', () => show('edit'));
+  els.tabRead.addEventListener('click', () => { if (ensureLoaded()) show('read'); });
+  let rateTimer;
+  els.rate.addEventListener('input', () => {
+    rate = +els.rate.value; els.rateVal.textContent = rate.toFixed(1) + '×';
+    store.set('rate', String(rate)); updateStatus();
+    clearTimeout(rateTimer); rateTimer = setTimeout(() => { if (playing) speakCurrent(); }, 350);
+  });
+  els.voice.addEventListener('change', () => { store.set('voice', els.voice.value); if (playing) speakCurrent(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('textarea, input, select')) return;
+    if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+    else if (e.key === 'ArrowRight') jump(idx + 1);
+    else if (e.key === 'ArrowLeft') jump(idx - 1);
+  });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && playing) lockScreen(); });
+
+  // ---------- init ----------
+  if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
+    els.support.hidden = false;
+    els.support.innerHTML = '<strong>הדפדפן הזה לא תומך בהקראה.</strong> נסו Chrome, Edge או Safari עדכניים.';
+    [els.play, els.start].forEach((b) => (b.disabled = true));
+  } else {
+    loadVoices();
+    if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', loadVoices);
+    else synth.onvoiceschanged = loadVoices;
+  }
+  const savedRate = parseFloat(store.get('rate'));
+  if (savedRate >= 0.5 && savedRate <= 3) { rate = savedRate; els.rate.value = rate; els.rateVal.textContent = rate.toFixed(1) + '×'; }
+  const savedText = store.get('text');
+  els.text.value = savedText || SAMPLE;
+  updateCount();
+  ensureLoaded();
+  const savedIdx = parseInt(store.get('idx'), 10);
+  if (savedText && savedIdx > 0 && savedIdx < chunks.length) {
+    idx = savedIdx; store.set('idx', String(idx));
+    els.resume.textContent = 'ממשיכים מהמקום שבו עצרת. לחצו ▶ להמשך.';
+    show('read');
+  }
+  mark(false);
+  window.addEventListener('beforeunload', () => { if (synth) synth.cancel(); });
+})();
+</script>
+</body>
+</html>
