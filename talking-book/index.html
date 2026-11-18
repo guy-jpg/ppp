@@ -134,7 +134,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     <summary>הקול נשמע רובוטי? כך משיגים קול טבעי בעברית, בחינם</summary>
     <p id="voice-tip" class="lead" hidden></p>
     <ol>
-      <li><strong>מחשב (ווינדוס או מק):</strong> פתחו את האתר בדפדפן <strong>Microsoft Edge</strong>. יש בו שני קולות עבריים טבעיים, <strong>אברי</strong> ו<strong>הילה</strong>, והאתר בוחר אותם לבד. הם דורשים חיבור לאינטרנט.</li>
+      <li><strong>ווינדוס:</strong> פתחו את האתר בדפדפן <strong>Microsoft Edge</strong>. יש בו שני קולות עבריים טבעיים, <strong>אברי</strong> ו<strong>הילה</strong>, והאתר בוחר אותם לבד. הם דורשים חיבור לאינטרנט.</li>
+      <li><strong>מק, הדרך הכי טובה:</strong> התקינו בחינם את <a href="https://www.microsoft.com/edge" target="_blank" rel="noopener">Microsoft Edge למק</a>, פתחו בו את האתר, ותקבלו את הקולות הטבעיים <strong>אברי</strong> ו<strong>הילה</strong>.</li>
+      <li><strong>מק, בלי להתקין דפדפן:</strong> הגדרות המערכת (System Settings) ← נגישות (Accessibility) ← תוכן מוקרא (Spoken Content) ← קול המערכת (System Voice) ← ניהול קולות (Manage Voices) ← עברית ← סמנו את <strong>כרמית (משופר)</strong>. אחר כך פתחו את האתר ב־<strong>Safari</strong>.</li>
       <li><strong>אנדרואיד:</strong> הגדרות ← חפשו "המרת טקסט לדיבור" ← מנוע מועדף: <strong>Google</strong> ← גלגל השיניים ← התקנת נתוני קול ← עברית. אחר כך רעננו את הדף ובחרו קול מהרשימה.</li>
       <li><strong>אייפון / אייפד:</strong> הגדרות ← נגישות ← תוכן מוקרא ← קולות ← עברית ← <strong>כרמית</strong> ← הורידו את הגרסה <strong>המשופרת</strong>. אחר כך סגרו ופתחו מחדש את הדפדפן.</li>
     </ol>
@@ -330,7 +332,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
   const UA = navigator.userAgent;
   const platform = /Android/i.test(UA) ? 'android'
     : (/iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1)) ? 'ios'
-    : 'desktop';
+    : /Macintosh/.test(UA) ? 'mac' : 'desktop';
   const isEdge = /Edg\//.test(UA);
   function isHebrew(v) { return /^(he|iw)/i.test(v.lang); }
   function isNatural(v) { return /natural|neural|online|enhanced|premium|google/i.test(v.name + ' ' + v.voiceURI); }
@@ -355,7 +357,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     if (!heb.length) tip = 'לא נמצא במכשיר הזה קול בעברית, ולכן ההקראה לא תישמע טוב. ';
     else if (!heb.some(isNatural)) tip = 'הקול העברי שיש כרגע במכשיר הוא קול ישן ורובוטי. ';
     if (tip) {
-      if (platform === 'desktop') tip += isEdge ? 'אתם ב־Edge אבל הקולות הטבעיים לא נטענו: בדקו חיבור לאינטרנט ורעננו את הדף.' : 'הפתרון הכי מהיר: פתחו את האתר בדפדפן Microsoft Edge.';
+      if (platform === 'mac' && !isEdge) tip += 'במק יש שתי דרכים בחינם: להתקין את הדפדפן Microsoft Edge ולפתוח בו את האתר (הכי טוב), או להוריד את הקול "כרמית (משופר)" ולהשתמש ב־Safari. ההוראות למטה.';
+      else if (platform === 'desktop' || platform === 'mac') tip += isEdge ? 'אתם ב־Edge אבל הקולות הטבעיים לא נטענו: בדקו חיבור לאינטרנט ורעננו את הדף.' : 'הפתרון הכי מהיר: פתחו את האתר בדפדפן Microsoft Edge.';
       else if (platform === 'android') tip += 'התקינו את הקול העברי של Google לפי ההוראות למטה.';
       else tip += 'הורידו את הקול "כרמית (משופר)" לפי ההוראות למטה.';
     }
