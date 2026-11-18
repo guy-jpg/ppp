@@ -433,7 +433,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
         text = await readPdf(buf);
       } else {
         text = new TextDecoder('utf-8').decode(buf);
-        if (text.includes('�')) text = new TextDecoder('windows-1255').decode(buf);
+        if (text.includes('\uFFFD')) text = new TextDecoder('windows-1255').decode(buf);
       }
       els.text.value = text;
       updateCount();
