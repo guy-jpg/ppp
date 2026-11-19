@@ -1,0 +1,5 @@
+Third-party libraries bundled here, loaded only when importing a file:
+
+pdf.min.js, pdf.worker.min.js  - PDF.js 3.11.174 (legacy build), Mozilla, Apache License 2.0
+jszip.min.js                   - JSZip 3.10.1, Stuart Knightley, MIT License (dual MIT/GPLv3)
+mammoth.browser.min.js         - Mammoth 1.6.0, Michael Williamson, BSD 2-Clause License
