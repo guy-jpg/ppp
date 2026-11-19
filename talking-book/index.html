@@ -1,261 +1,293 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="he" dir="rtl" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>הספר המדבר</title>
-<meta name="description" content="מדביקים ספר ומקשיבים לו בקול טבעי, בטלפון ובמחשב.">
-<meta name="theme-color" content="#0d1220">
+<title>הד</title>
+<meta name="description" content="מדביקים ספר ולוחצים פליי. הד מקריא כל טקסט בקול טבעי, בטלפון ובמחשב.">
+<meta name="theme-color" content="#141414">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="הספר המדבר">
+<meta name="apple-mobile-web-app-title" content="הד">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 10.2 12 3.5l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4.5v-6h-5v6H5A1.5 1.5 0 0 1 3.5 19z"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><rect x="5.5" y="4.5" width="13" height="16" rx="2"/><path d="M9 4.5V3.5h6v1M9 10h6M9 13.5h6M9 17h3.5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5m0 0L7.8 8.7M12 4.5l4.2 4.2M4.5 15v3.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V15"/></symbol>
+    <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 15.5V12a8 8 0 0 1 16 0v3.5"/><rect x="3.5" y="14" width="4.5" height="6.5" rx="1.5"/><rect x="16" y="14" width="4.5" height="6.5" rx="1.5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3.5" width="6" height="10.5" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5v3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-train" viewBox="0 0 24 24"><rect x="5.5" y="3.5" width="13" height="13" rx="3"/><path d="M5.5 10.5h13M9 20.5l1.4-4M15 20.5l-1.4-4"/><path d="M9 13.6h.01M15 13.6h.01" stroke-width="2.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A7.5 7.5 0 0 1 9.5 4.5a7.5 7.5 0 1 0 10 10z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h3.8l2 2h7.2a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" /></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4.2 17.5a8.5 8.5 0 1 1 15.6 0"/><path d="m12 13 3.5-3.5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4.5v11m0 0-4.2-4.2M12 15.5l4.2-4.2M4.5 15v3.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V15"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M4.5 6h15M4.5 10h15M4.5 14h9M4.5 18h12"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><path d="M12 5.5h.01M12 12h.01M12 18.5h.01" stroke-width="3"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.5-2-3.4-2.3.9a7.5 7.5 0 0 0-2.6-1.5L14.1 2.5h-4.2l-.4 2.5a7.5 7.5 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.5a7.6 7.6 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9a7.5 7.5 0 0 0 2.6 1.5l.4 2.5h4.2l.4-2.5a7.5 7.5 0 0 0 2.6-1.5l2.3.9 2-3.4z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-rew" viewBox="0 0 24 24"><path d="M6.6 16.6A7.3 7.3 0 0 1 12 4.7"/><path d="M11.6 2.2l3.8 2.6-3.8 2.6z" fill="currentColor"/><text x="13.3" y="16.4" font-size="7.4" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="Heebo, Arial, sans-serif">15</text></symbol>
+    <symbol id="i-ffw" viewBox="0 0 24 24"><path d="M17.4 16.6A7.3 7.3 0 0 0 12 4.7"/><path d="M12.4 2.2 8.6 4.8l3.8 2.6z" fill="currentColor"/><text x="10.7" y="16.4" font-size="7.4" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="Heebo, Arial, sans-serif">15</text></symbol>
+    <symbol id="i-prevch" viewBox="0 0 24 24"><path d="M17 6v12M15 12 6.5 6.5v11z" fill="currentColor"/></symbol>
+    <symbol id="i-nextch" viewBox="0 0 24 24"><path d="M7 6v12M9 12l8.5-5.5v11z" fill="currentColor"/></symbol>
+  </defs>
+</svg>
 
-  <!-- ===================== Library ===================== -->
-  <main id="view-library" class="view">
-    <header class="topbar">
-      <div class="brand">
-        <img src="icons/icon.svg" alt="" width="36" height="36">
-        <span>הספר המדבר</span>
-      </div>
-      <button id="open-settings" class="icon-btn" type="button" aria-label="הגדרות" title="הגדרות">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1l.4 2.6h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
-      </button>
+<div class="shell">
+  <!-- ===================== Sidebar ===================== -->
+  <aside id="sidebar" class="sidebar" aria-label="ניווט">
+    <div class="side-top">
+      <a class="logo" href="#home" aria-label="הד, לדף הבית">
+        <span>הד</span>
+        <svg class="logo-wave" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="2.6" height="6" rx="1.3"/><rect x="6.6" y="5" width="2.6" height="14" rx="1.3"/><rect x="11.2" y="2.5" width="2.6" height="19" rx="1.3"/><rect x="15.8" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="20.4" y="10" width="2.6" height="4" rx="1.3"/></svg>
+      </a>
+      <button id="side-close" class="icon-btn only-mobile" type="button" aria-label="סגירת התפריט"><svg class="i"><use href="#i-close"/></svg></button>
+    </div>
+
+    <label class="search" for="search">
+      <svg class="i"><use href="#i-search"/></svg>
+      <input id="search" type="search" placeholder="חיפוש בספרייה" autocomplete="off">
+    </label>
+
+    <nav class="nav">
+      <button class="nav-item" type="button" data-nav="home"><svg class="i"><use href="#i-home"/></svg><span>בית</span></button>
+      <button class="nav-item" type="button" data-nav="paste"><svg class="i"><use href="#i-paste"/></svg><span>הדבקת טקסט</span></button>
+      <button class="nav-item" type="button" data-nav="upload"><svg class="i"><use href="#i-upload"/></svg><span>העלאת קובץ</span></button>
+      <button class="nav-item" type="button" data-nav="player"><svg class="i"><use href="#i-headphones"/></svg><span>מתנגן עכשיו</span></button>
+      <button class="nav-item" type="button" data-nav="voices"><svg class="i"><use href="#i-mic"/></svg><span>קריינות</span></button>
+    </nav>
+
+    <div class="nav-label">ספרייה</div>
+    <nav id="nav-filters" class="nav"></nav>
+
+    <div class="nav-label">אוספים</div>
+    <nav id="nav-collections" class="nav"></nav>
+
+    <div class="side-card">
+      <strong>ללא הגבלה</strong>
+      <span>אין מגבלה על מספר הספרים, העמודים, המילים או התווים.</span>
+    </div>
+  </aside>
+  <div id="scrim" class="scrim" hidden></div>
+
+  <!-- ===================== Main ===================== -->
+  <main class="main">
+    <header class="mobile-bar only-mobile">
+      <button id="side-open" class="icon-btn" type="button" aria-label="תפריט"><svg class="i"><use href="#i-menu"/></svg></button>
+      <a class="logo" href="#home" aria-label="הד, לדף הבית">
+        <span>הד</span>
+        <svg class="logo-wave" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="2.6" height="6" rx="1.3"/><rect x="6.6" y="5" width="2.6" height="14" rx="1.3"/><rect x="11.2" y="2.5" width="2.6" height="19" rx="1.3"/><rect x="15.8" y="6.5" width="2.6" height="11" rx="1.3"/><rect x="20.4" y="10" width="2.6" height="4" rx="1.3"/></svg>
+      </a>
+      <button class="icon-btn" type="button" data-nav="voices" aria-label="קריינות והגדרות"><svg class="i"><use href="#i-mic"/></svg></button>
     </header>
 
-    <section id="continue" class="continue" hidden></section>
+    <input id="file-input" class="visually-hidden" type="file" tabindex="-1" aria-hidden="true" accept=".txt,.pdf,.epub,.docx,text/plain,application/pdf,application/epub+zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
 
-    <section id="engine-banner" class="banner" hidden>
-      <div class="banner-text">
-        <strong>רוצים קול שנשמע כמו קריין אמיתי?</strong>
-        <span>חברו את הקולות הטבעיים של Google. ההקראה תמשיך גם כשהמסך כבוי, ואפשר לשמור פרקים לנסיעה בלי אינטרנט.</span>
-      </div>
-      <button class="btn primary" type="button" data-go="settings">לחיבור הקול</button>
-    </section>
-
-    <section class="shelf">
-      <div class="section-head">
-        <h2>הספרייה שלי</h2>
-        <span id="shelf-count" class="muted"></span>
-      </div>
-      <div id="shelf" class="shelf-grid"></div>
-    </section>
-  </main>
-
-  <!-- ===================== Add book ===================== -->
-  <section id="view-add" class="view narrow" hidden>
-    <header class="topbar">
-      <button class="icon-btn" type="button" data-back aria-label="חזרה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <h1 class="topbar-title">ספר חדש</h1>
-      <span class="icon-spacer"></span>
-    </header>
-
-    <div class="stack">
-      <label class="drop" id="drop" for="add-file">
-        <input id="add-file" type="file" accept=".txt,.pdf,.epub,.docx,text/plain,application/pdf,application/epub+zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <strong>בחירת קובץ</strong>
-        <span class="muted">או גרירה לכאן · EPUB, PDF, DOCX, TXT</span>
-      </label>
-
-      <div id="file-card" class="file-card" hidden>
+    <!-- ---------- Home ---------- -->
+    <section id="view-home" class="view">
+      <div class="page-head">
         <div>
-          <strong id="file-name"></strong>
-          <span id="file-info" class="muted"></span>
+          <span id="today" class="date"></span>
+          <h1>בית</h1>
         </div>
-        <button id="file-remove" class="btn ghost small" type="button">הסרה</button>
+        <button class="btn pill" type="button" data-nav="upload"><span>העלאת קובץ</span><svg class="i"><use href="#i-upload"/></svg></button>
       </div>
 
-      <div class="divider"><span>או הדבקת טקסט</span></div>
+      <div class="hero">
+        <section class="card paste-card" aria-labelledby="paste-title">
+          <div class="paste-head">
+            <h2 id="paste-title">הדביקו טקסט ולחצו פליי</h2>
+            <span class="badge">ללא הגבלת תווים</span>
+          </div>
+          <p class="muted">ספר שלם, פרק או מאמר. הקריינות מתחילה מיד, ואפשר להמשיך לשמוע ברכבת.</p>
+          <label class="visually-hidden" for="paste-text">הטקסט להקראה</label>
+          <textarea id="paste-text" placeholder="הדביקו כאן את כל הטקסט של הספר…"></textarea>
+          <div class="paste-foot">
+            <span class="hint"><span id="paste-stats">אין מגבלה על אורך הטקסט</span> · <button id="paste-sample" class="link" type="button">טקסט לדוגמה</button></span>
+            <div class="paste-actions">
+              <button id="paste-voice" class="chip" type="button"><svg class="i"><use href="#i-mic"/></svg><span>קול</span></button>
+              <button id="paste-speed" class="chip" type="button"><span>1×</span></button>
+              <button id="paste-play" class="btn accent" type="button" disabled><svg class="i"><use href="#i-play"/></svg><span>האזנה עכשיו</span></button>
+            </div>
+          </div>
+        </section>
 
-      <label class="field" for="add-text">
-        <textarea id="add-text" rows="10" placeholder="הדביקו כאן את הטקסט של הספר. אין הגבלת אורך."></textarea>
-      </label>
-
-      <div class="field-row">
-        <label class="field" for="add-title"><span>שם הספר</span><input id="add-title" type="text" autocomplete="off" placeholder="למשל: הארי פוטר ואבן החכמים"></label>
-        <label class="field" for="add-author"><span>מחבר <em class="muted">(לא חובה)</em></span><input id="add-author" type="text" autocomplete="off"></label>
-      </div>
-
-      <div class="add-foot">
-        <span id="add-stats" class="muted"></span>
-        <button id="add-save" class="btn primary" type="button">הוספה לספרייה</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== Player ===================== -->
-  <section id="view-player" class="view" hidden>
-    <header class="topbar">
-      <button class="icon-btn" type="button" data-back aria-label="לספרייה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <span class="topbar-eyebrow">מאזינים עכשיו</span>
-      <button id="p-more" class="icon-btn" type="button" aria-label="עוד אפשרויות"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
-    </header>
-
-    <div class="player-layout">
-      <div class="player-main">
-        <div id="p-cover-wrap" class="p-cover-wrap"></div>
-        <div class="p-meta">
-          <h1 id="p-title"></h1>
-          <button id="p-chapter" class="p-chapter" type="button"></button>
-        </div>
-
-        <div class="p-progress">
-          <input id="p-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="מיקום בספר">
-          <div class="p-times"><span id="p-pct"></span><span id="p-left"></span></div>
-        </div>
-
-        <div class="p-controls">
-          <button id="p-prevch" class="ctl" type="button" aria-label="לתחילת הפרק / הפרק הקודם" title="פרק קודם"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 6h2v12h-2zM5.5 6l9.5 6-9.5 6z"/></svg></button>
-          <button id="p-back" class="ctl" type="button" aria-label="15 שניות אחורה" title="15 שניות אחורה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 16.5A7.5 7.5 0 0 1 12 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11.5 1.5l4.5 3-4.5 3z"/><text x="13.2" y="16.6" font-size="7.6" font-weight="700" text-anchor="middle" fill="currentColor" font-family="Heebo, Arial, sans-serif">15</text></svg></button>
-          <button id="p-play" class="ctl play" type="button" aria-label="הפעלה"><svg id="p-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span class="spinner" aria-hidden="true"></span></button>
-          <button id="p-fwd" class="ctl" type="button" aria-label="30 שניות קדימה" title="30 שניות קדימה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.8 16.5A7.5 7.5 0 0 0 12 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12.5 1.5L8 4.5l4.5 3z"/><text x="10.8" y="16.6" font-size="7.6" font-weight="700" text-anchor="middle" fill="currentColor" font-family="Heebo, Arial, sans-serif">30</text></svg></button>
-          <button id="p-nextch" class="ctl" type="button" aria-label="הפרק הבא" title="פרק הבא"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 6h2v12h-2zM18.5 6L9 12l9.5 6z"/></svg></button>
-        </div>
-
-        <div class="p-chips">
-          <button id="chip-speed" class="chip" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a9 9 0 0 0-8 13.1h16A9 9 0 0 0 12 4zm1 9.7a1.6 1.6 0 1 1-2.2-2.2l5.4-3.4z"/></svg><span>1×</span></button>
-          <button id="chip-sleep" class="chip" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span>טיימר שינה</span></button>
-          <button id="chip-voice" class="chip" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zm-7 9h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-2.1A7 7 0 0 1 5 12z"/></svg><span>קול</span></button>
-          <button id="chip-text" class="chip only-narrow" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v2H4zm0 4h16v2H4zm0 4h10v2H4zm0 4h13v2H4z"/></svg><span>טקסט</span></button>
-        </div>
-
-        <p id="p-status" class="p-status" role="status"></p>
-      </div>
-
-      <div id="p-text" class="p-text closed" aria-label="הטקסט של הספר"></div>
-    </div>
-  </section>
-
-  <!-- ===================== Settings ===================== -->
-  <section id="view-settings" class="view narrow" hidden>
-    <header class="topbar">
-      <button class="icon-btn" type="button" data-back aria-label="חזרה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <h1 class="topbar-title">הגדרות</h1>
-      <span class="icon-spacer"></span>
-    </header>
-
-    <div class="stack">
-      <section class="card">
-        <h2>הקול שמקריא</h2>
-        <div class="engine-list" role="radiogroup" aria-label="מנוע הקול">
-          <label class="engine" for="eng-google">
-            <input type="radio" name="engine" id="eng-google" value="google">
-            <span class="engine-body">
-              <span class="engine-title">קול טבעי של Google <span class="tag">מומלץ לספרים</span></span>
-              <span class="muted">נשמע כמו קריין אמיתי. ממשיך לנגן כשהמסך כבוי, ואפשר להוריד פרקים מראש לנסיעה בלי אינטרנט. צריך מפתח, פעם אחת.</span>
-            </span>
-          </label>
-          <label class="engine" for="eng-device">
-            <input type="radio" name="engine" id="eng-device" value="device">
-            <span class="engine-body">
-              <span class="engine-title">קול המכשיר</span>
-              <span class="muted">חינם ובלי הגדרות. האיכות תלויה במכשיר: במחשב, הקולות הטובים נמצאים ב־Microsoft Edge. בטלפון ההקראה נעצרת כשהמסך נכבה.</span>
-            </span>
-          </label>
-        </div>
-      </section>
-
-      <section id="google-card" class="card">
-        <h2>חיבור לקולות של Google</h2>
-        <label class="field" for="g-key"><span>מפתח API</span>
-          <span class="key-row">
-            <input id="g-key" type="password" autocomplete="off" spellcheck="false" dir="ltr" placeholder="AIza…">
-            <button id="g-key-show" class="btn ghost small" type="button">הצגה</button>
-          </span>
+        <label id="drop" class="drop-card" for="file-input">
+          <span class="drop-icon"><svg class="i"><use href="#i-upload"/></svg></span>
+          <strong>או גררו לכאן קובץ</strong>
+          <span id="drop-text" class="muted">PDF,&rlm; EPUB,&rlm; DOCX או TXT, בכל גודל. אפשר להתחיל להאזין עוד לפני שההמרה מסתיימת.</span>
+          <span class="btn pill">בחירת קובץ</span>
         </label>
-        <div class="row">
-          <button id="g-check" class="btn primary" type="button">שמירה ובדיקה</button>
-          <span id="g-status" class="muted" role="status"></span>
-        </div>
-        <label class="field" for="g-voice"><span>קול</span><select id="g-voice"><option value="">יופיע אחרי הבדיקה</option></select></label>
-        <div class="row">
-          <button id="g-test" class="btn ghost" type="button">השמעת דוגמה</button>
-        </div>
+      </div>
 
+      <section id="continue" class="card continue" hidden></section>
+
+      <section class="library" aria-labelledby="lib-title">
+        <div class="lib-head">
+          <h2 id="lib-title">הספרייה שלי</h2>
+          <div id="tabs" class="segmented" role="tablist" aria-label="סינון הספרייה"></div>
+        </div>
+        <div id="shelf" class="shelf"></div>
+        <p id="shelf-empty" class="empty muted" hidden></p>
+      </section>
+    </section>
+
+    <!-- ---------- Now playing ---------- -->
+    <section id="view-player" class="view" hidden>
+      <div class="page-head">
+        <div>
+          <span class="date">מתנגן עכשיו</span>
+          <h1 id="p-title"></h1>
+        </div>
+        <button id="p-more" class="icon-btn" type="button" aria-label="עוד אפשרויות"><svg class="i"><use href="#i-dots"/></svg></button>
+      </div>
+      <div class="player-layout">
+        <div class="card player-card">
+          <div id="p-cover" class="p-cover"></div>
+          <p id="p-byline" class="muted p-byline"></p>
+          <button id="p-chapter" class="p-chapter" type="button"><span></span><svg class="i"><use href="#i-chev"/></svg></button>
+          <div class="p-progress">
+            <input id="p-seek" class="range" type="range" min="0" max="1000" value="0" aria-label="מיקום בספר">
+            <div class="p-times"><span id="p-pct"></span><span id="p-left"></span></div>
+          </div>
+          <div class="p-controls">
+            <button id="p-prevch" class="ctl" type="button" aria-label="פרק קודם" title="פרק קודם"><svg class="i"><use href="#i-prevch"/></svg></button>
+            <button id="p-back" class="ctl" type="button" aria-label="15 שניות אחורה" title="15 שניות אחורה"><svg class="i"><use href="#i-rew"/></svg></button>
+            <button id="p-play" class="ctl play" type="button" aria-label="הפעלה"><svg class="i"><use href="#i-play"/></svg><span class="spinner" aria-hidden="true"></span></button>
+            <button id="p-fwd" class="ctl" type="button" aria-label="15 שניות קדימה" title="15 שניות קדימה"><svg class="i"><use href="#i-ffw"/></svg></button>
+            <button id="p-nextch" class="ctl" type="button" aria-label="פרק הבא" title="פרק הבא"><svg class="i"><use href="#i-nextch"/></svg></button>
+          </div>
+          <div class="p-chips">
+            <button id="chip-speed" class="chip" type="button"><svg class="i"><use href="#i-gauge"/></svg><span>1×</span></button>
+            <button id="chip-voice" class="chip" type="button"><svg class="i"><use href="#i-mic"/></svg><span>קול</span></button>
+            <button id="chip-sleep" class="chip" type="button"><svg class="i"><use href="#i-moon"/></svg><span>טיימר שינה</span></button>
+            <button id="chip-chapters" class="chip" type="button"><svg class="i"><use href="#i-list"/></svg><span>פרקים</span></button>
+            <button id="chip-download" class="chip" type="button"><svg class="i"><use href="#i-download"/></svg><span>לנסיעה</span></button>
+            <button id="chip-text" class="chip only-narrow" type="button"><svg class="i"><use href="#i-text"/></svg><span>טקסט</span></button>
+          </div>
+          <p id="p-status" class="p-status" role="status"></p>
+        </div>
+        <div id="p-text" class="card p-text closed" aria-label="הטקסט של הספר"></div>
+      </div>
+    </section>
+
+    <!-- ---------- Voices & settings ---------- -->
+    <section id="view-voices" class="view" hidden>
+      <div class="page-head">
+        <div>
+          <span class="date">הקול שמקריא לכם</span>
+          <h1>קריינות</h1>
+        </div>
+      </div>
+
+      <section id="google-connect" class="card connect">
+        <div class="connect-head">
+          <div>
+            <h2>קריינים טבעיים</h2>
+            <p class="muted">קולות של Google שנשמעים כמו קריין אמיתי. ממשיכים לנגן כשהמסך כבוי, ואפשר להוריד פרקים מראש לנסיעה. מחברים פעם אחת עם מפתח.</p>
+          </div>
+          <span id="g-badge" class="badge"></span>
+        </div>
+        <div class="key-row">
+          <label class="visually-hidden" for="g-key">מפתח API של Google</label>
+          <input id="g-key" type="password" autocomplete="off" spellcheck="false" dir="ltr" placeholder="מפתח API · AIza…">
+          <button id="g-key-show" class="btn pill" type="button">הצגה</button>
+          <button id="g-check" class="btn accent" type="button">חיבור</button>
+        </div>
+        <p id="g-status" class="g-status muted" role="status"></p>
         <details class="guide">
-          <summary>איך משיגים מפתח (בערך 5 דקות, פעם אחת)</summary>
+          <summary>איך משיגים מפתח? בערך 5 דקות, פעם אחת</summary>
           <ol>
             <li>נכנסים ל־<a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> ומתחברים עם חשבון Google.</li>
-            <li>יוצרים פרויקט חדש, למשל בשם talking-book.</li>
+            <li>יוצרים פרויקט חדש, למשל בשם hed.</li>
             <li>מפעילים חיוב (Billing). צריך כרטיס אשראי. יש מכסה חינמית חודשית, ולחשבון חדש יש בדרך כלל גם קרדיט התחלתי.</li>
             <li>בתיבת החיפוש למעלה כותבים <b dir="ltr">Cloud Text-to-Speech API</b>, נכנסים ולוחצים <b>Enable</b>.</li>
             <li>בתפריט: <b dir="ltr">APIs &amp; Services ← Credentials ← Create credentials ← API key</b>. מעתיקים את המפתח.</li>
-            <li>מומלץ: לוחצים על המפתח ומגבילים אותו ל־<b dir="ltr">Cloud Text-to-Speech API</b> בלבד, ולכתובת של האתר הזה (Website restrictions).</li>
-            <li>מדביקים כאן ולוחצים "שמירה ובדיקה".</li>
+            <li>מומלץ: לוחצים על המפתח ומגבילים אותו ל־<b dir="ltr">Cloud Text-to-Speech API</b> בלבד, ולכתובת של האתר (Website restrictions).</li>
+            <li>מדביקים כאן ולוחצים "חיבור".</li>
           </ol>
-          <p class="muted">כדאי להגדיר ב־Google התראת תקציב (Budget alert) כדי לא להיות מופתעים. המחירון העדכני: <a href="https://cloud.google.com/text-to-speech/pricing" target="_blank" rel="noopener">cloud.google.com/text-to-speech/pricing</a>.</p>
+          <p class="muted">כדאי להגדיר ב־Google התראת תקציב (Budget alert). המחירון העדכני: <a href="https://cloud.google.com/text-to-speech/pricing" target="_blank" rel="noopener">cloud.google.com/text-to-speech/pricing</a>.</p>
         </details>
+      </section>
 
-        <div class="transfer">
-          <strong>להעביר את החיבור לטלפון</strong>
-          <span class="muted">מעתיקים קישור, שולחים אותו לעצמכם (למשל בוואטסאפ) ופותחים בטלפון. אל תשתפו אותו עם אחרים, כי המפתח בתוכו.</span>
-          <div class="row">
-            <button id="g-link" class="btn ghost" type="button">העתקת קישור חיבור</button>
-          </div>
-          <input id="g-link-out" class="link-out" type="text" readonly hidden dir="ltr">
+      <section class="voices-section">
+        <div class="lib-head"><h2>קריינים</h2></div>
+        <div id="narrators" class="narrators"></div>
+      </section>
+
+      <section class="settings-grid">
+        <div class="card setting">
+          <h3>להעביר את החיבור לטלפון</h3>
+          <p class="muted">מעתיקים קישור, שולחים אותו לעצמכם (למשל בוואטסאפ) ופותחים בטלפון. אל תשתפו אותו עם אחרים, כי המפתח בתוכו.</p>
+          <button id="g-link" class="btn pill" type="button">העתקת קישור חיבור</button>
+          <input id="g-link-out" class="link-out" type="text" readonly hidden dir="ltr" aria-label="קישור חיבור">
         </div>
-      </section>
-
-      <section id="device-card" class="card">
-        <h2>קול המכשיר</h2>
-        <label class="field" for="d-voice"><span>קול</span><select id="d-voice"></select></label>
-        <div class="row"><button id="d-test" class="btn ghost" type="button">השמעת דוגמה</button></div>
-        <p id="d-tip" class="muted"></p>
-      </section>
-
-      <section class="card">
-        <h2>תצוגה ואחסון</h2>
-        <label class="field" for="theme"><span>ערכת צבעים</span>
+        <div class="card setting">
+          <h3>תצוגה</h3>
+          <label class="visually-hidden" for="theme">ערכת צבעים</label>
           <select id="theme">
-            <option value="system">לפי המכשיר</option>
             <option value="dark">כהה</option>
             <option value="light">בהירה</option>
+            <option value="system">לפי המכשיר</option>
           </select>
-        </label>
-        <div class="row">
-          <span id="storage-info" class="muted"></span>
-          <button id="clear-audio" class="btn ghost small" type="button">מחיקת האודיו השמור</button>
         </div>
-        <p class="muted small-print">הספרים, המיקום בכל ספר והמפתח נשמרים רק בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח לשרת שלנו. הטקסט נשלח ל־Google רק כשבוחרים בקול של Google.</p>
+        <div class="card setting">
+          <h3>אחסון</h3>
+          <p id="storage-info" class="muted"></p>
+          <button id="clear-audio" class="btn pill" type="button">מחיקת האודיו השמור</button>
+        </div>
       </section>
-    </div>
-  </section>
+      <p class="muted small-print">הספרים, המקום שבו עצרתם והמפתח נשמרים רק בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח לשרת שלנו. הטקסט נשלח ל־Google רק כשמקשיבים בקריין של Google.</p>
+    </section>
 
-  <!-- ===================== Mini player ===================== -->
-  <div id="mini" class="mini" hidden>
-    <div class="mini-in">
-      <span class="mini-bar"><i id="mini-fill"></i></span>
-      <button id="mini-open" class="mini-open" type="button">
-        <span id="mini-cover" class="mini-cover"></span>
-        <span class="mini-text"><strong id="mini-title"></strong><span id="mini-sub" class="muted"></span></span>
+    <!-- ---------- Dock: the player bar ---------- -->
+    <div id="dock" class="dock" hidden>
+      <span class="dock-line"><i id="dock-line"></i></span>
+      <button id="dock-open" class="dock-book" type="button" aria-label="פתיחת הנגן">
+        <span id="dock-cover" class="dock-cover"></span>
+        <span class="dock-text"><strong id="dock-title"></strong><span id="dock-sub" class="muted"></span></span>
       </button>
-      <button id="mini-play" class="ctl small-play" type="button" aria-label="הפעלה"><svg id="mini-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg></button>
+      <div class="dock-controls">
+        <button id="dock-back" class="ctl small" type="button" aria-label="15 שניות אחורה"><svg class="i"><use href="#i-rew"/></svg></button>
+        <button id="dock-play" class="ctl dock-play" type="button" aria-label="הפעלה"><svg class="i"><use href="#i-play"/></svg><span class="spinner" aria-hidden="true"></span></button>
+        <button id="dock-fwd" class="ctl small" type="button" aria-label="15 שניות קדימה"><svg class="i"><use href="#i-ffw"/></svg></button>
+      </div>
+      <div class="dock-progress">
+        <span id="dock-elapsed" class="time"></span>
+        <input id="dock-seek" class="range thin" type="range" min="0" max="1000" value="0" aria-label="מיקום בפרק">
+        <span id="dock-remain" class="time"></span>
+      </div>
+      <button id="dock-speed" class="chip dock-speed" type="button" aria-label="מהירות"><span>1×</span></button>
     </div>
-  </div>
-
-  <!-- ===================== Bottom sheet ===================== -->
-  <div id="sheet" class="sheet" hidden>
-    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
-      <div class="sheet-grip" aria-hidden="true"></div>
-      <h3 id="sheet-title"></h3>
-      <div id="sheet-body"></div>
-      <button id="sheet-close" class="btn ghost wide" type="button">סגירה</button>
-    </div>
-  </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </main>
 </div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-grip" aria-hidden="true"></div>
+    <h3 id="sheet-title"></h3>
+    <div id="sheet-body"></div>
+    <button id="sheet-close" class="btn pill wide" type="button">סגירה</button>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <script src="app.js"></script>
 </body>
 </html>

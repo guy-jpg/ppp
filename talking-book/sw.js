@@ -1,7 +1,7 @@
 /* Offline support: the app itself works without internet once opened.
    App files: network first (so updates arrive), cache as fallback.
    Libraries, icons and fonts: cache first. Audio is stored by the app in IndexedDB, not here. */
-const CACHE = 'talking-book-v1';
+const CACHE = 'hed-v1';
 const SHELL = [
   './', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest',
   'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',

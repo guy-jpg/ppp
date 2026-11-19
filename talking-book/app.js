@@ -1,5 +1,5 @@
 'use strict';
-/* הספר המדבר: turns any text into an audiobook. Plain JS, no build step.
+/* הד: turns any text into an audiobook. Plain JS, no build step.
    Two voice engines:
    - Google Cloud Text-to-Speech: natural voices, real MP3 audio that keeps playing with the screen
      off, shows on the lock screen, and can be saved ahead for listening offline.
@@ -7,6 +7,7 @@
 
 // ---------- helpers ----------
 const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const nf = new Intl.NumberFormat('he-IL');
@@ -14,18 +15,12 @@ const WORD = /[\p{L}\p{N}]/u;
 const DEFAULT_CPS = 14;     // characters per second of speech at 1x; refined from real audio
 const PIECE_CHARS = 1300;   // text per Google request (limit is 5000 bytes; Hebrew is 2 bytes per letter)
 const PREFETCH = 3;         // pieces generated ahead of the one playing
-const SPEEDS = [0.75, 0.9, 1, 1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5];
+const SKIP = 15;
+const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.4, 1.5, 1.75, 2, 2.5];
 const SILENT = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAACQAABCAARUVFRUVFRUVFRUVdXV1dXV1dXV1dXXR0dHR0dHR0dHR0i4uLi4uLi4uLi4uioqKioqKioqKiorq6urq6urq6urq60dHR0dHR0dHR0dHo6Ojo6Ojo6Ojo6P//////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQD8AAAAAAAAAQgDeb0IwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
 const SAMPLE_LINE = 'שלום! אני הקול שיקריא לך את הספרים. אפשר להתרווח, לשים אוזניות, ולהקשיב.';
 
-const ICONS = {
-  play: '<path d="M8 5.5v13l10.5-6.5z"/>',
-  pause: '<path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/>',
-  dots: '<circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/>',
-  plus: '<path d="M11 4h2v16h-2zM4 11h16v2H4z" fill="currentColor"/>',
-};
-const svg = (inner) => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
-
+const icon = (name) => `<svg class="i" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 function el(tag, cls, text) {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -33,7 +28,7 @@ function el(tag, cls, text) {
   return n;
 }
 function btn(label, cls, fn) { const b = el('button', cls, label); b.type = 'button'; b.onclick = fn; return b; }
-function note(text) { return el('p', 'muted', text); }
+function note(text, cls = 'muted') { return el('p', cls, text); }
 function optBtn(label, on, hint) {
   const b = el('button', 'opt' + (on ? ' on' : ''));
   b.type = 'button';
@@ -49,6 +44,12 @@ function fmtDur(sec) {
   const h = Math.floor(m / 60), mm = m % 60;
   return mm ? `${h} שע׳ ${mm} דק׳` : `${h} שע׳`;
 }
+function fmtClock(sec) {
+  sec = Math.max(0, Math.round(sec || 0));
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  const ss = String(s).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
+}
 const fmtRate = (r) => `${Math.round(r * 100) / 100}×`;
 const mb = (b) => (b < 1048576 ? 'פחות מ־1MB' : `${nf.format(Math.round(b / 1048576))}MB`);
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
@@ -59,13 +60,17 @@ function upperBound(arr, x) { // first index whose value is > x
   while (lo < hi) { const m = (lo + hi) >> 1; if (arr[m] <= x) lo = m + 1; else hi = m; }
   return lo;
 }
+function hashOf(str) { let h = 7; for (const ch of str) h = (h * 31 + ch.codePointAt(0)) >>> 0; return h; }
 
 // ---------- settings ----------
 const settings = Object.assign(
-  { engine: 'device', gKey: '', gVoice: '', gVoices: [], deviceVoice: '', rate: 1, cps: {}, theme: 'system', lastBook: null },
-  lsGet('tb:settings', {})
+  {
+    engine: 'device', gKey: '', gVoice: '', gVoices: [], deviceVoice: '', rate: 1, cps: {}, theme: 'dark', lastBook: null,
+    collections: [{ id: 'train', name: 'לרכבת', icon: 'train' }, { id: 'sleep', name: 'לפני השינה', icon: 'moon' }],
+  },
+  lsGet('hed:settings', {})
 );
-const saveSettings = () => lsSet('tb:settings', settings);
+const saveSettings = () => lsSet('hed:settings', settings);
 const useGoogle = () => settings.engine === 'google' && !!settings.gKey;
 const voiceId = () => (useGoogle() ? 'g:' + (settings.gVoice || 'default') : 'd:' + (settings.deviceVoice || 'auto'));
 const cps = () => settings.cps[voiceId()] || DEFAULT_CPS;
@@ -77,7 +82,7 @@ const DB = (() => {
   function open() {
     if (!dbp) {
       dbp = new Promise((res, rej) => {
-        const r = indexedDB.open('talking-book', 1);
+        const r = indexedDB.open('hed', 1);
         r.onupgradeneeded = () => {
           const db = r.result;
           db.createObjectStore('books', { keyPath: 'id' });
@@ -191,52 +196,55 @@ const pieceStart = (pb, s) => pb.bounds[Math.max(0, upperBound(pb.bounds, s) - 1
 const chapterIndex = (pb, s) => Math.max(0, upperBound(pb.chS, s) - 1);
 const sentenceAtChar = (pb, c) => clamp(upperBound(pb.cum, c) - 1, 0, Math.max(0, pb.n - 1));
 
-// ---------- covers ----------
-function hueOf(str) { let h = 7; for (const ch of str) h = (h * 31 + ch.codePointAt(0)) >>> 0; return h % 360; }
-function coverEl(book) {
-  const d = el('div', 'cover');
-  d.style.setProperty('--h', hueOf(book.title + '|' + (book.author || '')));
-  const inner = el('div', 'cover-in');
-  inner.append(el('span', 'cover-title', book.title));
-  if (book.author) inner.append(el('span', 'cover-rule'), el('span', 'cover-author', book.author));
-  d.append(inner);
+// ---------- covers: flat cloth colours ----------
+const COVERS = [
+  ['#1f3b63', '#e9eef6'], ['#e8dfc8', '#2a2318'], ['#efc23f', '#2a1f04'], ['#9f2325', '#fbe9e5'],
+  ['#f1f0ec', '#1b1b1b'], ['#2f5a3b', '#e6f0e7'], ['#3d2f60', '#ebe5fb'], ['#1d5e62', '#e2f3f2'],
+  ['#d9622f', '#fff1e8'], ['#2b2b2b', '#ececec'], ['#7d93ab', '#15212d'], ['#c8a6c6', '#2a1929'],
+];
+const coverColors = (book) => COVERS[book.color != null ? book.color % COVERS.length : hashOf(book.title + '|' + (book.author || '')) % COVERS.length];
+function coverEl(book, mini = false) {
+  const [bg, ink] = coverColors(book);
+  const d = el('div', 'cover' + (mini ? ' mini' : ''));
+  d.style.setProperty('--bg', bg);
+  d.style.setProperty('--ink', ink);
+  if (!mini) {
+    if (book.author) d.append(el('span', 'cover-author', book.author));
+    d.append(el('span', 'cover-title', book.title), el('span', 'cover-dash'));
+  }
   return d;
 }
 const artCache = new Map();
 async function coverArt(book) { // a square cover for the lock screen
   if (artCache.has(book.id)) return artCache.get(book.id);
   try { await document.fonts.load('900 58px "Frank Ruhl Libre"'); } catch (e) { /* fallback font */ }
+  const [bg, ink] = coverColors(book);
   const c = document.createElement('canvas');
   c.width = c.height = 512;
   const g = c.getContext('2d');
-  const h = hueOf(book.title + '|' + (book.author || ''));
-  const grad = g.createLinearGradient(0, 0, 512, 512);
-  grad.addColorStop(0, `hsl(${h}, 44%, 32%)`);
-  grad.addColorStop(1, `hsl(${(h + 38) % 360}, 52%, 13%)`);
-  g.fillStyle = grad;
+  g.fillStyle = bg;
   g.fillRect(0, 0, 512, 512);
-  g.strokeStyle = `hsla(${h}, 60%, 85%, 0.35)`;
-  g.lineWidth = 3;
-  g.strokeRect(44, 44, 424, 424);
-  g.fillStyle = `hsl(${h}, 70%, 93%)`;
+  g.fillStyle = 'rgba(0,0,0,0.25)';
+  g.fillRect(484, 0, 28, 512);
+  g.fillStyle = ink;
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.direction = 'rtl';
-  g.font = '900 58px "Frank Ruhl Libre", serif';
+  g.font = '900 60px "Frank Ruhl Libre", serif';
   const lines = [];
   let line = '';
   for (const w of book.title.split(/\s+/)) {
     const test = line ? line + ' ' + w : w;
-    if (g.measureText(test).width > 360 && line) { lines.push(line); line = w; } else line = test;
+    if (g.measureText(test).width > 380 && line) { lines.push(line); line = w; } else line = test;
   }
   if (line) lines.push(line);
-  const shown = lines.slice(0, 4), lh = 66;
-  const y0 = 256 - ((shown.length - 1) * lh) / 2 - (book.author ? 24 : 0);
-  shown.forEach((l, i) => g.fillText(l, 256, y0 + i * lh));
+  const shown = lines.slice(0, 4), lh = 70;
+  shown.forEach((l, i) => g.fillText(l, 250, 256 - ((shown.length - 1) * lh) / 2 + i * lh));
   if (book.author) {
-    g.font = '500 28px "Heebo", sans-serif';
-    g.globalAlpha = 0.8;
-    g.fillText(book.author, 256, y0 + shown.length * lh + 14);
+    g.font = '500 26px "Heebo", sans-serif';
+    g.globalAlpha = 0.85;
+    g.textAlign = 'right';
+    g.fillText(book.author, 440, 64);
   }
   const url = await new Promise((res) => c.toBlob((b) => res(b ? URL.createObjectURL(b) : 'icons/icon-512.png'), 'image/png'));
   artCache.set(book.id, url);
@@ -269,29 +277,31 @@ function closeSheet() {
 }
 
 // ---------- routing ----------
-const VIEWS = ['library', 'add', 'player', 'settings'];
-let navDepth = 0;
-function go(v) { navDepth++; location.hash = v; }
-function back() { if (navDepth > 0) { navDepth--; history.back(); } else location.hash = 'library'; }
+const VIEWS = ['home', 'player', 'voices'];
+function go(v) { if (location.hash.slice(1) === v) route(); else location.hash = v; }
 function route() {
-  let v = location.hash.slice(1) || 'library';
+  let v = location.hash.slice(1) || 'home';
   if (v.startsWith('setup=')) {
     importSetup(v.slice(6));
-    history.replaceState(null, '', location.pathname + location.search + '#settings');
-    v = 'settings';
+    history.replaceState(null, '', location.pathname + location.search + '#voices');
+    v = 'voices';
   }
-  if (!VIEWS.includes(v) || (v === 'player' && !P.book)) v = 'library';
+  if (!VIEWS.includes(v) || (v === 'player' && !P.book)) v = 'home';
   for (const n of VIEWS) $('#view-' + n).hidden = n !== v;
   document.body.dataset.view = v;
-  if (v === 'library') renderLibrary();
-  if (v === 'settings') renderSettings();
+  closeSide();
+  if (v === 'home') renderHome();
   if (v === 'player') renderPlayer();
-  updateMini();
+  if (v === 'voices') renderVoices();
+  renderNav();
+  renderDock();
   window.scrollTo(0, 0);
 }
+function openSide() { $('#sidebar').classList.add('open'); $('#scrim').hidden = false; }
+function closeSide() { $('#sidebar').classList.remove('open'); $('#scrim').hidden = true; }
 
 // ---------- player state ----------
-const P = { book: null, pb: null, s: 0, playing: false, loading: false, sleep: null, textOpen: false, chIdx: -1, miniFor: null };
+const P = { book: null, pb: null, s: 0, playing: false, loading: false, sleep: null, textOpen: false, chIdx: -1, dockFor: null };
 
 let saveTimer = null;
 function savePos(now = false) {
@@ -325,7 +335,7 @@ function unlockAudio() { if (useGoogle()) Cloud.unlock(); else Device.prime(); }
 
 function play() {
   if (!P.book || !P.pb || !P.pb.n) return;
-  if (settings.engine === 'google' && !settings.gKey) toast('כדי להשתמש בקול של Google צריך להוסיף מפתח בהגדרות. בינתיים מקריא בקול המכשיר.', 5000);
+  if (settings.engine === 'google' && !settings.gKey) toast('כדי לשמוע קריין טבעי צריך לחבר את Google בעמוד הקריינות. בינתיים מקריא בקול המכשיר.', 5000);
   if (P.book.finished) { P.book.finished = false; setPos(0); Cloud.piece = null; }
   P.playing = true;
   status('');
@@ -337,7 +347,7 @@ function play() {
     Cloud.stop();
     if (!Device.supported) {
       P.playing = false;
-      status('הדפדפן הזה לא יודע להקריא. חברו את הקול של Google בהגדרות.', true);
+      status('הדפדפן הזה לא יודע להקריא. חברו קריין של Google בעמוד הקריינות.', true);
       renderPlayState();
       return;
     }
@@ -393,12 +403,15 @@ function finished() {
   renderPlayState();
   status('סיימת את הספר. כל הכבוד!');
   savePos(true);
+  scheduleRender();
 }
 
 // ---------- engine 1: the device's own voices ----------
+const KNOWN_VOICES = { Avri: 'אברי', Hila: 'הילה', Asaf: 'אסף', Carmit: 'כרמית' };
 function isHebrew(v) { return /^(he|iw)/i.test(v.lang); }
 function isNaturalVoice(v) { return /natural|neural|online|enhanced|premium|google/i.test(v.name + ' ' + v.voiceURI); }
 function niceVoiceName(v) { return v.name.replace(/^Microsoft\s+/, '').replace(/\s*-\s*Hebrew \(Israel\)/i, '').replace(/\s*Online \(Natural\)/i, '').trim(); }
+function deviceName(v) { const k = Object.keys(KNOWN_VOICES).find((n) => v.name.includes(n)); return k ? KNOWN_VOICES[k] : niceVoiceName(v); }
 function deviceVoices() {
   if (!Device.supported) return [];
   const all = speechSynthesis.getVoices();
@@ -409,8 +422,7 @@ function pickDeviceVoice() {
   const list = deviceVoices();
   return list.find((v) => v.voiceURI === settings.deviceVoice) || list.find(isHebrew) || null;
 }
-function applyDeviceVoice(u) {
-  const v = pickDeviceVoice();
+function applyDeviceVoice(u, v = pickDeviceVoice()) {
   if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'he-IL';
 }
 const Device = {
@@ -526,7 +538,7 @@ const Google = {
 function ttsMessage(e) {
   if (!e || e.status === undefined) return 'משהו השתבש בהשמעה. נסו שוב.';
   if (e.status === 0) return 'אין חיבור לאינטרנט, והקטע הזה עוד לא נשמר במכשיר.';
-  if (e.status === 400 && /api key/i.test(e.message)) return 'המפתח של Google לא תקין. בדקו אותו בהגדרות.';
+  if (e.status === 400 && /api key/i.test(e.message)) return 'המפתח של Google לא תקין. בדקו אותו בעמוד הקריינות.';
   if (e.status === 403) return 'Google סירבו לבקשה. ודאו שה־Cloud Text-to-Speech API מופעל בפרויקט ושיש לו חשבון חיוב פעיל.';
   if (e.status === 429) return 'Google מגבילים כרגע את קצב הבקשות. נסו שוב בעוד דקה.';
   return 'יצירת הקול נכשלה: ' + (e.message || e.status);
@@ -539,19 +551,32 @@ function tierOf(name) {
   if (/Standard/i.test(name)) return 1;
   return 2;
 }
-const TIER_LABEL = { 5: 'HD, הכי טבעי', 4: 'HD', 3: 'Neural2, טבעי', 2: 'WaveNet, טבעי', 1: 'בסיסי' };
+const TIER_LABEL = { 5: 'HD', 4: 'HD', 3: 'טבעי', 2: 'טבעי', 1: 'בסיסי' };
+const FEMALE_NAMES = ['נועה', 'מיכל', 'שירה', 'יעל', 'תמר', 'רוני', 'ליה', 'דנה', 'הדס', 'עדי', 'מאיה', 'גלית'];
+const MALE_NAMES = ['איתי', 'יונתן', 'דניאל', 'עומר', 'גיא', 'נדב', 'רון', 'אלון', 'עידו', 'אריאל', 'יואב', 'תום'];
 function processVoices(list) {
-  return list.map((v) => {
-    const tier = tierOf(v.name);
-    const rest = v.name.replace(/^[a-z]{2,3}-[A-Z]{2}-/, '');
-    const short = tier >= 4 ? rest.split('-').pop() : rest.replace(/-/g, ' ');
-    const gender = v.ssmlGender === 'FEMALE' ? 'קול נשי' : v.ssmlGender === 'MALE' ? 'קול גברי' : '';
-    return { name: v.name, tier, short, hint: [TIER_LABEL[tier], gender].filter(Boolean).join(' · ') };
-  }).sort((a, b) => b.tier - a.tier || a.short.localeCompare(b.short));
+  const sorted = list.map((v) => ({
+    name: v.name,
+    tier: tierOf(v.name),
+    gender: v.ssmlGender === 'MALE' ? 'm' : 'f',
+    short: v.name.replace(/^[a-z]{2,3}-[A-Z]{2}-/, ''),
+  })).sort((a, b) => b.tier - a.tier || a.short.localeCompare(b.short));
+  let f = 0, m = 0;
+  for (const v of sorted) {
+    v.he = v.gender === 'm' ? (MALE_NAMES[m++] || v.short) : (FEMALE_NAMES[f++] || v.short);
+    v.hint = `${TIER_LABEL[v.tier]} · ${v.gender === 'm' ? 'קול גברי' : 'קול נשי'}`;
+  }
+  return sorted;
+}
+const googleVoice = (name = settings.gVoice) => settings.gVoices.find((v) => v.name === name);
+function narratorName() {
+  if (useGoogle()) { const v = googleVoice(); return v ? v.he : 'Google'; }
+  const d = pickDeviceVoice();
+  return d ? deviceName(d) : 'קול המכשיר';
 }
 
 const Cloud = {
-  audio: null, piece: null, url: null, token: 0, mem: new Map(), inflight: new Map(), unlocked: false, switchedAt: 0, lastSave: 0,
+  audio: null, piece: null, url: null, token: 0, mem: new Map(), inflight: new Map(), unlocked: false, switchedAt: 0, lastSave: 0, lastClock: 0,
   init() {
     const a = (this.audio = new Audio());
     a.preload = 'auto';
@@ -648,7 +673,7 @@ const Cloud = {
     const pc = this.piece, a = this.audio;
     if (!pc || !P.playing || !P.pb || pc.book !== P.book.id) return;
     if (isFinite(a.duration) && a.duration > 2) {
-      const id = voiceId(), measured = clamp(pc.chars / a.duration, 7, 25); // guard against odd audio
+      const id = voiceId(), measured = clamp(pc.chars / a.duration, 7, 25);
       settings.cps[id] = settings.cps[id] ? settings.cps[id] * 0.8 + measured * 0.2 : measured;
       saveSettings();
     }
@@ -667,6 +692,7 @@ const Cloud = {
       this.lastSave = Date.now();
       setPos(s, { p0: pc.s, t: a.currentTime });
     }
+    if (Date.now() - this.lastClock > 450) { this.lastClock = Date.now(); renderClock(); }
     updateMediaPosition();
   },
   seekBy(sec) {
@@ -707,7 +733,7 @@ const Cloud = {
     this.url = URL.createObjectURL(new Blob([buf], { type: 'audio/mpeg' }));
     this.audio.src = this.url;
     this.audio.playbackRate = 1;
-    this.audio.play().catch(() => toast('לחצו שוב על "השמעת דוגמה".'));
+    this.audio.play().catch(() => toast('לחצו שוב כדי לשמוע את הדוגמה.'));
   },
   async cleanup(beforeS) { // drop audio of pieces already listened to, keep the last one for "back 15s"
     try {
@@ -737,7 +763,7 @@ function setMedia() {
   const ch = P.pb && P.pb.chapters[chapterIndex(P.pb, P.s)];
   const meta = {
     title: ch && !ch.auto ? ch.title : P.book.title,
-    artist: P.book.author || 'הספר המדבר',
+    artist: P.book.author || 'הד',
     album: P.book.title,
     artwork: [{ src: new URL('icons/icon-512.png', location.href).href, sizes: '512x512', type: 'image/png' }],
   };
@@ -754,21 +780,23 @@ function initMediaSession() {
   h('play', () => play());
   h('pause', () => pause());
   h('stop', () => pause());
-  h('seekbackward', (d) => skip(-((d && d.seekOffset) || 15)));
-  h('seekforward', (d) => skip((d && d.seekOffset) || 30));
+  h('seekbackward', (d) => skip(-((d && d.seekOffset) || SKIP)));
+  h('seekforward', (d) => skip((d && d.seekOffset) || SKIP));
   h('seekto', (d) => { if (P.pb && d && isFinite(d.seekTime)) jumpTo(sentenceAtChar(P.pb, d.seekTime * cps())); });
 }
 let lastMediaPos = 0;
+function curChar() {
+  const a = Cloud.audio;
+  if (Cloud.isLoaded() && isFinite(a.duration) && a.duration) return P.pb.cum[Cloud.piece.s] + Cloud.piece.chars * clamp(a.currentTime / a.duration, 0, 1);
+  return P.pb.cum[P.s];
+}
 function updateMediaPosition() {
   if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState || !P.pb) return;
   if (Date.now() - lastMediaPos < 1000) return;
   lastMediaPos = Date.now();
   const k = cps();
   const duration = Math.max(1, P.pb.total / k);
-  let position = P.pb.cum[P.s] / k;
-  const a = Cloud.audio;
-  if (Cloud.isLoaded() && isFinite(a.duration) && a.duration) position = (P.pb.cum[Cloud.piece.s] + Cloud.piece.chars * (a.currentTime / a.duration)) / k;
-  try { navigator.mediaSession.setPositionState({ duration, position: clamp(position, 0, duration), playbackRate: settings.rate }); } catch (e) { /* ignore */ }
+  try { navigator.mediaSession.setPositionState({ duration, position: clamp(curChar() / k, 0, duration), playbackRate: settings.rate }); } catch (e) { /* ignore */ }
 }
 
 // ---------- sleep timer ----------
@@ -788,45 +816,68 @@ function setSleep(v) {
   if (v) toast(v === 'ch' ? 'ההקראה תיעצר בסוף הפרק.' : `ההקראה תיעצר בעוד ${v} דקות.`);
 }
 
-// ---------- player rendering ----------
-let seeking = false;
-function setFill(r) { r.style.setProperty('--fill', (r.value / r.max) * 100 + '%'); }
+// ---------- rendering: shared bits ----------
+let seeking = false, dockSeeking = false;
+function setFill(r) { r.style.setProperty('--fill-p', (r.value / r.max) * 100 + '%'); }
 function renderPlayState() {
-  const icon = P.playing ? ICONS.pause : ICONS.play;
-  $('#p-play-icon').innerHTML = icon;
-  $('#mini-play-icon').innerHTML = icon;
+  const name = P.playing ? 'pause' : 'play';
   const label = P.playing ? 'השהיה' : 'הפעלה';
-  $('#p-play').setAttribute('aria-label', label);
-  $('#mini-play').setAttribute('aria-label', label);
-  $('#p-play').classList.toggle('loading', P.loading);
+  for (const id of ['#p-play', '#dock-play']) {
+    const b = $(id);
+    b.querySelector('use').setAttribute('href', '#i-' + name);
+    b.setAttribute('aria-label', label);
+    b.classList.toggle('loading', P.loading);
+  }
   if ('mediaSession' in navigator) navigator.mediaSession.playbackState = P.playing ? 'playing' : 'paused';
 }
-function voiceLabel() {
-  if (useGoogle()) { const v = settings.gVoices.find((x) => x.name === settings.gVoice); return v ? v.short : 'Google'; }
-  const d = pickDeviceVoice();
-  return d ? niceVoiceName(d) : 'קול המכשיר';
-}
 function renderChips() {
-  $('#chip-speed span').textContent = fmtRate(settings.rate);
+  const rate = fmtRate(settings.rate);
+  $('#chip-speed span').textContent = rate;
+  $('#dock-speed span').textContent = rate;
+  $('#paste-speed span').textContent = rate;
+  const name = narratorName();
+  $('#chip-voice span').textContent = name;
+  $('#paste-voice span').textContent = name;
   const sl = $('#chip-sleep');
   sl.classList.toggle('on', !!P.sleep);
   sl.querySelector('span').textContent = !P.sleep ? 'טיימר שינה' : P.sleep.until ? `עוד ${Math.max(1, Math.ceil((P.sleep.until - Date.now()) / 60000))} דק׳` : 'בסוף הפרק';
-  $('#chip-voice span').textContent = voiceLabel();
   $('#chip-text').classList.toggle('on', P.textOpen);
+}
+function chapterSpan() {
+  const pb = P.pb, ci = chapterIndex(pb, P.s), next = pb.chapters[ci + 1];
+  return { ci, ch: pb.chapters[ci], start: pb.cum[pb.chapters[ci].s], end: next ? pb.cum[next.s] : pb.total };
+}
+const chapterWord = (pb) => (pb.chapters[0] && pb.chapters[0].auto ? 'חלק' : 'פרק');
+function renderClock() {
+  if (!P.pb || !P.pb.n || dockSeeking) return;
+  const { start, end } = chapterSpan();
+  const c = curChar(), speed = cps() * settings.rate;
+  $('#dock-elapsed').textContent = fmtClock((c - start) / speed);
+  $('#dock-remain').textContent = '-' + fmtClock((end - c) / speed);
+  const sk = $('#dock-seek');
+  sk.value = Math.round(((c - start) / Math.max(1, end - start)) * 1000);
+  setFill(sk);
 }
 function renderPos() {
   if (!P.pb || !P.book) return;
   const pb = P.pb;
   const frac = pb.total ? pb.cum[P.s] / pb.total : 0;
   const pct = P.book.finished ? 100 : Math.floor(frac * 100);
-  const ci = chapterIndex(pb, P.s), ch = pb.chapters[ci];
-  if (!seeking) { const sk = $('#p-seek'); sk.value = Math.round(frac * 1000); setFill(sk); $('#p-chapter').textContent = ch ? ch.title : ''; }
+  const { ci, ch } = chapterSpan();
+  if (!seeking) {
+    const sk = $('#p-seek');
+    sk.value = P.book.finished ? 1000 : Math.round(frac * 1000);
+    setFill(sk);
+    $('#p-chapter span').textContent = ch ? ch.title : '';
+  }
   $('#p-pct').textContent = `${pct}%`;
   $('#p-left').textContent = P.book.finished ? 'הסתיים' : `נותרו ${fmtDur((pb.total - pb.cum[P.s]) / (cps() * settings.rate))}`;
-  $('#mini-fill').style.width = pct + '%';
-  $('#mini-sub').textContent = `${ch ? ch.title + ' · ' : ''}${pct}%`;
+  $('#dock-sub').textContent = ch ? `${ch.title} · ${pct}%` : `${pct}%`;
+  $('#dock-line').style.setProperty('--p', pct + '%');
   if (ci !== P.chIdx) { P.chIdx = ci; setMedia(); }
+  renderClock();
   renderText();
+  if (document.body.dataset.view === 'home') updateContinueLive();
   updateMediaPosition();
 }
 const TV = { from: -1, to: -1, cur: -1, user: 0 };
@@ -869,10 +920,16 @@ function toggleText() {
   renderChips();
   renderText(true);
 }
+function byline(book) {
+  return [book.author, `קריינות: ${narratorName()}`].filter(Boolean).join(' · ');
+}
+
+// ---------- player view ----------
 function renderPlayer() {
   if (!P.book) return;
-  $('#p-cover-wrap').replaceChildren(coverEl(P.book));
+  $('#p-cover').replaceChildren(coverEl(P.book));
   $('#p-title').textContent = P.book.title;
+  $('#p-byline').textContent = byline(P.book);
   document.body.dataset.text = P.textOpen ? 'open' : '';
   renderChips();
   renderPlayState();
@@ -880,246 +937,259 @@ function renderPlayer() {
   TV.from = -1;
   renderPos();
 }
-function updateMini() {
+
+// ---------- dock ----------
+function renderDock() {
   const show = !!P.book && document.body.dataset.view !== 'player';
-  $('#mini').hidden = !show;
+  $('#dock').hidden = !show;
   if (!show) return;
-  if (P.miniFor !== P.book.id + P.book.title) {
-    P.miniFor = P.book.id + P.book.title;
-    $('#mini-cover').replaceChildren(coverEl(P.book));
+  const key = P.book.id + '|' + P.book.title + '|' + P.book.author;
+  if (P.dockFor !== key) {
+    P.dockFor = key;
+    $('#dock-cover').replaceChildren(coverEl(P.book, true));
+    $('#dock-title').textContent = P.book.title;
   }
-  $('#mini-title').textContent = P.book.title;
+  renderChips();
   renderPlayState();
   renderPos();
 }
 
-// ---------- sheets: speed, sleep, voice, chapters, more, download ----------
-function openSpeed() {
-  openSheet('מהירות הקראה', (body) => {
-    const grid = el('div', 'chip-grid');
-    for (const r of SPEEDS) {
-      const b = optBtn(fmtRate(r), r === settings.rate);
-      b.onclick = () => { setRate(r); closeSheet(); };
-      grid.append(b);
-    }
-    body.append(grid);
-  });
+// ---------- sidebar ----------
+const LIB = { filter: 'all', col: null, q: '' };
+let BOOKS = [];
+const statusOf = (b) => (b.finished ? 'done' : (b.posChars || 0) > 0 ? 'listening' : 'new');
+const FILTERS = [['all', 'הכל'], ['listening', 'בהאזנה'], ['new', 'חדשים'], ['done', 'הושלמו']];
+function renderNav() {
+  const view = document.body.dataset.view;
+  for (const b of $$('.nav-item[data-nav]')) b.classList.toggle('active', b.dataset.nav === view);
+  const onShelf = view === 'home' && !LIB.q.trim();
+  const counts = { all: BOOKS.length, listening: 0, new: 0, done: 0 };
+  for (const b of BOOKS) counts[statusOf(b)]++;
+  const nf_ = $('#nav-filters');
+  nf_.replaceChildren(...FILTERS.map(([id, label]) => {
+    const b = el('button', 'nav-item' + (onShelf && !LIB.col && LIB.filter === id ? ' active' : ''));
+    b.type = 'button';
+    b.append(el('span', null, label), el('span', 'count', nf.format(counts[id])));
+    b.onclick = () => { LIB.filter = id; LIB.col = null; showLibrary(); };
+    return b;
+  }));
+  const nc = $('#nav-collections');
+  nc.replaceChildren(...settings.collections.map((c) => {
+    const b = el('button', 'nav-item' + (onShelf && LIB.col === c.id ? ' active' : ''));
+    b.type = 'button';
+    b.innerHTML = icon(c.icon || 'folder');
+    b.append(el('span', null, c.name));
+    const n = BOOKS.filter((x) => (x.cols || []).includes(c.id)).length;
+    if (n) b.append(el('span', 'count', nf.format(n)));
+    b.onclick = () => { LIB.col = c.id; LIB.filter = 'all'; showLibrary(); };
+    return b;
+  }), (() => { const b = el('button', 'nav-item add'); b.type = 'button'; b.innerHTML = icon('plus'); b.append(el('span', null, 'אוסף חדש')); b.onclick = () => newCollection(); return b; })());
 }
-function setRate(r) {
-  settings.rate = r;
-  saveSettings();
-  Cloud.audio.playbackRate = r;
-  if (Device.active) Device.speak();
-  renderChips();
-  scheduleRender();
-}
-function openSleep() {
-  const items = [{ v: 0, l: 'כבוי' }, ...[10, 20, 30, 45, 60, 90].map((m) => ({ v: m, l: `בעוד ${m} דקות` })), { v: 'ch', l: 'בסוף הפרק הנוכחי' }];
-  const cur = !P.sleep ? 0 : P.sleep.until ? null : 'ch';
-  openSheet('טיימר שינה', (body) => {
-    const list = el('div', 'opt-list');
-    for (const it of items) {
-      const b = optBtn(it.l, it.v === cur);
-      b.onclick = () => { setSleep(it.v); closeSheet(); };
-      list.append(b);
-    }
-    body.append(list);
-  });
-}
-function openVoice() {
-  openSheet('הקול שמקריא', (body) => {
-    const list = el('div', 'opt-list');
-    if (settings.gKey) {
-      list.append(el('div', 'opt-group', 'קולות טבעיים של Google'));
-      const gv = settings.gVoices.length ? settings.gVoices : [{ name: '', short: 'ברירת המחדל', hint: '' }];
-      for (const v of gv) {
-        const b = optBtn(v.short, settings.engine === 'google' && settings.gVoice === v.name, v.hint);
-        b.onclick = () => { closeSheet(); switchVoice('google', v.name); };
-        list.append(b);
-      }
-    }
-    list.append(el('div', 'opt-group', 'קולות המכשיר'));
-    const dv = deviceVoices();
-    if (!dv.length) list.append(note('לא נמצאו קולות במכשיר הזה.'));
-    const curD = pickDeviceVoice();
-    for (const v of dv.slice(0, 40)) {
-      const b = optBtn(niceVoiceName(v), !useGoogle() && curD === v, isNaturalVoice(v) ? 'טבעי' : '');
-      b.onclick = () => { closeSheet(); switchVoice('device', v.voiceURI); };
-      list.append(b);
-    }
-    body.append(list);
-    if (!settings.gKey) body.append(note('לקול שנשמע כמו קריין אמיתי, חברו את Google בהגדרות.'), btn('לחיבור הקול', 'btn primary wide', () => { closeSheet(); go('settings'); }));
-  });
-}
-function switchVoice(engine, id) {
-  const was = P.playing;
-  if (was) pause();
-  settings.engine = engine;
-  if (engine === 'google') settings.gVoice = id; else settings.deviceVoice = id;
-  saveSettings();
-  Cloud.piece = null;
-  renderChips();
-  scheduleRender();
-  if (was) { unlockAudio(); play(); }
-}
-function openChapters() {
-  const pb = P.pb, cur = chapterIndex(pb, P.s);
-  openSheet('פרקים', (body) => {
-    const list = el('div', 'opt-list');
-    pb.chapters.forEach((c, i) => {
-      const next = pb.chapters[i + 1];
-      const len = ((next ? pb.cum[next.s] : pb.total) - pb.cum[c.s]) / (cps() * settings.rate);
-      const b = optBtn(c.title, i === cur, fmtDur(len));
-      b.onclick = () => { unlockAudio(); closeSheet(); jumpTo(c.s); };
-      list.append(b);
-    });
-    body.append(list);
-    requestAnimationFrame(() => { const n = list.children[cur]; if (n) n.scrollIntoView({ block: 'center' }); });
-  });
-}
-function openMore() {
-  if (!P.book) return;
-  openSheet(P.book.title, (body) => {
-    const list = el('div', 'opt-list');
-    const add = (label, fn, hint) => { const b = optBtn(label, false, hint); b.onclick = fn; list.append(b); };
-    add('פרקים', openChapters, nf.format(P.pb.chapters.length));
-    add('הורדה לנסיעה, להאזנה בלי אינטרנט', openDownload);
-    add('חזרה לתחילת הספר', () => { closeSheet(); jumpTo(0); });
-    add('שינוי שם ומחבר', () => renameBook(P.book));
-    body.append(list);
-  });
-}
-function openDownload() {
-  if (!useGoogle()) {
-    openSheet('הורדה לנסיעה', (body) => {
-      body.append(note('הורדה מראש עובדת עם הקול של Google. קול המכשיר לא צריך אינטרנט בכלל, אבל בטלפון הוא נעצר כשהמסך נכבה.'));
-      body.append(btn('לחיבור Google', 'btn primary wide', () => { closeSheet(); go('settings'); }));
-    });
-    return;
-  }
-  const left = P.pb.total - P.pb.cum[P.s];
-  const opts = [[30, 'חצי שעה'], [60, 'שעה'], [120, 'שעתיים'], [300, '5 שעות'], [Infinity, 'עד סוף הספר']];
-  openSheet('הורדה לנסיעה', (body) => {
-    body.append(note('האודיו יישמר במכשיר, ותוכלו להקשיב גם בלי קליטה, למשל ברכבת. כדאי להוריד כשיש Wi-Fi.'));
-    const list = el('div', 'opt-list');
-    for (const [m, l] of opts) {
-      const chars = m === Infinity ? left : Math.min(left, m * 60 * cps());
-      const b = optBtn(l, false, `${nf.format(Math.max(1, Math.round(chars / 1000)))} אלף תווים`);
-      b.onclick = () => runDownload(m, body);
-      list.append(b);
-    }
-    body.append(list);
-  });
-}
-async function runDownload(minutes, body) {
-  const ref = { cancel: false };
-  body.replaceChildren();
-  const label = note('מוריד… אפשר להמשיך להאזין בינתיים. אל תסגרו את האתר עד הסוף.');
-  const bar = el('div', 'progress-line');
-  const fill = el('i');
-  bar.append(fill);
-  const cancel = btn('ביטול ההורדה', 'btn ghost wide', () => { ref.cancel = true; });
-  body.append(label, bar, cancel);
-  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* optional */ }
-  try {
-    const r = await Cloud.download(minutes, (f) => { fill.style.setProperty('--p', Math.round(f * 100) + '%'); label.textContent = `מוריד… ${Math.round(f * 100)}%`; }, ref);
-    if (r === 'done') {
-      label.textContent = 'ההורדה הסתיימה. אפשר להקשיב גם בלי אינטרנט.';
-      toast('ההורדה לנסיעה הסתיימה.');
-    } else label.textContent = 'ההורדה בוטלה. מה שכבר ירד נשאר שמור.';
-  } catch (e) { label.textContent = ttsMessage(e); }
-  cancel.textContent = 'סגירה';
-  cancel.onclick = closeSheet;
+function showLibrary() {
+  if (document.body.dataset.view !== 'home') { go('home'); requestAnimationFrame(() => $('.library').scrollIntoView({ behavior: 'smooth' })); return; }
+  closeSide();
+  renderShelf();
+  renderNav();
+  $('.library').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ---------- library ----------
+// ---------- home ----------
+async function loadBooks() {
+  try { BOOKS = await DB.all('books'); } catch (e) { BOOKS = []; toast('הדפדפן חוסם שמירה במכשיר, ולכן הספרייה לא נשמרת. אם אתם בגלישה בסתר, פתחו חלון רגיל.', 7000); }
+  BOOKS = BOOKS.map((b) => (P.book && P.book.id === b.id ? P.book : b)).sort((a, b) => (b.opened || b.created) - (a.opened || a.created));
+}
+async function renderHome() {
+  $('#today').textContent = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  await loadBooks();
+  renderContinue();
+  renderShelf();
+  renderNav();
+}
 function progressOf(b) {
   const pct = b.finished ? 100 : b.chars ? Math.min(100, Math.floor(((b.posChars || 0) / b.chars) * 100)) : 0;
   const left = Math.max(0, b.chars - (b.posChars || 0)) / (cps() * settings.rate);
   return { pct, left };
 }
-async function renderLibrary() {
-  let books = [];
-  try { books = await DB.all('books'); } catch (e) { toast('הדפדפן חוסם שמירה במכשיר, ולכן הספרייה לא נשמרת. אם אתם בגלישה בסתר, פתחו חלון רגיל.', 7000); }
-  books = books.map((b) => (P.book && P.book.id === b.id ? P.book : b)).sort((a, b) => (b.opened || b.created) - (a.opened || a.created));
-  const shelf = $('#shelf');
-  shelf.replaceChildren(addTile(), ...books.map(bookTile));
-  $('#shelf-count').textContent = books.length === 1 ? 'ספר אחד' : books.length ? `${nf.format(books.length)} ספרים` : '';
-  renderContinue(books[0]);
-  $('#engine-banner').hidden = useGoogle();
+function barEl(pct) { const bar = el('span', 'bar'); const i = el('i'); i.style.setProperty('--p', pct + '%'); bar.append(i); return bar; }
+function renderContinue() {
+  const box = $('#continue');
+  const b = P.book || BOOKS[0];
+  if (!b) { box.hidden = true; box.dataset.book = ''; return; }
+  const { pct } = progressOf(b);
+  const started = pct > 0 && !b.finished;
+  const cov = coverEl(b);
+  cov.onclick = async () => { if (await openBook(b.id)) go('player'); };
+  const mid = el('div');
+  mid.style.minWidth = '0';
+  mid.append(
+    el('span', 'eyebrow', started ? 'ממשיכים להאזין' : b.finished ? 'סיימת להאזין' : 'מוכן להאזנה'),
+    el('h2', null, b.title),
+    el('p', 'byline', byline(b)),
+    el('p', 'quote'),
+    barEl(pct)
+  );
+  const meta = el('div', 'bar-meta');
+  meta.append(el('span', 'cm-chapter'), el('span', 'cm-left'));
+  mid.append(meta);
+  const actions = el('div', 'continue-actions');
+  const playB = el('button', 'btn accent');
+  playB.type = 'button';
+  playB.innerHTML = icon('play');
+  playB.append(el('span', 'cp-label', started ? 'המשך האזנה' : b.finished ? 'האזנה מחדש' : 'התחלת האזנה'));
+  playB.onclick = async () => {
+    unlockAudio();
+    if (!(await openBook(b.id))) return;
+    if (!P.playing) play();
+  };
+  actions.append(playB, btn('פרקים', 'btn pill', async () => { if (await openBook(b.id)) openChapters(); }));
+  box.replaceChildren(cov, mid, actions);
+  box.dataset.book = b.id;
+  box.hidden = false;
+  updateContinueLive();
 }
-function addTile() {
-  const t = el('div', 'tile');
-  const b = el('button', 'tile-open');
-  b.type = 'button';
-  b.innerHTML = `<div class="cover add-cover">${svg(ICONS.plus)}<span>ספר חדש</span></div><span class="tile-meta"><strong>הוספת ספר</strong><span class="muted">קובץ או הדבקת טקסט</span></span>`;
-  b.onclick = () => go('add');
-  t.append(b);
-  return t;
+function updateContinueLive() {
+  const box = $('#continue');
+  if (box.hidden || !P.book || box.dataset.book !== P.book.id || !P.pb || !P.pb.n) return;
+  const pb = P.pb, { ci } = chapterSpan();
+  const pct = P.book.finished ? 100 : Math.floor((pb.cum[P.s] / pb.total) * 100);
+  box.querySelector('.quote').textContent = `”${pb.sent[P.s]}”`;
+  box.querySelector('.bar i').style.setProperty('--p', pct + '%');
+  box.querySelector('.cm-chapter').textContent = `${chapterWord(pb)} ${nf.format(ci + 1)} מתוך ${nf.format(pb.chapters.length)}`;
+  box.querySelector('.cm-left').textContent = P.book.finished ? 'הסתיים' : `נותרו ${fmtDur((pb.total - pb.cum[P.s]) / (cps() * settings.rate))}`;
+  box.querySelector('.byline').textContent = byline(P.book);
+  const label = box.querySelector('.cp-label');
+  if (label) label.textContent = P.playing ? 'מתנגן עכשיו' : P.book.finished ? 'האזנה מחדש' : pct > 0 ? 'המשך האזנה' : 'התחלת האזנה';
+  box.querySelector('.eyebrow').textContent = P.book.finished ? 'סיימת להאזין' : pct > 0 || P.playing ? 'ממשיכים להאזין' : 'מוכן להאזנה';
+}
+function renderShelf() {
+  const tabs = $('#tabs');
+  tabs.hidden = !!LIB.q.trim();
+  tabs.replaceChildren(...FILTERS.map(([id, label]) => {
+    const b = el('button', 'seg' + (LIB.filter === id ? ' active' : ''), label);
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', String(LIB.filter === id));
+    b.onclick = () => { LIB.filter = id; renderShelf(); renderNav(); };
+    return b;
+  }));
+  const col = settings.collections.find((c) => c.id === LIB.col);
+  const q = LIB.q.trim().toLowerCase();
+  const list = q
+    ? BOOKS.filter((b) => (b.title + ' ' + (b.author || '')).toLowerCase().includes(q))
+    : BOOKS.filter((b) => (LIB.filter === 'all' || statusOf(b) === LIB.filter) && (!col || (b.cols || []).includes(col.id)));
+  $('#lib-title').textContent = q ? `תוצאות עבור "${LIB.q.trim()}"` : col ? col.name : 'הספרייה שלי';
+  $('#shelf').replaceChildren(...list.map(bookTile));
+  const empty = $('#shelf-empty');
+  empty.hidden = list.length > 0;
+  if (!list.length) {
+    empty.textContent = q ? 'לא נמצאו ספרים שמתאימים לחיפוש.'
+      : col ? `האוסף "${col.name}" עדיין ריק. מוסיפים אליו ספר מהתפריט של הספר (שלוש הנקודות על הכריכה).`
+      : LIB.filter === 'all' ? 'הספרייה ריקה. הדביקו טקסט או העלו קובץ כדי להתחיל.'
+      : 'אין כאן ספרים כרגע.';
+  }
+  const existing = $('#col-actions');
+  if (existing) existing.remove();
+  if (col) {
+    const wrap = el('div');
+    wrap.id = 'col-actions';
+    wrap.append(btn('מחיקת האוסף', 'link', () => deleteCollection(col)));
+    $('.lib-head').append(wrap);
+  }
 }
 function bookTile(b) {
   const t = el('div', 'tile');
   const open = el('button', 'tile-open');
   open.type = 'button';
   open.setAttribute('aria-label', `פתיחת ${b.title}`);
-  const { pct, left } = progressOf(b);
+  const { pct } = progressOf(b);
   const meta = el('span', 'tile-meta');
-  const bar = el('span', 'bar');
-  const fillI = el('i');
-  fillI.style.setProperty('--p', pct + '%');
-  bar.append(fillI);
-  meta.append(el('strong', null, b.title), bar, el('span', 'muted', b.finished ? 'הסתיים' : pct ? `${pct}% · נותרו ${fmtDur(left)}` : `${fmtDur(left)} האזנה`));
+  const prog = el('span', 'tile-prog');
+  prog.append(barEl(pct), el('span', null, b.finished ? 'הושלם' : pct ? `${pct}%` : 'חדש'));
+  meta.append(el('span', 'tile-title', b.title), el('span', 'tile-author', b.author || ''), prog);
   open.append(coverEl(b), meta);
   open.onclick = async () => { if (await openBook(b.id)) go('player'); };
   const menu = el('button', 'tile-menu');
   menu.type = 'button';
   menu.setAttribute('aria-label', `אפשרויות עבור ${b.title}`);
-  menu.innerHTML = svg(ICONS.dots);
+  menu.innerHTML = icon('dots');
   menu.onclick = () => bookMenu(b);
   t.append(open, menu);
   return t;
 }
-function renderContinue(b) {
-  const box = $('#continue');
-  if (!b) { box.hidden = true; return; }
-  const { pct, left } = progressOf(b);
-  const started = pct > 0 && !b.finished;
-  const mid = el('div');
-  const bar = el('span', 'bar');
-  const fillI = el('i');
-  fillI.style.setProperty('--p', pct + '%');
-  bar.append(fillI);
-  mid.append(
-    el('span', 'eyebrow', started ? 'להמשיך להאזין' : b.finished ? 'סיימת להאזין' : 'מוכן להאזנה'),
-    el('h2', null, b.title),
-    el('p', 'sub', [b.author, started ? `${pct}% · נותרו ${fmtDur(left)}` : `${fmtDur(left)} האזנה`].filter(Boolean).join(' · ')),
-    bar
-  );
-  const label = started ? 'המשך האזנה' : 'האזנה';
-  const playB = el('button', 'play-lg');
-  playB.type = 'button';
-  playB.innerHTML = svg(ICONS.play);
-  playB.setAttribute('aria-label', label);
-  playB.dataset.label = label;
-  playB.onclick = async () => { unlockAudio(); if (await openBook(b.id)) { go('player'); play(); } };
-  const cov = coverEl(b);
-  cov.style.cursor = 'pointer';
-  cov.onclick = async () => { if (await openBook(b.id)) go('player'); };
-  box.replaceChildren(cov, mid, playB);
-  box.hidden = false;
-}
+
+// ---------- book actions ----------
 function bookMenu(b) {
   openSheet(b.title, (body) => {
     const list = el('div', 'opt-list');
-    const rn = optBtn('שינוי שם ומחבר');
-    rn.onclick = () => renameBook(b);
-    const rs = optBtn('התחלה מההתחלה');
-    rs.onclick = async () => { await updateBook(b.id, { pos: { s: 0 }, posChars: 0, finished: false }); closeSheet(); renderLibrary(); toast('הספר יתחיל מההתחלה.'); };
-    const del = optBtn('מחיקת הספר');
-    del.style.color = 'var(--danger)';
-    del.onclick = () => confirmDelete(b);
-    list.append(rn, rs, del);
+    const add = (label, fn, cls) => { const o = optBtn(label); if (cls) o.classList.add(cls); o.onclick = fn; list.append(o); };
+    add('האזנה', async () => { closeSheet(); unlockAudio(); if (await openBook(b.id)) { go('player'); if (!P.playing) play(); } });
+    add('הוספה לאוסף', () => collectionsFor(b));
+    add('שינוי שם ומחבר', () => renameBook(b));
+    add('התחלה מההתחלה', async () => { await updateBook(b.id, { pos: { s: 0 }, posChars: 0, finished: false }); closeSheet(); refresh(); toast('הספר יתחיל מההתחלה.'); });
+    add('מחיקת הספר', () => confirmDelete(b), 'danger');
     body.append(list);
+  });
+}
+function refresh() {
+  const v = document.body.dataset.view;
+  if (v === 'home') renderHome(); else if (v === 'player') renderPlayer(); else renderNav();
+  P.dockFor = null;
+  renderDock();
+}
+function collectionsFor(b) {
+  openSheet(`אוספים: ${b.title}`, (body) => {
+    const list = el('div', 'opt-list');
+    for (const c of settings.collections) {
+      const on = (b.cols || []).includes(c.id);
+      const o = optBtn(c.name, on);
+      const box = el('span', 'check');
+      box.innerHTML = on ? '<svg class="i" style="width:14px;height:14px;stroke-width:2.6"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : '';
+      o.append(box);
+      o.onclick = async () => {
+        const cols = new Set(b.cols || []);
+        if (cols.has(c.id)) cols.delete(c.id); else cols.add(c.id);
+        b.cols = [...cols];
+        await updateBook(b.id, { cols: b.cols });
+        collectionsFor(b);
+        loadBooks().then(renderNav);
+      };
+      list.append(o);
+    }
+    body.append(list, btn('אוסף חדש', 'btn pill wide', () => newCollection(b)));
+  });
+}
+function newCollection(forBook) {
+  closeSide();
+  openSheet('אוסף חדש', (body) => {
+    const f = field('שם האוסף', '', 'col-name');
+    f.input.placeholder = 'למשל: קיץ, עבודה, ילדים';
+    const save = btn('יצירה', 'btn accent wide', async () => {
+      const name = f.input.value.trim();
+      if (!name) { f.input.focus(); return; }
+      const c = { id: uid(), name, icon: 'folder' };
+      settings.collections.push(c);
+      saveSettings();
+      if (forBook) { forBook.cols = [...(forBook.cols || []), c.id]; await updateBook(forBook.id, { cols: forBook.cols }); }
+      closeSheet();
+      await loadBooks();
+      renderNav();
+      toast(`האוסף "${name}" נוצר.`);
+    });
+    f.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save.click(); });
+    body.append(f.wrap, save);
+    setTimeout(() => f.input.focus(), 250);
+  });
+}
+function deleteCollection(c) {
+  openSheet('למחוק את האוסף?', (body) => {
+    body.append(note(`האוסף "${c.name}" יימחק. הספרים עצמם נשארים בספרייה.`));
+    body.append(btn('מחיקת האוסף', 'btn danger wide', async () => {
+      settings.collections = settings.collections.filter((x) => x.id !== c.id);
+      saveSettings();
+      LIB.col = null;
+      closeSheet();
+      renderHome();
+    }));
   });
 }
 function confirmDelete(b) {
@@ -1138,8 +1208,7 @@ async function deleteBook(id) {
   await DB.del('books', id).catch(() => {});
   await DB.del('texts', id).catch(() => {});
   try { for (const k of await DB.audioKeys(id)) await DB.del('audio', k); } catch (e) { /* ignore */ }
-  renderLibrary();
-  updateMini();
+  if (document.body.dataset.view === 'player') go('home'); else refresh();
 }
 function field(label, value, id) {
   const wrap = el('label', 'field');
@@ -1155,12 +1224,11 @@ function renameBook(b) {
   openSheet('שינוי שם', (body) => {
     const t = field('שם הספר', b.title, 'rn-title');
     const a = field('מחבר', b.author || '', 'rn-author');
-    body.append(t.wrap, a.wrap, btn('שמירה', 'btn primary wide', async () => {
+    body.append(t.wrap, a.wrap, btn('שמירה', 'btn accent wide', async () => {
       await updateBook(b.id, { title: t.input.value.trim() || b.title, author: a.input.value.trim() });
       artCache.delete(b.id);
       closeSheet();
-      if (document.body.dataset.view === 'player') renderPlayer(); else renderLibrary();
-      updateMini();
+      refresh();
       setMedia();
       toast('נשמר.');
     }));
@@ -1185,38 +1253,61 @@ async function openBook(id) {
   let book, text;
   try { book = await DB.get('books', id); text = await DB.get('texts', id); } catch (e) { return false; }
   if (!book) return false;
-  P.book = book;
-  P.pb = parseBook(text || '');
-  P.s = clamp((book.pos && book.pos.s) || 0, 0, Math.max(0, P.pb.n - 1));
-  P.sleep = null;
-  P.chIdx = -1;
-  Cloud.piece = null;
-  TV.from = -1;
-  settings.lastBook = id;
-  saveSettings();
-  setMedia();
+  setCurrent(book, parseBook(text || ''));
   return true;
 }
-
-// ---------- adding a book ----------
-const Add = { text: null };
-const PASTE_HINT = 'הדביקו כאן את הטקסט של הספר. אין הגבלת אורך.';
-function resetAdd() {
-  Add.text = null;
-  const ta = $('#add-text');
-  ta.value = '';
-  ta.disabled = false;
-  ta.placeholder = PASTE_HINT;
-  $('#add-title').value = '';
-  $('#add-author').value = '';
-  $('#file-card').hidden = true;
-  $('#drop').hidden = false;
-  addStats();
+function setCurrent(book, pb) {
+  P.book = book;
+  P.pb = pb;
+  P.s = clamp((book.pos && book.pos.s) || 0, 0, Math.max(0, pb.n - 1));
+  P.sleep = null;
+  P.chIdx = -1;
+  P.dockFor = null;
+  Cloud.piece = null;
+  TV.from = -1;
+  settings.lastBook = book.id;
+  saveSettings();
+  setMedia();
+  renderDock();
 }
-function addStats() {
-  const text = Add.text != null ? Add.text : $('#add-text').value;
-  const chars = text.trim().length;
-  $('#add-stats').textContent = chars ? `כ־${nf.format(Math.max(1, Math.round(chars / 1800)))} עמודים · ${fmtDur(chars / DEFAULT_CPS)} האזנה` : '';
+
+// ---------- adding books: paste & files ----------
+async function createBook(text, meta = {}) {
+  const pb = parseBook(text);
+  if (!pb.n) throw new Error('no words');
+  let title = (meta.title || '').trim();
+  if (!title) { const first = pb.sent[0] || ''; title = first.length > 40 ? first.slice(0, 40).replace(/\s+\S*$/, '') + '…' : first; }
+  const book = {
+    id: uid(), title: title || 'ספר ללא שם', author: (meta.author || '').trim(), created: Date.now(), opened: Date.now(),
+    chars: pb.total, posChars: 0, pos: { s: 0 }, finished: false, cols: LIB.col ? [LIB.col] : [],
+  };
+  await DB.put('texts', text, book.id);
+  await DB.put('books', book);
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* optional */ }
+  if (P.playing) pause();
+  setCurrent(book, pb);
+  return book;
+}
+function pasteStats() {
+  const t = $('#paste-text').value.trim();
+  $('#paste-play').disabled = !t;
+  $('#paste-stats').textContent = t
+    ? `${nf.format(t.split(/\s+/).length)} מילים · ${fmtDur(t.length / (DEFAULT_CPS * settings.rate))} האזנה`
+    : 'אין מגבלה על אורך הטקסט';
+}
+async function listenNow() {
+  const text = $('#paste-text').value.trim();
+  if (!text) return;
+  unlockAudio();
+  try { await createBook(text); } catch (e) {
+    toast(e.message === 'no words' ? 'לא מצאתי בטקסט מילים שאפשר לקרוא.' : 'לא הצלחתי לשמור את הטקסט. ייתכן שהאחסון במכשיר מלא.');
+    return;
+  }
+  $('#paste-text').value = '';
+  pasteStats();
+  play();
+  await renderHome();
+  toast('מתחילים להקריא. אפשר להמשיך לגלוש, ההקראה ממשיכה.');
 }
 const scripts = {};
 function loadScript(src) {
@@ -1244,6 +1335,8 @@ function fixReversedHebrew(text) { // some Hebrew PDFs store text in visual orde
     .replace(/[A-Za-z0-9][A-Za-z0-9.,:%/-]*[A-Za-z0-9]/g, (m) => [...m].reverse().join(''))
     .replace(/[()[\]{}<>]/g, (c) => mirror[c])).join('\n');
 }
+const dropText = (t) => { $('#drop-text').textContent = t; };
+const DROP_DEFAULT = 'PDF,‏ EPUB,‏ DOCX או TXT, בכל גודל. אפשר להתחיל להאזין עוד לפני שההמרה מסתיימת.';
 async function readPdf(buf) {
   await loadScript('vendor/pdf.min.js');
   const lib = window.pdfjsLib;
@@ -1251,7 +1344,7 @@ async function readPdf(buf) {
   const pdf = await lib.getDocument({ data: new Uint8Array(buf), isEvalSupported: false }).promise;
   const pages = [];
   for (let n = 1; n <= pdf.numPages; n++) {
-    $('#add-stats').textContent = `קורא עמוד ${nf.format(n)} מתוך ${nf.format(pdf.numPages)}…`;
+    dropText(`קורא עמוד ${nf.format(n)} מתוך ${nf.format(pdf.numPages)}…`);
     const page = await pdf.getPage(n);
     const tc = await page.getTextContent();
     let s = '';
@@ -1306,7 +1399,7 @@ async function readEpub(buf) {
   const parts = [];
   const refs = [...tag('itemref')];
   for (let i = 0; i < refs.length; i++) {
-    $('#add-stats').textContent = `קורא את הספר… ${Math.round(((i + 1) / refs.length) * 100)}%`;
+    dropText(`קורא את הספר… ${Math.round(((i + 1) / refs.length) * 100)}%`);
     const href = manifest[refs[i].getAttribute('idref')];
     if (!href) continue;
     const f = zip.file(resolvePath(opfDir, decodeURIComponent(href.split('#')[0])));
@@ -1322,7 +1415,9 @@ async function readDocx(buf) {
   return r.value;
 }
 async function importFile(file) {
-  $('#add-stats').textContent = 'קורא את הקובץ…';
+  const drop = $('#drop');
+  drop.classList.add('busy');
+  dropText('קורא את הקובץ…');
   try {
     const buf = await file.arrayBuffer();
     const name = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim();
@@ -1333,77 +1428,180 @@ async function importFile(file) {
     else res = { text: decodeText(buf) };
     const text = (res.text || '').trim();
     if (!text) throw new Error('empty');
-    Add.text = text;
-    if (!$('#add-title').value) $('#add-title').value = res.title || name;
-    if (!$('#add-author').value && res.author) $('#add-author').value = res.author;
-    $('#file-name').textContent = file.name;
-    $('#file-info').textContent = `${nf.format(text.length)} תווים נקראו מהקובץ`;
-    $('#file-card').hidden = false;
-    $('#drop').hidden = true;
-    const ta = $('#add-text');
-    ta.value = '';
-    ta.disabled = true;
-    ta.placeholder = 'הטקסט נטען מהקובץ. כדי להדביק טקסט אחר, הסירו את הקובץ.';
-    addStats();
+    const book = await createBook(text, { title: res.title || name, author: res.author });
+    if (document.body.dataset.view !== 'home') go('home'); else await renderHome();
+    toast(`"${book.title}" נוסף לספרייה. לחצו "התחלת האזנה".`, 5000);
+    $('#continue').scrollIntoView({ behavior: 'smooth', block: 'center' });
   } catch (e) {
     console.error(e);
-    $('#add-stats').textContent = '';
     toast(e.message === 'scanned'
       ? 'זה נראה כמו PDF סרוק (תמונות של עמודים), ואין בו טקסט שאפשר לקרוא.'
-      : 'לא הצלחתי לקרוא את הקובץ. אפשר לפתוח אותו, להעתיק את הטקסט ולהדביק כאן.', 7000);
+      : 'לא הצלחתי לקרוא את הקובץ. אפשר לפתוח אותו, להעתיק את הטקסט ולהדביק בתיבה.', 7000);
+  } finally {
+    drop.classList.remove('busy');
+    dropText(DROP_DEFAULT);
   }
 }
-async function saveNewBook() {
-  const text = (Add.text != null ? Add.text : $('#add-text').value).trim();
-  if (!text) { toast('קודם מדביקים טקסט או בוחרים קובץ.'); $('#add-text').focus(); return; }
-  const pb = parseBook(text);
-  if (!pb.n) { toast('לא מצאתי בטקסט מילים שאפשר לקרוא.'); return; }
-  let title = $('#add-title').value.trim();
-  if (!title) { const first = pb.sent[0] || ''; title = first.length > 40 ? first.slice(0, 40).replace(/\s+\S*$/, '') + '…' : first; }
-  const book = { id: uid(), title: title || 'ספר ללא שם', author: $('#add-author').value.trim(), created: Date.now(), opened: Date.now(), chars: pb.total, posChars: 0, pos: { s: 0 }, finished: false };
-  try {
-    await DB.put('texts', text, book.id);
-    await DB.put('books', book);
-  } catch (e) { toast('לא הצלחתי לשמור את הספר. ייתכן שהאחסון במכשיר מלא.'); return; }
-  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* optional */ }
-  if (P.playing) pause();
-  Object.assign(P, { book, pb, s: 0, sleep: null, chIdx: -1 });
-  Cloud.piece = null;
-  TV.from = -1;
-  settings.lastBook = book.id;
+
+// ---------- sheets: speed, sleep, narrator, chapters, more, download ----------
+function openSpeed() {
+  openSheet('מהירות הקראה', (body) => {
+    const grid = el('div', 'chip-grid');
+    for (const r of SPEEDS) {
+      const b = optBtn(fmtRate(r), r === settings.rate);
+      b.onclick = () => { setRate(r); closeSheet(); };
+      grid.append(b);
+    }
+    body.append(grid);
+  });
+}
+function setRate(r) {
+  settings.rate = r;
   saveSettings();
-  setMedia();
-  resetAdd();
-  toast('הספר נוסף לספרייה. לחצו על הפעלה כדי להתחיל.');
-  navDepth = Math.max(0, navDepth - 1);
-  location.replace('#player');
+  Cloud.audio.playbackRate = r;
+  if (Device.active) Device.speak();
+  renderChips();
+  pasteStats();
+  scheduleRender();
+}
+function openSleep() {
+  if (!P.pb) return;
+  const items = [{ v: 0, l: 'כבוי' }, ...[10, 20, 30, 45, 60, 90].map((m) => ({ v: m, l: `בעוד ${m} דקות` })), { v: 'ch', l: 'בסוף הפרק הנוכחי' }];
+  const cur = !P.sleep ? 0 : P.sleep.until ? null : 'ch';
+  openSheet('טיימר שינה', (body) => {
+    const list = el('div', 'opt-list');
+    for (const it of items) {
+      const b = optBtn(it.l, it.v === cur);
+      b.onclick = () => { setSleep(it.v); closeSheet(); };
+      list.append(b);
+    }
+    body.append(list);
+  });
+}
+function openNarrators() {
+  openSheet('מי מקריא', (body) => {
+    const list = el('div', 'opt-list');
+    if (settings.gKey && settings.gVoices.length) {
+      list.append(el('div', 'opt-group', 'קריינים טבעיים'));
+      for (const v of settings.gVoices) {
+        const b = optBtn(v.he, useGoogle() && settings.gVoice === v.name, v.hint);
+        b.onclick = () => { closeSheet(); switchVoice('google', v.name); };
+        list.append(b);
+      }
+    }
+    list.append(el('div', 'opt-group', 'קולות המכשיר'));
+    const dv = deviceVoices();
+    if (!dv.length) list.append(note('לא נמצאו קולות במכשיר הזה.'));
+    const curD = pickDeviceVoice();
+    for (const v of dv.slice(0, 40)) {
+      const b = optBtn(deviceName(v), !useGoogle() && curD === v, isNaturalVoice(v) ? 'טבעי' : 'בסיסי');
+      b.onclick = () => { closeSheet(); switchVoice('device', v.voiceURI); };
+      list.append(b);
+    }
+    body.append(list);
+    if (!settings.gKey) body.append(note('לקריין שנשמע כמו בן אדם, חברו את Google בעמוד הקריינות.'), btn('לעמוד הקריינות', 'btn accent wide', () => { closeSheet(); go('voices'); }));
+  });
+}
+function switchVoice(engine, id) {
+  const was = P.playing;
+  if (was) pause();
+  settings.engine = engine;
+  if (engine === 'google') settings.gVoice = id; else settings.deviceVoice = id;
+  saveSettings();
+  Cloud.piece = null;
+  renderChips();
+  scheduleRender();
+  if (document.body.dataset.view === 'voices') renderNarrators();
+  if (document.body.dataset.view === 'player') $('#p-byline').textContent = byline(P.book);
+  if (was) { unlockAudio(); play(); }
+}
+function openChapters() {
+  if (!P.pb) return;
+  const pb = P.pb, cur = chapterIndex(pb, P.s);
+  openSheet('פרקים', (body) => {
+    const list = el('div', 'opt-list');
+    pb.chapters.forEach((c, i) => {
+      const next = pb.chapters[i + 1];
+      const len = ((next ? pb.cum[next.s] : pb.total) - pb.cum[c.s]) / (cps() * settings.rate);
+      const b = optBtn(c.title, i === cur, fmtDur(len));
+      b.onclick = () => { unlockAudio(); closeSheet(); jumpTo(c.s); if (!P.playing) play(); };
+      list.append(b);
+    });
+    body.append(list);
+    requestAnimationFrame(() => { const n = list.children[cur]; if (n) n.scrollIntoView({ block: 'center' }); });
+  });
+}
+function openMore() {
+  if (!P.book) return;
+  openSheet(P.book.title, (body) => {
+    const list = el('div', 'opt-list');
+    const add = (label, fn, hint) => { const b = optBtn(label, false, hint); b.onclick = fn; list.append(b); };
+    add('פרקים', openChapters, nf.format(P.pb.chapters.length));
+    add('הורדה לנסיעה, להאזנה בלי אינטרנט', openDownload);
+    add('הוספה לאוסף', () => collectionsFor(P.book));
+    add('חזרה לתחילת הספר', () => { closeSheet(); jumpTo(0); });
+    add('שינוי שם ומחבר', () => renameBook(P.book));
+    body.append(list);
+  });
+}
+function openDownload() {
+  if (!P.pb) return;
+  if (!useGoogle()) {
+    openSheet('הורדה לנסיעה', (body) => {
+      body.append(note('הורדה מראש עובדת עם הקריינים של Google. קול המכשיר לא צריך אינטרנט בכלל, אבל בטלפון הוא נעצר כשהמסך נכבה.'));
+      body.append(btn('לחיבור Google', 'btn accent wide', () => { closeSheet(); go('voices'); }));
+    });
+    return;
+  }
+  const left = P.pb.total - P.pb.cum[P.s];
+  const opts = [[30, 'חצי שעה'], [60, 'שעה'], [120, 'שעתיים'], [300, '5 שעות'], [Infinity, 'עד סוף הספר']];
+  openSheet('הורדה לנסיעה', (body) => {
+    body.append(note('האודיו יישמר במכשיר, ותוכלו להקשיב גם בלי קליטה, למשל ברכבת. כדאי להוריד כשיש Wi-Fi.'));
+    const list = el('div', 'opt-list');
+    for (const [m, l] of opts) {
+      const chars = m === Infinity ? left : Math.min(left, m * 60 * cps());
+      const b = optBtn(l, false, `${nf.format(Math.max(1, Math.round(chars / 1000)))} אלף תווים`);
+      b.onclick = () => runDownload(m, body);
+      list.append(b);
+    }
+    body.append(list);
+  });
+}
+async function runDownload(minutes, body) {
+  const ref = { cancel: false };
+  body.replaceChildren();
+  const label = note('מוריד… אפשר להמשיך להאזין בינתיים. אל תסגרו את האתר עד הסוף.');
+  const bar = el('div', 'progress-line');
+  const fill = el('i');
+  bar.append(fill);
+  const cancel = btn('ביטול ההורדה', 'btn pill wide', () => { ref.cancel = true; });
+  body.append(label, bar, cancel);
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* optional */ }
+  try {
+    const r = await Cloud.download(minutes, (f) => { fill.style.setProperty('--p', Math.round(f * 100) + '%'); label.textContent = `מוריד… ${Math.round(f * 100)}%`; }, ref);
+    if (r === 'done') { label.textContent = 'ההורדה הסתיימה. אפשר להקשיב גם בלי אינטרנט.'; toast('ההורדה לנסיעה הסתיימה.'); }
+    else label.textContent = 'ההורדה בוטלה. מה שכבר ירד נשאר שמור.';
+  } catch (e) { label.textContent = ttsMessage(e); }
+  cancel.textContent = 'סגירה';
+  cancel.onclick = closeSheet;
 }
 
-// ---------- settings ----------
+// ---------- voices view ----------
 function applyTheme() {
   if (settings.theme === 'system') document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme', settings.theme);
 }
-function renderSettings() {
-  $('#eng-google').checked = settings.engine === 'google';
-  $('#eng-device').checked = settings.engine !== 'google';
+function renderVoices() {
   $('#g-key').value = settings.gKey;
+  const badge = $('#g-badge');
+  badge.textContent = settings.gKey ? 'מחובר' : 'לא מחובר';
+  badge.className = 'badge' + (settings.gKey ? ' ok' : '');
   const st = $('#g-status');
-  st.textContent = settings.gKey ? (settings.gVoices.length ? `מחובר · ${settings.gVoices.length} קולות בעברית` : 'המפתח שמור') : '';
-  st.className = settings.gKey ? 'ok' : '';
+  if (!st.dataset.sticky) { st.textContent = settings.gKey ? `${settings.gVoices.length || ''} קריינים טבעיים זמינים בעברית`.trim() : ''; st.className = 'g-status muted'; }
   $('#g-link-out').hidden = true;
-  fillGoogleVoices();
-  fillDeviceVoices();
   $('#theme').value = settings.theme;
+  renderNarrators();
   storageInfo();
-}
-function fillGoogleVoices() {
-  const sel = $('#g-voice');
-  sel.replaceChildren();
-  if (!settings.gVoices.length) { sel.add(new Option('יופיעו אחרי הבדיקה', '')); sel.disabled = true; return; }
-  sel.disabled = false;
-  for (const v of settings.gVoices) sel.add(new Option(`${v.short} · ${v.hint}`, v.name));
-  sel.value = settings.gVoice;
 }
 function deviceTip(list) {
   if (!Device.supported) return 'הדפדפן הזה לא תומך בהקראה. אפשר לחבר את Google למעלה.';
@@ -1420,38 +1618,58 @@ function deviceTip(list) {
   if (!isEdge) return base + 'פתחו את האתר ב־Microsoft Edge כדי לקבל קולות טבעיים, או חברו את Google למעלה.';
   return base + 'ב־Edge הקולות הטבעיים צריכים אינטרנט. רעננו את הדף, או חברו את Google למעלה.';
 }
-function fillDeviceVoices() {
-  const sel = $('#d-voice');
-  sel.replaceChildren();
-  const list = deviceVoices();
-  $('#d-tip').textContent = deviceTip(list);
-  if (!Device.supported) { sel.add(new Option('לא זמין בדפדפן הזה', '')); sel.disabled = true; return; }
-  sel.disabled = false;
-  const best = list.find(isHebrew);
-  sel.add(new Option(best ? `אוטומטי (${niceVoiceName(best)})` : 'אוטומטי', ''));
-  for (const v of list) sel.add(new Option(niceVoiceName(v) + (isNaturalVoice(v) ? ' · טבעי' : ''), v.voiceURI));
-  sel.value = list.some((v) => v.voiceURI === settings.deviceVoice) ? settings.deviceVoice : '';
+function narratorCard({ name, hint, on, onPick, onSample }) {
+  const card = el('div', 'narrator' + (on ? ' on' : ''));
+  const pick = el('button', 'narrator-pick');
+  pick.type = 'button';
+  pick.setAttribute('aria-pressed', String(on));
+  const av = el('span', 'avatar', name.slice(0, 1));
+  av.style.setProperty('--h', hashOf(name) % 360);
+  const info = el('span', 'narrator-info');
+  info.append(el('strong', null, name), el('span', null, on ? `${hint} · נבחר` : hint));
+  pick.append(av, info);
+  pick.onclick = onPick;
+  const sample = el('button', 'sample');
+  sample.type = 'button';
+  sample.setAttribute('aria-label', `השמעת דוגמה של ${name}`);
+  sample.innerHTML = icon('play');
+  sample.onclick = onSample;
+  card.append(pick, sample);
+  return card;
 }
-function setEngine(v) {
-  const was = P.playing;
-  if (was) pause();
-  settings.engine = v;
-  saveSettings();
-  Cloud.piece = null;
-  if (v === 'google' && !settings.gKey) {
-    const st = $('#g-status');
-    st.textContent = 'הדביקו את המפתח ולחצו "שמירה ובדיקה".';
-    st.className = '';
-    $('#g-key').focus();
+function renderNarrators() {
+  const box = $('#narrators');
+  const nodes = [];
+  if (settings.gKey && settings.gVoices.length) {
+    nodes.push(el('div', 'group-label', 'קריינים טבעיים · Google'));
+    for (const v of settings.gVoices) {
+      nodes.push(narratorCard({
+        name: v.he, hint: v.hint, on: useGoogle() && settings.gVoice === v.name,
+        onPick: () => switchVoice('google', v.name),
+        onSample: () => sampleGoogle(v.name),
+      }));
+    }
   }
-  renderChips();
+  nodes.push(el('div', 'group-label', 'קולות המכשיר · חינם'));
+  const dv = deviceVoices().filter(isHebrew);
+  const curD = pickDeviceVoice();
+  for (const v of dv) {
+    nodes.push(narratorCard({
+      name: deviceName(v), hint: isNaturalVoice(v) ? 'טבעי' : 'בסיסי', on: !useGoogle() && curD === v,
+      onPick: () => switchVoice('device', v.voiceURI),
+      onSample: () => sampleDevice(v),
+    }));
+  }
+  nodes.push(note(deviceTip(deviceVoices()), 'muted note'));
+  box.replaceChildren(...nodes);
 }
 async function checkGoogle() {
   const key = $('#g-key').value.trim();
   const st = $('#g-status');
-  if (!key) { st.textContent = 'הדביקו קודם את המפתח.'; st.className = 'err'; return; }
+  st.dataset.sticky = '1';
+  if (!key) { st.textContent = 'הדביקו קודם את המפתח.'; st.className = 'g-status err'; return; }
   st.textContent = 'בודק…';
-  st.className = '';
+  st.className = 'g-status muted';
   try {
     const voices = processVoices(await Google.voices(key));
     if (!voices.length) throw new TTSError(-1, 'no hebrew voices');
@@ -1459,43 +1677,38 @@ async function checkGoogle() {
     if (!voices.some((v) => v.name === settings.gVoice)) settings.gVoice = voices[0].name;
     saveSettings();
     Cloud.piece = null;
-    $('#eng-google').checked = true;
-    fillGoogleVoices();
+    st.textContent = `מחובר. ${voices.length} קריינים טבעיים בעברית. משמיע דוגמה של ${googleVoice().he}…`;
+    st.className = 'g-status ok';
+    renderVoices();
     renderChips();
-    st.textContent = `מחובר · ${voices.length} קולות בעברית. משמיע דוגמה…`;
-    st.className = 'ok';
-    await testGoogle();
+    await sampleGoogle(settings.gVoice);
   } catch (e) {
     st.textContent = e.status === -1 ? 'המפתח עובד, אבל לא נמצאו קולות בעברית.' : ttsMessage(e);
-    st.className = 'err';
+    st.className = 'g-status err';
   }
 }
-async function testGoogle() {
-  if (!settings.gKey) { toast('קודם מחברים מפתח.'); return; }
+const samples = new Map();
+async function sampleGoogle(name) {
+  if (!settings.gKey) return;
   Cloud.unlock();
   if (P.playing) pause();
   try {
-    Cloud.playOneOff(await Google.synthSafe(SAMPLE_LINE, settings.gVoice, settings.gKey));
-    const st = $('#g-status');
-    st.textContent = `מחובר · ${settings.gVoices.length || ''} קולות בעברית`.replace(' ·  ', ' · ');
-    st.className = 'ok';
-  } catch (e) {
-    const st = $('#g-status');
-    st.textContent = ttsMessage(e);
-    st.className = 'err';
-  }
+    let buf = samples.get(name);
+    if (!buf) { buf = await Google.synthSafe(SAMPLE_LINE, name, settings.gKey); samples.set(name, buf); }
+    Cloud.playOneOff(buf.slice(0));
+  } catch (e) { toast(ttsMessage(e), 6000); }
 }
-function testDevice() {
+function sampleDevice(v) {
   if (!Device.supported) return;
   if (P.playing) pause();
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(SAMPLE_LINE);
-  applyDeviceVoice(u);
+  applyDeviceVoice(u, v);
   u.rate = settings.rate;
   speechSynthesis.speak(u);
 }
 function setupLink() {
-  if (!settings.gKey) { toast('קודם מחברים מפתח.'); return; }
+  if (!settings.gKey) { toast('קודם מחברים את Google.'); return; }
   const payload = btoa(JSON.stringify({ k: settings.gKey, v: settings.gVoice }));
   const url = location.href.split('#')[0] + '#setup=' + encodeURIComponent(payload);
   const out = $('#g-link-out');
@@ -1511,7 +1724,7 @@ function importSetup(raw) {
     if (!d.k) throw new Error('no key');
     Object.assign(settings, { gKey: d.k, gVoice: d.v || '', engine: 'google' });
     saveSettings();
-    toast('החיבור לקולות של Google נשמר במכשיר הזה.');
+    toast('החיבור לקריינים של Google נשמר במכשיר הזה.');
     refreshGoogleVoices();
   } catch (e) { toast('הקישור לא תקין. העתיקו אותו שוב מהמחשב.'); }
 }
@@ -1520,7 +1733,7 @@ async function refreshGoogleVoices() {
     settings.gVoices = processVoices(await Google.voices(settings.gKey));
     if (settings.gVoices.length && !settings.gVoices.some((v) => v.name === settings.gVoice)) settings.gVoice = settings.gVoices[0].name;
     saveSettings();
-    if (document.body.dataset.view === 'settings') renderSettings();
+    if (document.body.dataset.view === 'voices') renderVoices();
     renderChips();
   } catch (e) { /* offline; try again next time */ }
 }
@@ -1530,7 +1743,7 @@ async function storageInfo() {
     const keys = await DB.keys('audio');
     let usage = '';
     if (navigator.storage && navigator.storage.estimate) usage = ` · בשימוש: ${mb((await navigator.storage.estimate()).usage || 0)}`;
-    out.textContent = `${nf.format(keys.length)} קטעי אודיו שמורים${usage}`;
+    out.textContent = `${nf.format(keys.length)} קטעי אודיו שמורים לנסיעה${usage}`;
   } catch (e) { out.textContent = ''; }
 }
 async function clearAudio() {
@@ -1542,69 +1755,85 @@ async function clearAudio() {
 
 // ---------- sample book ----------
 const SAMPLE_TEXT = `# איך זה עובד
-ברוכים הבאים להספר המדבר. זה ספר קצר לדוגמה, כדי שתשמעו איך ההקראה נשמעת לפני שמוסיפים ספר אמיתי.
-מוסיפים ספר בלחיצה על "ספר חדש": בוחרים קובץ, או מדביקים את הטקסט. אין הגבלת אורך, גם ספר של אלף עמודים יעבוד.
+ברוכים הבאים להד. זה ספר קצר לדוגמה, כדי שתשמעו איך ההקראה נשמעת לפני שמוסיפים ספר אמיתי.
+מוסיפים ספר בדף הבית: מדביקים טקסט ולוחצים "האזנה עכשיו", או גוררים קובץ. אין הגבלת אורך, גם ספר של אלף עמודים יעבוד.
 
 # שליטה בהאזנה
-הכפתורים במסך הנגן מדלגים חמש עשרה שניות אחורה או שלושים שניות קדימה, ועוברים בין פרקים. אפשר להאיץ את הקריאה, להפעיל טיימר שינה, ולפתוח את הטקסט כדי לעקוב אחרי המשפט שמוקרא.
-האתר זוכר בדיוק איפה עצרתם בכל ספר. סוגרים, חוזרים, ולוחצים על המשך.
+הנגן בתחתית המסך מדלג חמש עשרה שניות אחורה או קדימה. בעמוד "מתנגן עכשיו" אפשר לעבור בין פרקים, להאיץ את הקריאה, להפעיל טיימר שינה ולעקוב אחרי הטקסט.
+הד זוכר בדיוק איפה עצרתם בכל ספר. סוגרים, חוזרים, ולוחצים על המשך האזנה.
 
-# קול טבעי
-קול המכשיר עובד מיד ובחינם, אבל האיכות שלו תלויה במכשיר. כדי לקבל קול שנשמע כמו קריין אמיתי, וממשיך לנגן גם כשהמסך כבוי, מחברים את הקולות של Google במסך ההגדרות. עושים את זה פעם אחת.
+# קריין טבעי
+קול המכשיר עובד מיד ובחינם, אבל האיכות שלו תלויה במכשיר. כדי לשמוע קריין שנשמע כמו בן אדם, וממשיך לנגן גם כשהמסך כבוי, מחברים את Google בעמוד הקריינות. עושים את זה פעם אחת.
 אחרי החיבור אפשר גם להוריד פרקים מראש, ולהקשיב ברכבת בלי קליטה. האזנה נעימה!`;
 async function seedSample() {
-  if (lsGet('tb:seeded', false)) return;
+  if (lsGet('hed:seeded', false)) return;
   const books = await DB.all('books');
   if (!books.length) {
     const pb = parseBook(SAMPLE_TEXT);
-    const book = { id: 'sample', title: 'ספר לדוגמה', author: 'הספר המדבר', created: Date.now(), opened: Date.now(), chars: pb.total, posChars: 0, pos: { s: 0 }, finished: false };
+    const book = { id: 'sample', title: 'ברוכים הבאים להד', author: 'מדריך קצר', created: Date.now(), opened: Date.now(), chars: pb.total, posChars: 0, pos: { s: 0 }, finished: false, color: 8, cols: [] };
     await DB.put('texts', SAMPLE_TEXT, book.id);
     await DB.put('books', book);
     if (!settings.lastBook) { settings.lastBook = book.id; saveSettings(); }
   }
-  lsSet('tb:seeded', true);
+  lsSet('hed:seeded', true);
 }
 
 // ---------- wiring ----------
 function bindUI() {
   document.addEventListener('click', (e) => {
-    if (e.target.closest('[data-back]')) { back(); return; }
-    const g = e.target.closest('[data-go]');
-    if (g) go(g.dataset.go);
+    const n = e.target.closest('[data-nav]');
+    if (!n) return;
+    const where = n.dataset.nav;
+    if (where === 'upload') { $('#file-input').click(); closeSide(); return; }
+    if (where === 'paste') {
+      go('home');
+      closeSide();
+      requestAnimationFrame(() => { const ta = $('#paste-text'); ta.scrollIntoView({ behavior: 'smooth', block: 'center' }); ta.focus({ preventScroll: true }); });
+      return;
+    }
+    if (where === 'home') { LIB.col = null; LIB.filter = 'all'; }
+    if (where === 'player' && !P.book) { toast('עוד לא התחלתם להאזין לספר.'); return; }
+    go(where);
   });
-  $('#open-settings').onclick = () => go('settings');
+  $('#side-open').onclick = openSide;
+  $('#side-close').onclick = closeSide;
+  $('#scrim').onclick = closeSide;
+  let searchT;
+  $('#search').addEventListener('input', (e) => {
+    clearTimeout(searchT);
+    searchT = setTimeout(() => {
+      LIB.q = e.target.value;
+      if (document.body.dataset.view !== 'home') go('home'); else renderShelf();
+    }, 150);
+  });
+  $('#search').addEventListener('keydown', (e) => { if (e.key === 'Enter') { closeSide(); showLibrary(); } });
 
-  // add book
-  $('#add-file').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) importFile(f); e.target.value = ''; });
+  // home: paste + files
+  const ta = $('#paste-text');
+  let statT;
+  ta.addEventListener('input', () => { $('#paste-play').disabled = !ta.value.trim(); clearTimeout(statT); statT = setTimeout(pasteStats, 250); });
+  $('#paste-play').onclick = listenNow;
+  $('#paste-sample').onclick = () => { ta.value = SAMPLE_TEXT.replace(/^# /gm, ''); pasteStats(); ta.focus(); };
+  $('#paste-voice').onclick = openNarrators;
+  $('#paste-speed').onclick = openSpeed;
+  $('#file-input').addEventListener('change', (e) => { const f = e.target.files[0]; if (f) importFile(f); e.target.value = ''; });
   const drop = $('#drop');
   for (const t of ['dragenter', 'dragover']) drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); });
   for (const t of ['dragleave', 'drop']) drop.addEventListener(t, () => drop.classList.remove('over'));
   drop.addEventListener('drop', (e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) importFile(f); });
-  $('#file-remove').onclick = () => {
-    Add.text = null;
-    $('#file-card').hidden = true;
-    $('#drop').hidden = false;
-    const ta = $('#add-text');
-    ta.disabled = false;
-    ta.placeholder = PASTE_HINT;
-    addStats();
-  };
-  let statT;
-  $('#add-text').addEventListener('input', () => { clearTimeout(statT); statT = setTimeout(addStats, 250); });
-  $('#add-save').onclick = saveNewBook;
 
-  // player
+  // player view
   $('#p-play').onclick = () => { unlockAudio(); toggle(); };
-  $('#mini-play').onclick = () => { unlockAudio(); toggle(); };
-  $('#mini-open').onclick = () => go('player');
-  $('#p-back').onclick = () => skip(-15);
-  $('#p-fwd').onclick = () => skip(30);
+  $('#p-back').onclick = () => skip(-SKIP);
+  $('#p-fwd').onclick = () => skip(SKIP);
   $('#p-prevch').onclick = () => { unlockAudio(); prevChapter(); };
   $('#p-nextch').onclick = () => { unlockAudio(); nextChapter(); };
   $('#p-chapter').onclick = openChapters;
   $('#chip-speed').onclick = openSpeed;
+  $('#chip-voice').onclick = openNarrators;
   $('#chip-sleep').onclick = openSleep;
-  $('#chip-voice').onclick = openVoice;
+  $('#chip-chapters').onclick = openChapters;
+  $('#chip-download').onclick = openDownload;
   $('#chip-text').onclick = toggleText;
   $('#p-more').onclick = openMore;
   const seek = $('#p-seek');
@@ -1615,7 +1844,7 @@ function bindUI() {
     setFill(seek);
     const ch = P.pb.chapters[chapterIndex(P.pb, seekTarget())];
     $('#p-pct').textContent = `${Math.floor(seek.value / 10)}%`;
-    $('#p-chapter').textContent = ch ? ch.title : '';
+    $('#p-chapter span').textContent = ch ? ch.title : '';
   });
   seek.addEventListener('change', () => { if (!P.pb) return; seeking = false; unlockAudio(); jumpTo(seekTarget()); });
   const box = $('#p-text');
@@ -1629,20 +1858,37 @@ function bindUI() {
     if (!P.playing) play();
   });
 
+  // dock
+  $('#dock-play').onclick = () => { unlockAudio(); toggle(); };
+  $('#dock-back').onclick = () => skip(-SKIP);
+  $('#dock-fwd').onclick = () => skip(SKIP);
+  $('#dock-open').onclick = () => go('player');
+  $('#dock-speed').onclick = openSpeed;
+  const dseek = $('#dock-seek');
+  const dockTarget = () => { const { start, end } = chapterSpan(); return sentenceAtChar(P.pb, start + (dseek.value / 1000) * (end - start)); };
+  dseek.addEventListener('input', () => {
+    if (!P.pb) return;
+    dockSeeking = true;
+    setFill(dseek);
+    const { start, end } = chapterSpan();
+    const c = start + (dseek.value / 1000) * (end - start), speed = cps() * settings.rate;
+    $('#dock-elapsed').textContent = fmtClock((c - start) / speed);
+    $('#dock-remain').textContent = '-' + fmtClock((end - c) / speed);
+  });
+  dseek.addEventListener('change', () => { if (!P.pb) return; const s = dockTarget(); dockSeeking = false; unlockAudio(); jumpTo(s); });
+
   // sheet & keyboard
   $('#sheet-close').onclick = closeSheet;
   $('#sheet').addEventListener('click', (e) => { if (e.target.id === 'sheet') closeSheet(); });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !$('#sheet').hidden) { closeSheet(); return; }
-    if (e.target.matches('input, textarea, select, button') && e.code === 'Space') return;
-    if (e.target.matches('input, textarea, select') || document.body.dataset.view !== 'player') return;
-    if (e.code === 'Space') { e.preventDefault(); unlockAudio(); toggle(); }
-    else if (e.key === 'ArrowRight') skip(-15);
-    else if (e.key === 'ArrowLeft') skip(30);
+    if (e.key === 'Escape') { if (!$('#sheet').hidden) closeSheet(); else closeSide(); return; }
+    if (e.target.matches('input, textarea, select') || !P.book) return;
+    if (e.code === 'Space' && !e.target.matches('button')) { e.preventDefault(); unlockAudio(); toggle(); }
+    else if (e.key === 'ArrowRight' && !e.target.matches('button')) skip(-SKIP);
+    else if (e.key === 'ArrowLeft' && !e.target.matches('button')) skip(SKIP);
   });
 
-  // settings
-  for (const r of document.querySelectorAll('input[name="engine"]')) r.addEventListener('change', () => setEngine(r.value));
+  // voices view
   $('#g-key-show').onclick = () => {
     const k = $('#g-key');
     const show = k.type === 'password';
@@ -1650,11 +1896,8 @@ function bindUI() {
     $('#g-key-show').textContent = show ? 'הסתרה' : 'הצגה';
   };
   $('#g-check').onclick = () => { Cloud.unlock(); checkGoogle(); };
-  $('#g-voice').onchange = (e) => { switchVoice('google', e.target.value); };
-  $('#g-test').onclick = testGoogle;
+  $('#g-key').addEventListener('keydown', (e) => { if (e.key === 'Enter') { Cloud.unlock(); checkGoogle(); } });
   $('#g-link').onclick = setupLink;
-  $('#d-voice').onchange = (e) => { settings.deviceVoice = e.target.value; saveSettings(); renderChips(); };
-  $('#d-test').onclick = testDevice;
   $('#theme').onchange = (e) => { settings.theme = e.target.value; saveSettings(); applyTheme(); };
   $('#clear-audio').onclick = clearAudio;
 
@@ -1665,7 +1908,7 @@ function bindUI() {
     else if (Device.active) Device.lockScreen();
   });
   if (Device.supported) {
-    const onVoices = () => { if (document.body.dataset.view === 'settings') fillDeviceVoices(); renderChips(); };
+    const onVoices = () => { if (document.body.dataset.view === 'voices') renderNarrators(); renderChips(); };
     if (speechSynthesis.addEventListener) speechSynthesis.addEventListener('voiceschanged', onVoices);
     else speechSynthesis.onvoiceschanged = onVoices;
   }
@@ -1678,8 +1921,10 @@ async function init() {
   bindUI();
   try { await seedSample(); } catch (e) { /* storage blocked */ }
   if (settings.lastBook) { try { await openBook(settings.lastBook); } catch (e) { /* book gone */ } }
+  await loadBooks();
   route();
-  if (settings.gKey && !settings.gVoices.length) refreshGoogleVoices();
+  pasteStats();
+  if (settings.gKey && (!settings.gVoices.length || !settings.gVoices[0].he)) refreshGoogleVoices();
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
