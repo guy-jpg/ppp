@@ -200,30 +200,27 @@
       <section id="google-connect" class="card connect">
         <div class="connect-head">
           <div>
-            <h2>קריינים טבעיים</h2>
-            <p class="muted">קולות של Google שנשמעים כמו קריין אמיתי. ממשיכים לנגן כשהמסך כבוי, ואפשר להוריד פרקים מראש לנסיעה. מחברים פעם אחת עם מפתח.</p>
+            <h2>קריינים טבעיים, בחינם</h2>
+            <p class="muted">קולות של Gemini מבית Google שנשמעים כמו קריין אמיתי. בלי כרטיס אשראי ובלי תשלום. ממשיכים לנגן כשהמסך כבוי, ואפשר להוריד פרקים מראש לנסיעה. מחברים פעם אחת עם מפתח.</p>
           </div>
           <span id="g-badge" class="badge"></span>
         </div>
         <div class="key-row">
           <label class="visually-hidden" for="g-key">מפתח API של Google</label>
-          <input id="g-key" type="password" autocomplete="off" spellcheck="false" dir="ltr" placeholder="מפתח API · AIza…">
+          <input id="g-key" type="password" autocomplete="off" spellcheck="false" dir="ltr" placeholder="מפתח Gemini API">
           <button id="g-key-show" class="btn pill" type="button">הצגה</button>
           <button id="g-check" class="btn accent" type="button">חיבור</button>
         </div>
         <p id="g-status" class="g-status muted" role="status"></p>
         <details class="guide">
-          <summary>איך משיגים מפתח? בערך 5 דקות, פעם אחת</summary>
+          <summary>איך משיגים מפתח חינמי? דקה אחת, פעם אחת</summary>
           <ol>
-            <li>נכנסים ל־<a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> ומתחברים עם חשבון Google.</li>
-            <li>יוצרים פרויקט חדש, למשל בשם hed.</li>
-            <li>מפעילים חיוב (Billing). צריך כרטיס אשראי. יש מכסה חינמית חודשית, ולחשבון חדש יש בדרך כלל גם קרדיט התחלתי.</li>
-            <li>בתיבת החיפוש למעלה כותבים <b dir="ltr">Cloud Text-to-Speech API</b>, נכנסים ולוחצים <b>Enable</b>.</li>
-            <li>בתפריט: <b dir="ltr">APIs &amp; Services ← Credentials ← Create credentials ← API key</b>. מעתיקים את המפתח.</li>
-            <li>מומלץ: לוחצים על המפתח ומגבילים אותו ל־<b dir="ltr">Cloud Text-to-Speech API</b> בלבד, ולכתובת של האתר (Website restrictions).</li>
+            <li>נכנסים ל־<a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> ומתחברים עם חשבון Google.</li>
+            <li>לוחצים <b dir="ltr">Create API key</b> ומעתיקים את המפתח.</li>
             <li>מדביקים כאן ולוחצים "חיבור".</li>
           </ol>
-          <p class="muted">כדאי להגדיר ב־Google התראת תקציב (Budget alert). המחירון העדכני: <a href="https://cloud.google.com/text-to-speech/pricing" target="_blank" rel="noopener">cloud.google.com/text-to-speech/pricing</a>.</p>
+          <p class="muted">כל עוד לא מחברים לפרויקט חשבון חיוב, Google לא יכולים לחייב שום סכום. בעמוד המפתחות ב־AI Studio רואים ליד המפתח <b dir="ltr">Free tier</b>. בשכבה החינמית יש מכסה יומית, והיא מתחדשת כל יום בסביבות 10:00 בבוקר. כשהיא נגמרת, הד יגיד לכם, ואפשר להמשיך בקול המכשיר. בשכבה החינמית Google רשאים להשתמש בטקסט ששולחים לשיפור השירותים שלהם.</p>
+          <p class="muted">גם מפתח של Google Cloud Text-to-Speech עובד כאן, אבל הוא בתשלום.</p>
         </details>
       </section>
 
@@ -254,7 +251,7 @@
           <button id="clear-audio" class="btn pill" type="button">מחיקת האודיו השמור</button>
         </div>
       </section>
-      <p class="muted small-print">הספרים, המקום שבו עצרתם והמפתח נשמרים רק בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח לשרת שלנו. הטקסט נשלח ל־Google רק כשמקשיבים בקריין של Google.</p>
+      <p class="muted small-print">הספרים, המקום שבו עצרתם והמפתח נשמרים רק בדפדפן הזה, במכשיר הזה. שום דבר לא נשלח לשרת שלנו. הטקסט נשלח ל־Google רק כשמקשיבים בקריין טבעי.</p>
     </section>
 
     <!-- ---------- Dock: the player bar ---------- -->

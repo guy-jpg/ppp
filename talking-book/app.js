@@ -1,8 +1,9 @@
 'use strict';
 /* הד: turns any text into an audiobook. Plain JS, no build step.
-   Two voice engines:
-   - Google Cloud Text-to-Speech: natural voices, real MP3 audio that keeps playing with the screen
-     off, shows on the lock screen, and can be saved ahead for listening offline.
+   Voice engines:
+   - Gemini (Google AI Studio key, free tier): natural voices, real audio that keeps playing with the
+     screen off, shows on the lock screen, and can be saved ahead for listening offline.
+   - Google Cloud Text-to-Speech (paid key): the same, with MP3 straight from Google.
    - The device's own speechSynthesis: free and instant, quality depends on the device. */
 
 // ---------- helpers ----------
@@ -13,8 +14,22 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const nf = new Intl.NumberFormat('he-IL');
 const WORD = /[\p{L}\p{N}]/u;
 const DEFAULT_CPS = 14;     // characters per second of speech at 1x; refined from real audio
-const PIECE_CHARS = 1300;   // text per Google request (limit is 5000 bytes; Hebrew is 2 bytes per letter)
-const PREFETCH = 3;         // pieces generated ahead of the one playing
+const PIECE = { google: 1300, gemini: 2400 }; // characters per request (Cloud TTS takes up to 5000 bytes)
+const RAMP = [180, 700];    // Gemini: shorter first pieces, so the first sound comes within seconds
+const PREFETCH = { google: 3, gemini: 2 };    // pieces generated ahead of the one playing
+const GEM_STYLE = 'Read the following Hebrew text aloud as a warm, calm, relaxed audiobook narrator:\n\n';
+const GEM_VOICES = [
+  { id: 'Sulafat', he: 'נועה', g: 'f', d: 'חם' },
+  { id: 'Achernar', he: 'מיכל', g: 'f', d: 'רך' },
+  { id: 'Vindemiatrix', he: 'שירה', g: 'f', d: 'עדין' },
+  { id: 'Aoede', he: 'תמר', g: 'f', d: 'קליל' },
+  { id: 'Kore', he: 'יעל', g: 'f', d: 'יציב' },
+  { id: 'Achird', he: 'איתי', g: 'm', d: 'ידידותי' },
+  { id: 'Algieba', he: 'יונתן', g: 'm', d: 'חלק' },
+  { id: 'Umbriel', he: 'עומר', g: 'm', d: 'נינוח' },
+  { id: 'Charon', he: 'דניאל', g: 'm', d: 'מסביר' },
+  { id: 'Schedar', he: 'גיא', g: 'm', d: 'מאוזן' },
+];
 const SKIP = 15;
 const SPEEDS = [0.75, 0.9, 1, 1.1, 1.25, 1.4, 1.5, 1.75, 2, 2.5];
 const SILENT = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAACQAABCAARUVFRUVFRUVFRUVdXV1dXV1dXV1dXXR0dHR0dHR0dHR0i4uLi4uLi4uLi4uioqKioqKioqKiorq6urq6urq6urq60dHR0dHR0dHR0dHo6Ojo6Ojo6Ojo6P//////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQD8AAAAAAAAAQgDeb0IwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKwAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
@@ -65,15 +80,20 @@ function hashOf(str) { let h = 7; for (const ch of str) h = (h * 31 + ch.codePoi
 // ---------- settings ----------
 const settings = Object.assign(
   {
-    engine: 'device', gKey: '', gVoice: '', gVoices: [], deviceVoice: '', rate: 1, cps: {}, theme: 'dark', lastBook: null,
+    engine: 'device', gKey: '', gVoice: '', gVoices: [], gemVoice: 'Sulafat', gemModels: [], gemExhausted: {},
+    deviceVoice: '', rate: 1, cps: {}, theme: 'dark', lastBook: null,
     collections: [{ id: 'train', name: 'לרכבת', icon: 'train' }, { id: 'sleep', name: 'לפני השינה', icon: 'moon' }],
   },
   lsGet('hed:settings', {})
 );
 const saveSettings = () => lsSet('hed:settings', settings);
-const useGoogle = () => settings.engine === 'google' && !!settings.gKey;
-const voiceId = () => (useGoogle() ? 'g:' + (settings.gVoice || 'default') : 'd:' + (settings.deviceVoice || 'auto'));
-const cps = () => settings.cps[voiceId()] || DEFAULT_CPS;
+const cloudProvider = () => (settings.gKey && (settings.engine === 'gemini' || settings.engine === 'google') ? settings.engine : null);
+const useGoogle = () => !!cloudProvider(); // any natural cloud narrator: Gemini or Google Cloud
+const voiceId = () => {
+  const p = cloudProvider();
+  return p === 'gemini' ? 'gem:' + settings.gemVoice : p === 'google' ? 'g:' + (settings.gVoice || 'default') : 'd:' + (settings.deviceVoice || 'auto');
+};
+const cps = () => settings.cps[voiceId()] || (cloudProvider() === 'gemini' ? 11.5 : DEFAULT_CPS);
 
 // ---------- storage (IndexedDB: books, texts, audio) ----------
 const DB = (() => {
@@ -180,19 +200,32 @@ function parseBook(text) {
     for (let i = 1; i < n; i++) if (cum[i] >= step * k) { k++; chapters.push({ title: `חלק ${k}`, s: i, auto: true }); }
   }
   const chS = chapters.map((c) => c.s);
-  // Fixed audio piece boundaries, so generated audio can be cached and reused.
-  const bounds = [0];
-  const chSet = new Set(chS);
+  return { sent, ps: Uint8Array.from(ps), cum, total, n, chapters, chS, boundsBy: {} };
+}
+// Fixed audio piece boundaries for each piece size, so generated audio can be cached and reused.
+const pieceSize = () => PIECE[cloudProvider()] || PIECE.google;
+function boundsFor(pb) {
+  const size = pieceSize();
+  if (pb.boundsBy[size]) return pb.boundsBy[size];
+  const bounds = [0], chSet = new Set(pb.chS);
   let acc = 0;
-  for (let i = 0; i < n; i++) {
-    const len = sent[i].length + 1;
-    if (i > bounds[bounds.length - 1] && (acc + len > PIECE_CHARS || chSet.has(i))) { bounds.push(i); acc = 0; }
+  for (let i = 0; i < pb.n; i++) {
+    const len = pb.sent[i].length + 1;
+    if (i > bounds[bounds.length - 1] && (acc + len > size || chSet.has(i))) { bounds.push(i); acc = 0; }
     acc += len;
   }
-  return { sent, ps: Uint8Array.from(ps), cum, total, n, chapters, chS, bounds };
+  return (pb.boundsBy[size] = bounds);
 }
-const pieceEnd = (pb, s) => { const i = upperBound(pb.bounds, s); return i < pb.bounds.length ? pb.bounds[i] : pb.n; };
-const pieceStart = (pb, s) => pb.bounds[Math.max(0, upperBound(pb.bounds, s) - 1)];
+const pieceEnd = (pb, s) => { const b = boundsFor(pb), i = upperBound(b, s); return i < b.length ? b[i] : pb.n; };
+const pieceStart = (pb, s) => { const b = boundsFor(pb); return b[Math.max(0, upperBound(b, s) - 1)]; };
+function rampEnd(pb, s, level) { // end of the piece that starts at s, shorter right after playback starts
+  const e = pieceEnd(pb, s);
+  if (cloudProvider() !== 'gemini' || level >= RAMP.length) return e;
+  const limit = pb.cum[s] + RAMP[level];
+  let i = s + 1;
+  while (i < e && pb.cum[i] < limit) i++;
+  return i;
+}
 const chapterIndex = (pb, s) => Math.max(0, upperBound(pb.chS, s) - 1);
 const sentenceAtChar = (pb, c) => clamp(upperBound(pb.cum, c) - 1, 0, Math.max(0, pb.n - 1));
 
@@ -335,7 +368,7 @@ function unlockAudio() { if (useGoogle()) Cloud.unlock(); else Device.prime(); }
 
 function play() {
   if (!P.book || !P.pb || !P.pb.n) return;
-  if (settings.engine === 'google' && !settings.gKey) toast('כדי לשמוע קריין טבעי צריך לחבר את Google בעמוד הקריינות. בינתיים מקריא בקול המכשיר.', 5000);
+  if ((settings.engine === 'google' || settings.engine === 'gemini') && !settings.gKey) toast('כדי לשמוע קריין טבעי צריך לחבר מפתח בעמוד הקריינות. בינתיים מקריא בקול המכשיר.', 5000);
   if (P.book.finished) { P.book.finished = false; setPos(0); Cloud.piece = null; }
   P.playing = true;
   status('');
@@ -500,7 +533,11 @@ const Google = {
     let r;
     try { r = await fetch(url, opts); } catch (e) { throw new TTSError(0, 'offline'); }
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new TTSError(r.status, (j.error && j.error.message) || r.statusText || String(r.status));
+    if (!r.ok) {
+      const err = new TTSError(r.status, (j.error && j.error.message) || r.statusText || String(r.status));
+      err.details = (j.error && j.error.details) || [];
+      throw err;
+    }
     return j;
   },
   async voices(key) {
@@ -535,11 +572,125 @@ const Google = {
     }
   },
 };
+// WAV helpers: Gemini returns uncompressed 16-bit audio, sometimes without a WAV header.
+function isWav(buf) { const h = new Uint8Array(buf, 0, 4); return h[0] === 0x52 && h[1] === 0x49 && h[2] === 0x46 && h[3] === 0x46; }
+const audioType = (buf) => (isWav(buf) ? 'audio/wav' : 'audio/mpeg');
+function wavParts(buf) {
+  const v = new DataView(buf);
+  let off = 12, rate = 24000, dataOff = 44, dataLen = Math.max(0, buf.byteLength - 44);
+  while (off + 8 <= v.byteLength) {
+    const id = String.fromCharCode(v.getUint8(off), v.getUint8(off + 1), v.getUint8(off + 2), v.getUint8(off + 3));
+    const size = v.getUint32(off + 4, true);
+    if (id === 'fmt ') rate = v.getUint32(off + 12, true);
+    if (id === 'data') { dataOff = off + 8; dataLen = Math.min(size, v.byteLength - dataOff); break; }
+    off += 8 + size + (size & 1);
+  }
+  return { rate, pcm: new Uint8Array(buf, dataOff, dataLen) };
+}
+function pcmToWav(pcm, rate = 24000) {
+  const len = pcm.byteLength;
+  const out = new ArrayBuffer(44 + len), v = new DataView(out);
+  const tag = (o, t) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  tag(0, 'RIFF'); v.setUint32(4, 36 + len, true); tag(8, 'WAVE'); tag(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true);
+  v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); tag(36, 'data'); v.setUint32(40, len, true);
+  new Uint8Array(out, 44).set(pcm);
+  return out;
+}
+function joinWavs(a, b) {
+  const pa = wavParts(a), pb = wavParts(b);
+  const pcm = new Uint8Array(pa.pcm.byteLength + pb.pcm.byteLength);
+  pcm.set(pa.pcm, 0);
+  pcm.set(pb.pcm, pa.pcm.byteLength);
+  return pcmToWav(pcm, pa.rate);
+}
+const wavSeconds = (buf) => { const { rate, pcm } = wavParts(buf); return pcm.byteLength / (rate * 2); };
+
+const Gemini = {
+  base: 'https://generativelanguage.googleapis.com/v1beta/',
+  async models(key) { // the speech models this key can use, best first
+    const j = await Google.call(`${this.base}models?pageSize=200&key=${encodeURIComponent(key)}`);
+    const score = (n) => {
+      const ver = parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [0, 0])[1]);
+      return ver * 10 - (/preview/.test(n) ? 4 : 0) - (/pro/.test(n) ? 3 : 0) - (/lite/.test(n) ? 1 : 0);
+    };
+    return (j.models || [])
+      .filter((m) => /tts/i.test(m.name) && (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map((m) => m.name.replace(/^models\//, ''))
+      .sort((a, b) => score(b) - score(a));
+  },
+  model() { return settings.gemModels.find((m) => !(settings.gemExhausted[m] > Date.now())); },
+  nextReset() { // the free daily quota resets at midnight Pacific time
+    const d = new Date();
+    d.setUTCHours(8, 0, 0, 0);
+    if (d <= new Date()) d.setUTCDate(d.getUTCDate() + 1);
+    return d.getTime();
+  },
+  async once(text, voice, key, model) {
+    const j = await Google.call(`${this.base}models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: GEM_STYLE + text }] }],
+        generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } },
+      }),
+    });
+    const parts = (j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
+    const inline = (parts.find((x) => x.inlineData) || {}).inlineData;
+    if (!inline || !inline.data) throw new TTSError(502, 'no audio');
+    const raw = b64ToBuf(inline.data);
+    const wav = isWav(raw) ? raw : pcmToWav(new Uint8Array(raw), +((inline.mimeType || '').match(/rate=(\d+)/) || [0, 24000])[1]);
+    if (text.length > 200 && wavSeconds(wav) < text.length / 40) throw new TTSError(502, 'audio cut short');
+    return wav;
+  },
+  async synth(text, voice, key) {
+    let tries = 0;
+    for (;;) {
+      const model = this.model();
+      if (!model) { const e = new TTSError(429, 'daily quota'); e.kind = 'quota'; throw e; }
+      try { return await this.once(text, voice, key, model); } catch (e) {
+        tries++;
+        if (e.status === 429) {
+          const ids = (e.details || []).flatMap((d) => (d.violations || []).map((x) => x.quotaId || '')).join(' ');
+          const retry = (e.details || []).find((d) => d.retryDelay);
+          if (/PerDay/i.test(ids) || /per day|daily/i.test(e.message)) { settings.gemExhausted[model] = this.nextReset(); saveSettings(); continue; }
+          if (tries < 6) { await wait(retry ? parseFloat(retry.retryDelay) * 1000 + 500 : 15000); continue; }
+        }
+        if (e.status === 404 || (e.status === 400 && /model|not supported|modality/i.test(e.message))) {
+          settings.gemModels = settings.gemModels.filter((m) => m !== model); saveSettings(); continue;
+        }
+        if (e.status === 502 && text.length > 300 && tries < 3) { // missing or cut-off audio: try in two halves
+          const half = text.length >> 1, sp = text.lastIndexOf(' ', half), mid = sp > 0 ? sp : half;
+          return joinWavs(await this.synth(text.slice(0, mid), voice, key), await this.synth(text.slice(mid), voice, key));
+        }
+        if ((e.status >= 500 || e.status === 502) && tries < 4) { await wait(1500 * 2 ** tries); continue; }
+        throw e;
+      }
+    }
+  },
+};
+const MP3 = { // compresses Gemini's WAV for storage, in a worker
+  worker: null, seq: 0, jobs: new Map(), broken: false,
+  encode(wav) {
+    if (this.broken || typeof Worker === 'undefined' || !isWav(wav)) return Promise.resolve(null);
+    try {
+      if (!this.worker) {
+        this.worker = new Worker('mp3-worker.js');
+        this.worker.onmessage = (e) => { const done = this.jobs.get(e.data.id); if (done) { this.jobs.delete(e.data.id); done(e.data.mp3 || null); } };
+        this.worker.onerror = () => { this.broken = true; for (const done of this.jobs.values()) done(null); this.jobs.clear(); };
+      }
+    } catch (e) { this.broken = true; return Promise.resolve(null); }
+    const id = ++this.seq, copy = wav.slice(0);
+    return new Promise((res) => { this.jobs.set(id, res); this.worker.postMessage({ id, wav: copy }, [copy]); });
+  },
+};
 function ttsMessage(e) {
+  const gem = cloudProvider() === 'gemini';
   if (!e || e.status === undefined) return 'משהו השתבש בהשמעה. נסו שוב.';
   if (e.status === 0) return 'אין חיבור לאינטרנט, והקטע הזה עוד לא נשמר במכשיר.';
+  if (e.kind === 'quota') return 'נגמרה להיום המכסה החינמית של הקריינים הטבעיים. היא מתחדשת כל יום בסביבות 10:00 בבוקר. בינתיים אפשר לעבור לקול המכשיר.';
   if (e.status === 400 && /api key/i.test(e.message)) return 'המפתח של Google לא תקין. בדקו אותו בעמוד הקריינות.';
-  if (e.status === 403) return 'Google סירבו לבקשה. ודאו שה־Cloud Text-to-Speech API מופעל בפרויקט ושיש לו חשבון חיוב פעיל.';
+  if (e.status === 403) return gem ? 'Google סירבו לבקשה. בדקו ב־Google AI Studio שהמפתח פעיל.' : 'Google סירבו לבקשה. ודאו שה־Cloud Text-to-Speech API מופעל בפרויקט ושיש לו חשבון חיוב פעיל.';
   if (e.status === 429) return 'Google מגבילים כרגע את קצב הבקשות. נסו שוב בעוד דקה.';
   return 'יצירת הקול נכשלה: ' + (e.message || e.status);
 }
@@ -569,14 +720,16 @@ function processVoices(list) {
   return sorted;
 }
 const googleVoice = (name = settings.gVoice) => settings.gVoices.find((v) => v.name === name);
+const gemVoice = (id = settings.gemVoice) => GEM_VOICES.find((v) => v.id === id) || GEM_VOICES[0];
 function narratorName() {
+  if (cloudProvider() === 'gemini') return gemVoice().he;
   if (useGoogle()) { const v = googleVoice(); return v ? v.he : 'Google'; }
   const d = pickDeviceVoice();
   return d ? deviceName(d) : 'קול המכשיר';
 }
 
 const Cloud = {
-  audio: null, piece: null, url: null, token: 0, mem: new Map(), inflight: new Map(), unlocked: false, switchedAt: 0, lastSave: 0, lastClock: 0,
+  audio: null, piece: null, prev: null, ramp: 0, url: null, token: 0, mem: new Map(), inflight: new Map(), unlocked: false, switchedAt: 0, lastSave: 0, lastClock: 0,
   init() {
     const a = (this.audio = new Audio());
     a.preload = 'auto';
@@ -598,7 +751,24 @@ const Cloud = {
     const p = this.audio.play();
     if (p) p.catch(() => {});
   },
-  ctx() { return { book: P.book, pb: P.pb, voice: settings.gVoice || 'default', gVoice: settings.gVoice, key: settings.gKey }; },
+  ctx() {
+    const provider = cloudProvider();
+    const gem = provider === 'gemini';
+    return { book: P.book, pb: P.pb, provider, voice: gem ? 'gem:' + settings.gemVoice : 'g:' + (settings.gVoice || 'default'), gVoice: gem ? settings.gemVoice : settings.gVoice, key: settings.gKey };
+  },
+  async has(ctx, s, e) {
+    const k = this.key(ctx, s, e);
+    if (this.mem.has(k)) return true;
+    try { return !!(await DB.get('audio', k)); } catch (err) { return false; }
+  },
+  async startPlan(s, fresh) { // where playback starts: a saved piece mid-way, or a short new piece at s
+    const pos = P.book.pos;
+    if (!fresh && pos && pos.p0 != null && pos.s === s && pos.p0 <= s) {
+      const e = pos.pe > pos.p0 ? pos.pe : pieceEnd(P.pb, pos.p0);
+      if (await this.has(this.ctx(), pos.p0, e)) return { s: pos.p0, e, level: RAMP.length, t: pos.t || 0 };
+    }
+    return { s, e: rampEnd(P.pb, s, 0), level: 0, t: 0 };
+  },
   key(ctx, s, e) { return `${ctx.book.id}|${ctx.voice}|${s}|${e}`; },
   isLoaded() { return !!(this.piece && P.book && this.piece.book === P.book.id && this.audio.src.startsWith('blob:')); },
   async get(ctx, s, e) {
@@ -610,11 +780,17 @@ const Cloud = {
       try { const rec = await DB.get('audio', k); buf = rec && rec.buf; } catch (err) { /* not cached */ }
       if (!buf) {
         const text = ctx.pb.sent.slice(s, e).join(' ');
-        buf = await Google.synthSafe(text, ctx.gVoice, ctx.key);
-        DB.put('audio', { book: ctx.book.id, buf }, k).catch(() => {});
+        if (ctx.provider === 'gemini') {
+          buf = await Gemini.synth(text, ctx.gVoice, ctx.key);
+          const wav = buf;
+          MP3.encode(wav).then((mp3) => DB.put('audio', { book: ctx.book.id, buf: mp3 || wav }, k)).catch(() => {});
+        } else {
+          buf = await Google.synthSafe(text, ctx.gVoice, ctx.key);
+          DB.put('audio', { book: ctx.book.id, buf }, k).catch(() => {});
+        }
       }
       this.mem.set(k, buf);
-      while (this.mem.size > 8) this.mem.delete(this.mem.keys().next().value);
+      while (this.mem.size > 5) this.mem.delete(this.mem.keys().next().value);
       return buf;
     })();
     this.inflight.set(k, job);
@@ -623,15 +799,16 @@ const Cloud = {
   async play(s, fresh = false) {
     if (!P.pb) return;
     const a = this.audio;
-    if (!fresh && this.isLoaded() && this.piece.voice === (settings.gVoice || 'default') && s >= this.piece.s && s < this.piece.e) {
+    if (!fresh && this.isLoaded() && this.piece.voice === this.ctx().voice && s >= this.piece.s && s < this.piece.e) {
       a.playbackRate = settings.rate;
       try { await a.play(); } catch (err) { this.fail(err); }
       return;
     }
-    const pos = P.book.pos;
-    const resume = !fresh && pos && pos.p0 != null && pos.s === s && pos.p0 <= s ? pos : null;
-    const p0 = resume ? resume.p0 : s;
-    await this.load(p0, pieceEnd(P.pb, p0), resume ? resume.t || 0 : 0);
+    const my = this.token;
+    const plan = await this.startPlan(s, fresh);
+    if (my !== this.token || !P.playing) return;
+    this.ramp = plan.level;
+    await this.load(plan.s, plan.e, plan.t);
   },
   async load(s, e, t = 0) {
     const my = ++this.token;
@@ -644,7 +821,7 @@ const Cloud = {
     if (!P.playing) { setLoading(false); return; }
     const a = this.audio;
     if (this.url) URL.revokeObjectURL(this.url);
-    this.url = URL.createObjectURL(new Blob([buf], { type: 'audio/mpeg' }));
+    this.url = URL.createObjectURL(new Blob([buf], { type: audioType(buf) }));
     this.piece = { book: ctx.book.id, voice: ctx.voice, s, e, chars: ctx.pb.cum[e] - ctx.pb.cum[s] };
     this.switchedAt = Date.now();
     a.src = this.url;
@@ -660,11 +837,12 @@ const Cloud = {
     setLoading(false);
     this.prefetch(ctx, e, my);
   },
-  async prefetch(ctx, from, my) {
-    let s = from;
-    for (let k = 0; k < PREFETCH && s < ctx.pb.n; k++) {
+  async prefetch(ctx, from, my) { // generate the next pieces exactly as onEnded will ask for them
+    let s = from, level = this.ramp;
+    for (let k = 0; k < (PREFETCH[ctx.provider] || 2) && s < ctx.pb.n; k++) {
       if (my !== this.token) return;
-      const e = pieceEnd(ctx.pb, s);
+      level = Math.min(level + 1, RAMP.length);
+      const e = rampEnd(ctx.pb, s, level);
       try { await this.get(ctx, s, e); } catch (err) { return; }
       s = e;
     }
@@ -678,10 +856,12 @@ const Cloud = {
       saveSettings();
     }
     this.cleanup(pc.s);
+    this.prev = { s: pc.s, e: pc.e };
     if (pc.e >= P.pb.n) { setPos(P.pb.n - 1); finished(); return; }
     setPos(pc.e);
     if (!P.playing) return;
-    this.load(pc.e, pieceEnd(P.pb, pc.e), 0);
+    this.ramp = Math.min(this.ramp + 1, RAMP.length);
+    this.load(pc.e, rampEnd(P.pb, pc.e, this.ramp), 0);
   },
   onTime() {
     const pc = this.piece, a = this.audio;
@@ -690,7 +870,7 @@ const Cloud = {
     const s = clamp(sentenceAtChar(P.pb, P.pb.cum[pc.s] + frac * pc.chars), pc.s, pc.e - 1);
     if (s !== P.s || Date.now() - this.lastSave > 4000) {
       this.lastSave = Date.now();
-      setPos(s, { p0: pc.s, t: a.currentTime });
+      setPos(s, { p0: pc.s, pe: pc.e, t: a.currentTime });
     }
     if (Date.now() - this.lastClock > 450) { this.lastClock = Date.now(); renderClock(); }
     updateMediaPosition();
@@ -701,15 +881,17 @@ const Cloud = {
     if (t >= 0 && t < a.duration - 0.3) { a.currentTime = t; this.onTime(); return; }
     if (t < 0) {
       if (pc.s === 0) { a.currentTime = 0; this.onTime(); return; }
-      this.goto(pieceStart(P.pb, pc.s - 1), t); // negative t: counted back from the end
+      const prev = this.prev && this.prev.e === pc.s ? this.prev : { s: pieceStart(P.pb, pc.s - 1), e: pc.s };
+      this.goto(prev.s, t, prev.e); // negative t: counted back from the end
       return;
     }
     if (pc.e >= P.pb.n) { a.currentTime = Math.max(0, a.duration - 0.3); return; }
-    this.goto(pc.e, t - a.duration);
+    this.ramp = Math.min(this.ramp + 1, RAMP.length);
+    this.goto(pc.e, t - a.duration, rampEnd(P.pb, pc.e, this.ramp));
   },
-  goto(s, t) {
+  goto(s, t, e) {
     setPos(s);
-    if (P.playing) this.load(s, pieceEnd(P.pb, s), t);
+    if (P.playing) this.load(s, e || pieceEnd(P.pb, s), t);
     else { this.piece = null; P.book.pos = { s: P.s }; }
   },
   stop() {
@@ -730,7 +912,7 @@ const Cloud = {
     this.token++;
     this.piece = null;
     if (this.url) URL.revokeObjectURL(this.url);
-    this.url = URL.createObjectURL(new Blob([buf], { type: 'audio/mpeg' }));
+    this.url = URL.createObjectURL(new Blob([buf], { type: audioType(buf) }));
     this.audio.src = this.url;
     this.audio.playbackRate = 1;
     this.audio.play().catch(() => toast('לחצו שוב כדי לשמוע את הדוגמה.'));
@@ -741,17 +923,20 @@ const Cloud = {
       for (const k of keys) { const e = +String(k).split('|')[3]; if (e <= beforeS) DB.del('audio', k); }
     } catch (e) { /* ignore */ }
   },
-  async download(minutes, onProgress, ref) {
+  async download(minutes, onProgress, ref) { // fetch the same pieces playback will ask for next
     const ctx = this.ctx(), pb = ctx.pb;
-    let s = P.book.pos && P.book.pos.p0 != null ? P.book.pos.p0 : P.s;
+    let s, e, level;
+    if (this.isLoaded() && this.piece.voice === ctx.voice) ({ s, e } = this.piece), level = this.ramp;
+    else ({ s, e, level } = await this.startPlan(P.s, false));
     const startC = pb.cum[s];
     const endC = Math.min(pb.total, startC + (minutes === Infinity ? Infinity : minutes * 60 * cps()));
     while (s < pb.n && pb.cum[s] < endC) {
       if (ref.cancel) return 'cancel';
-      const e = pieceEnd(pb, s);
       await this.get(ctx, s, e);
+      onProgress(Math.min(1, (pb.cum[e] - startC) / Math.max(1, endC - startC)));
       s = e;
-      onProgress(Math.min(1, (pb.cum[s] - startC) / Math.max(1, endC - startC)));
+      level = Math.min(level + 1, RAMP.length);
+      e = rampEnd(pb, s, level);
     }
     return 'done';
   },
@@ -1481,10 +1666,18 @@ function openSleep() {
 function openNarrators() {
   openSheet('מי מקריא', (body) => {
     const list = el('div', 'opt-list');
+    if (settings.gKey && settings.gemModels.length) {
+      list.append(el('div', 'opt-group', 'קריינים טבעיים · חינם'));
+      for (const v of GEM_VOICES) {
+        const b = optBtn(v.he, cloudProvider() === 'gemini' && settings.gemVoice === v.id, `${v.d} · ${v.g === 'm' ? 'קול גברי' : 'קול נשי'}`);
+        b.onclick = () => { closeSheet(); switchVoice('gemini', v.id); };
+        list.append(b);
+      }
+    }
     if (settings.gKey && settings.gVoices.length) {
-      list.append(el('div', 'opt-group', 'קריינים טבעיים'));
+      list.append(el('div', 'opt-group', 'קריינים של Google Cloud'));
       for (const v of settings.gVoices) {
-        const b = optBtn(v.he, useGoogle() && settings.gVoice === v.name, v.hint);
+        const b = optBtn(v.he, cloudProvider() === 'google' && settings.gVoice === v.name, v.hint);
         b.onclick = () => { closeSheet(); switchVoice('google', v.name); };
         list.append(b);
       }
@@ -1499,14 +1692,14 @@ function openNarrators() {
       list.append(b);
     }
     body.append(list);
-    if (!settings.gKey) body.append(note('לקריין שנשמע כמו בן אדם, חברו את Google בעמוד הקריינות.'), btn('לעמוד הקריינות', 'btn accent wide', () => { closeSheet(); go('voices'); }));
+    if (!settings.gKey) body.append(note('לקריין שנשמע כמו בן אדם, חברו מפתח חינמי בעמוד הקריינות.'), btn('לעמוד הקריינות', 'btn accent wide', () => { closeSheet(); go('voices'); }));
   });
 }
 function switchVoice(engine, id) {
   const was = P.playing;
   if (was) pause();
   settings.engine = engine;
-  if (engine === 'google') settings.gVoice = id; else settings.deviceVoice = id;
+  if (engine === 'gemini') settings.gemVoice = id; else if (engine === 'google') settings.gVoice = id; else settings.deviceVoice = id;
   saveSettings();
   Cloud.piece = null;
   renderChips();
@@ -1548,8 +1741,8 @@ function openDownload() {
   if (!P.pb) return;
   if (!useGoogle()) {
     openSheet('הורדה לנסיעה', (body) => {
-      body.append(note('הורדה מראש עובדת עם הקריינים של Google. קול המכשיר לא צריך אינטרנט בכלל, אבל בטלפון הוא נעצר כשהמסך נכבה.'));
-      body.append(btn('לחיבור Google', 'btn accent wide', () => { closeSheet(); go('voices'); }));
+      body.append(note('הורדה מראש עובדת עם הקריינים הטבעיים. קול המכשיר לא צריך אינטרנט בכלל, אבל בטלפון הוא נעצר כשהמסך נכבה.'));
+      body.append(btn('לחיבור הקריינים', 'btn accent wide', () => { closeSheet(); go('voices'); }));
     });
     return;
   }
@@ -1597,7 +1790,10 @@ function renderVoices() {
   badge.textContent = settings.gKey ? 'מחובר' : 'לא מחובר';
   badge.className = 'badge' + (settings.gKey ? ' ok' : '');
   const st = $('#g-status');
-  if (!st.dataset.sticky) { st.textContent = settings.gKey ? `${settings.gVoices.length || ''} קריינים טבעיים זמינים בעברית`.trim() : ''; st.className = 'g-status muted'; }
+  if (!st.dataset.sticky) {
+    st.textContent = !settings.gKey ? '' : settings.gemModels.length ? 'מחובר בחינם דרך Google AI Studio.' : `מחובר ל־Google Cloud · ${settings.gVoices.length} קריינים בעברית`;
+    st.className = 'g-status muted';
+  }
   $('#g-link-out').hidden = true;
   $('#theme').value = settings.theme;
   renderNarrators();
@@ -1640,11 +1836,21 @@ function narratorCard({ name, hint, on, onPick, onSample }) {
 function renderNarrators() {
   const box = $('#narrators');
   const nodes = [];
+  if (settings.gKey && settings.gemModels.length) {
+    nodes.push(el('div', 'group-label', 'קריינים טבעיים · חינם'));
+    for (const v of GEM_VOICES) {
+      nodes.push(narratorCard({
+        name: v.he, hint: `${v.d} · ${v.g === 'm' ? 'קול גברי' : 'קול נשי'}`, on: cloudProvider() === 'gemini' && settings.gemVoice === v.id,
+        onPick: () => switchVoice('gemini', v.id),
+        onSample: () => sampleGemini(v.id),
+      }));
+    }
+  }
   if (settings.gKey && settings.gVoices.length) {
-    nodes.push(el('div', 'group-label', 'קריינים טבעיים · Google'));
+    nodes.push(el('div', 'group-label', 'קריינים של Google Cloud'));
     for (const v of settings.gVoices) {
       nodes.push(narratorCard({
-        name: v.he, hint: v.hint, on: useGoogle() && settings.gVoice === v.name,
+        name: v.he, hint: v.hint, on: cloudProvider() === 'google' && settings.gVoice === v.name,
         onPick: () => switchVoice('google', v.name),
         onSample: () => sampleGoogle(v.name),
       }));
@@ -1670,22 +1876,49 @@ async function checkGoogle() {
   if (!key) { st.textContent = 'הדביקו קודם את המפתח.'; st.className = 'g-status err'; return; }
   st.textContent = 'בודק…';
   st.className = 'g-status muted';
-  try {
+  let gemErr = null;
+  try { // a Gemini key from Google AI Studio: free
+    const models = await Gemini.models(key);
+    if (models.length) {
+      Object.assign(settings, { gKey: key, gemModels: models, gemExhausted: {}, gVoices: [], engine: 'gemini' });
+      saveSettings();
+      Cloud.piece = null;
+      st.textContent = `מחובר בחינם. ${GEM_VOICES.length} קריינים טבעיים. משמיע דוגמה של ${gemVoice().he}…`;
+      st.className = 'g-status ok';
+      renderVoices();
+      renderChips();
+      await sampleGemini(settings.gemVoice);
+      return;
+    }
+  } catch (e) { gemErr = e; }
+  try { // a Google Cloud Text-to-Speech key: paid
     const voices = processVoices(await Google.voices(key));
     if (!voices.length) throw new TTSError(-1, 'no hebrew voices');
-    Object.assign(settings, { gKey: key, gVoices: voices, engine: 'google' });
+    Object.assign(settings, { gKey: key, gVoices: voices, gemModels: [], engine: 'google' });
     if (!voices.some((v) => v.name === settings.gVoice)) settings.gVoice = voices[0].name;
     saveSettings();
     Cloud.piece = null;
-    st.textContent = `מחובר. ${voices.length} קריינים טבעיים בעברית. משמיע דוגמה של ${googleVoice().he}…`;
+    st.textContent = `מחובר ל־Google Cloud. ${voices.length} קריינים בעברית. משמיע דוגמה של ${googleVoice().he}…`;
     st.className = 'g-status ok';
     renderVoices();
     renderChips();
     await sampleGoogle(settings.gVoice);
   } catch (e) {
-    st.textContent = e.status === -1 ? 'המפתח עובד, אבל לא נמצאו קולות בעברית.' : ttsMessage(e);
+    const err = gemErr && gemErr.status !== 403 && gemErr.status !== 404 ? gemErr : e;
+    st.textContent = e.status === -1 ? 'המפתח עובד, אבל לא נמצאו קולות בעברית.' : ttsMessage(err);
     st.className = 'g-status err';
   }
+}
+async function sampleGemini(id) {
+  if (!settings.gKey) return;
+  Cloud.unlock();
+  if (P.playing) pause();
+  try {
+    const k = 'gem:' + id;
+    let buf = samples.get(k);
+    if (!buf) { buf = await Gemini.synth(SAMPLE_LINE, id, settings.gKey); samples.set(k, buf); }
+    Cloud.playOneOff(buf.slice(0));
+  } catch (e) { toast(ttsMessage(e), 6000); }
 }
 const samples = new Map();
 async function sampleGoogle(name) {
@@ -1709,7 +1942,7 @@ function sampleDevice(v) {
 }
 function setupLink() {
   if (!settings.gKey) { toast('קודם מחברים את Google.'); return; }
-  const payload = btoa(JSON.stringify({ k: settings.gKey, v: settings.gVoice }));
+  const payload = btoa(JSON.stringify({ k: settings.gKey, v: settings.gVoice, gv: settings.gemVoice, e: settings.engine }));
   const url = location.href.split('#')[0] + '#setup=' + encodeURIComponent(payload);
   const out = $('#g-link-out');
   out.value = url;
@@ -1722,13 +1955,17 @@ function importSetup(raw) {
   try {
     const d = JSON.parse(atob(decodeURIComponent(raw)));
     if (!d.k) throw new Error('no key');
-    Object.assign(settings, { gKey: d.k, gVoice: d.v || '', engine: 'google' });
+    Object.assign(settings, { gKey: d.k, gVoice: d.v || '', gemVoice: d.gv || settings.gemVoice, engine: d.e === 'google' ? 'google' : 'gemini' });
     saveSettings();
-    toast('החיבור לקריינים של Google נשמר במכשיר הזה.');
+    toast('החיבור לקריינים הטבעיים נשמר במכשיר הזה.');
     refreshGoogleVoices();
   } catch (e) { toast('הקישור לא תקין. העתיקו אותו שוב מהמחשב.'); }
 }
 async function refreshGoogleVoices() {
+  if (settings.engine !== 'google') {
+    try { settings.gemModels = await Gemini.models(settings.gKey); saveSettings(); renderChips(); if (document.body.dataset.view === 'voices') renderVoices(); } catch (e) { /* offline */ }
+    return;
+  }
   try {
     settings.gVoices = processVoices(await Google.voices(settings.gKey));
     if (settings.gVoices.length && !settings.gVoices.some((v) => v.name === settings.gVoice)) settings.gVoice = settings.gVoices[0].name;
@@ -1924,7 +2161,7 @@ async function init() {
   await loadBooks();
   route();
   pasteStats();
-  if (settings.gKey && (!settings.gVoices.length || !settings.gVoices[0].he)) refreshGoogleVoices();
+  if (settings.gKey && (settings.engine === 'gemini' ? !settings.gemModels.length : !settings.gVoices.length || !settings.gVoices[0].he)) refreshGoogleVoices();
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
