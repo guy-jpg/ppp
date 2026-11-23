@@ -1,0 +1,39 @@
+<section id="s23">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 3 · Merkle–Damgård&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;שלב 3–4: דחיסה בשרשרת&#8236;</h2>
+<div class="code" style="align-items:center; padding:24px 40px">
+<p class="cl" style="font-size:40px; color:#22D3EE">h₀ = IV,&#160;&#160;&#160; hᵢ = f(hᵢ₋₁, mᵢ),&#160;&#160;&#160; H(M) = hₜ</p>
+</div>
+<div class="ul" style="gap:16px">
+<div class="li"><div class="m"></div><p class="b fx">&#8235;מתחילים מערך התחלתי קבוע (IV).&#8236;</p></div>
+<div class="li"><div class="m"></div><p class="b fx">&#8235;כל בלוק נכנס לפונקציית הדחיסה f יחד עם המצב הקודם, ויוצא מצב חדש של 256 ביט.&#8236;</p></div>
+<div class="li"><div class="m g"></div><p class="b fx">&#8235;המצב האחרון הוא הגיבוב.&#8236;</p></div>
+</div>
+<!-- LTR chain. m: 230/640/1180 (w140,y0-64). IV 0-150. f: 230/640/1180 (w140,y132-232). h1 450-560, h2 860-970, dots 1050, H(M) 1400-1664 -->
+<div class="host" style="width:1664px; height:240px; margin-top:auto">
+<div class="box" style="position:absolute; left:0; top:142px; width:150px; height:80px; border-color:#A78BFA"><p class="blm" style="color:#A78BFA">IV</p></div>
+<svg class="fragment" data-fragment-index="1" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:152px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box fragment" data-fragment-index="1" style="position:absolute; left:230px; top:0; width:140px; height:64px; border-color:#94A3B8"><p class="blm" style="color:#F1F5F9">m₁</p></div>
+<svg class="fragment" data-fragment-index="1" width="20" height="66" viewBox="0 0 20 66" style="position:absolute; left:290px; top:66px"><path d="M10 2V60M3 52l7 8 7-8" fill="none" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box glow fragment" data-fragment-index="1" style="position:absolute; left:230px; top:132px; width:140px; height:100px"><p class="blm" style="font-size:44px; color:#22D3EE">f</p></div>
+<svg class="fragment" data-fragment-index="1" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:372px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<p class="pill c fragment" data-fragment-index="1" style="position:absolute; left:450px; top:155px; width:66px; font-family:'JetBrains Mono',monospace">h₁</p>
+<svg class="fragment" data-fragment-index="2" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:562px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box fragment" data-fragment-index="2" style="position:absolute; left:640px; top:0; width:140px; height:64px; border-color:#94A3B8"><p class="blm" style="color:#F1F5F9">m₂</p></div>
+<svg class="fragment" data-fragment-index="2" width="20" height="66" viewBox="0 0 20 66" style="position:absolute; left:700px; top:66px"><path d="M10 2V60M3 52l7 8 7-8" fill="none" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box glow fragment" data-fragment-index="2" style="position:absolute; left:640px; top:132px; width:140px; height:100px"><p class="blm" style="font-size:44px; color:#22D3EE">f</p></div>
+<svg class="fragment" data-fragment-index="2" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:782px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<p class="pill c fragment" data-fragment-index="2" style="position:absolute; left:860px; top:155px; width:66px; font-family:'JetBrains Mono',monospace">h₂</p>
+<svg class="fragment" data-fragment-index="3" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:972px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<p class="blm fragment" data-fragment-index="3" style="position:absolute; left:1050px; top:158px; width:50px; color:#94A3B8">…</p>
+<svg class="fragment" data-fragment-index="3" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:1102px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box fragment" data-fragment-index="3" style="position:absolute; left:1180px; top:0; width:140px; height:64px; border-color:#94A3B8"><p class="blm" style="color:#F1F5F9">mₜ</p></div>
+<svg class="fragment" data-fragment-index="3" width="20" height="66" viewBox="0 0 20 66" style="position:absolute; left:1240px; top:66px"><path d="M10 2V60M3 52l7 8 7-8" fill="none" stroke="#94A3B8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box glow fragment" data-fragment-index="3" style="position:absolute; left:1180px; top:132px; width:140px; height:100px"><p class="blm" style="font-size:44px; color:#22D3EE">f</p></div>
+<svg class="fragment" data-fragment-index="3" width="76" height="20" viewBox="0 0 76 20" style="position:absolute; left:1322px; top:172px"><path d="M2 10H70M62 3l8 7-8 7" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="box g glow g fragment" data-fragment-index="3" style="position:absolute; left:1400px; top:137px; width:264px; height:90px"><p class="blm" style="color:#34D399">H(M) = hₜ</p></div>
+</div>
+<aside>&#8235;כל ההודעה, בכל אורך, ’נדחסת’ שלב אחרי שלב לתוך 256 ביט בלבד.&#8236;</aside>
+</section>

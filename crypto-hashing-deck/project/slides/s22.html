@@ -1,0 +1,26 @@
+<section id="s22">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 3 · Merkle–Damgård&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;שלב 1–2: ריפוד וחלוקה לבלוקים&#8236;</h2>
+<div class="ul" style="gap:16px">
+<div class="li"><div class="m s36 a"></div><p class="sw fx">&#8235;<b>ריפוד (Padding):</b> מוסיפים להודעה <span class="am">ביט 1</span>, אחריו <span class="mu">אפסים</span>, ובסוף את <span class="vi">אורך ההודעה בביטים</span> (64 ביט ב־SHA-256).&#8236;</p></div>
+<div class="li"><div class="m s36 a"></div><p class="sw fx">&#8235;<b>המטרה:</b> שהאורך הכולל יהיה כפולה מדויקת של 512 ביט.&#8236;</p></div>
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;<b>חלוקה:</b> ההודעה המרופדת נחתכת לבלוקים של 512 ביט, כלומר 64 בתים.&#8236;</p></div>
+<div class="li"><div class="m s36 v"></div><p class="sw fx">&#8235;שדה האורך בסוף מבטיח ששתי הודעות באורכים שונים לא ירופדו לאותו רצף.&#8236;</p></div>
+</div>
+<!-- LTR bar: message 64-1100, bit 1100-1128, zeros 1128-1536, length 1536-1600; blocks at 64 / 592 / 1120, width 480 -->
+<div class="host" style="width:1664px; height:300px; margin-top:auto">
+<div class="seg" style="left:64px; top:40px; width:1036px; height:80px; background:rgba(34,211,238,.16); border:2px solid #22D3EE"><p class="bl" style="color:#22D3EE">הודעה</p></div>
+<div class="seg fragment" data-fragment-index="1" style="left:1100px; top:40px; width:28px; height:80px; background:#FBBF24; border-radius:4px"></div>
+<p class="blm fragment" data-fragment-index="1" style="position:absolute; left:1084px; top:-4px; width:60px; color:#FBBF24">1</p>
+<div class="seg fragment" data-fragment-index="2" style="left:1128px; top:40px; width:408px; height:80px; background:rgba(148,163,184,.12); border:2px solid rgba(148,163,184,.5)"><p class="blm" style="color:#94A3B8; font-size:28px">00000000…0</p></div>
+<div class="seg fragment" data-fragment-index="3" style="left:1536px; top:40px; width:64px; height:80px; background:rgba(167,139,250,.3); border:2px solid #A78BFA"></div>
+<p class="lab fragment" data-fragment-index="3" style="position:absolute; left:1440px; top:-6px; width:200px; text-align:right; color:#A78BFA">&#8235;אורך (64 ביט)&#8236;</p>
+<svg class="fragment" data-fragment-index="4" width="1664" height="160" viewBox="0 0 1664 160" style="position:absolute; left:0; top:20px"><g stroke="#F1F5F9" stroke-width="2.5" stroke-dasharray="8 7"><path d="M576 0 V140"/><path d="M1088 0 V140"/></g><g fill="none" stroke="#F1F5F9" stroke-width="2.5" stroke-linecap="round" transform="translate(588 126) scale(1.4)"><circle cx="6" cy="6" r="3"/><path d="M8.1 8.1 12 12M20 4 8.1 15.9"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></g><g fill="none" stroke="#F1F5F9" stroke-width="2.5" stroke-linecap="round" transform="translate(1100 126) scale(1.4)"><circle cx="6" cy="6" r="3"/><path d="M8.1 8.1 12 12M20 4 8.1 15.9"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></g></svg>
+<div class="box fragment" data-fragment-index="5" style="position:absolute; left:80px; top:200px; width:480px; height:90px"><p class="blm">&#8235;m₁ · 512 ביט&#8236;</p></div>
+<div class="box fragment" data-fragment-index="5" style="position:absolute; left:592px; top:200px; width:480px; height:90px"><p class="blm">&#8235;m₂ · 512 ביט&#8236;</p></div>
+<div class="box fragment" data-fragment-index="5" style="position:absolute; left:1104px; top:200px; width:480px; height:90px"><p class="blm">&#8235;m₃ · 512 ביט&#8236;</p></div>
+</div>
+<aside>&#8235;נראה את זה על דוגמה אמיתית עם abc בחלק 6.&#8236;</aside>
+</section>

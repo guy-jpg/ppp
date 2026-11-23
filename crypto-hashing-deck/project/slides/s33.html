@@ -1,0 +1,43 @@
+<section id="s33">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag v">&#8235;חלק 4 · Sponge&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;למה SHA-3 חסין ל־Length Extension&#8236;</h2>
+<div class="ul" style="gap:14px">
+<div class="li"><div class="m s36 v"></div><p class="sw fx">&#8235;הפלט נלקח רק מה־Rate. ה־Capacity — 512 ביט ב־SHA3-256 — <span class="vi">לעולם לא נחשף</span>.&#8236;</p></div>
+<div class="li"><div class="m s36 v"></div><p class="sw fx">&#8235;בלי ה־Capacity אי אפשר לשחזר את המצב המלא, ולכן אי אפשר להמשיך את החישוב.&#8236;</p></div>
+<div class="li"><div class="m s36 g"></div><p class="sw fx">&#8235;תוצאה מעשית: עם SHA-3 גם בנייה פשוטה של H(key ‖ message) בטוחה. זה הבסיס ל־KMAC.&#8236;</p></div>
+</div>
+<div class="row" style="flex:1; gap:32px">
+<div class="card v f1 rise" style="--i:1; align-items:center; gap:18px; padding:28px 32px">
+<div class="chip" style="align-self:stretch; justify-content:space-between"><h3 class="ch" style="color:#A78BFA">Sponge</h3><p class="pill g">חסין</p></div>
+<div class="host" style="width:700px; height:240px">
+<svg width="700" height="240" viewBox="0 0 700 240" aria-label="ספוג: ה־Capacity נעול; חץ אדום של תוקף נעצר בקיר סגול" style="position:absolute; left:0; top:0">
+<rect x="70" y="20" width="300" height="110" rx="12" fill="#22D3EE" fill-opacity=".16" stroke="#22D3EE" stroke-width="3"/>
+<rect x="70" y="130" width="300" height="90" rx="12" fill="#A78BFA" fill-opacity=".28" stroke="#A78BFA" stroke-width="3"/>
+<g transform="translate(220 160)" fill="none" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="-20" y="-4" width="40" height="32" rx="6"/><path d="M-12 -4 V-14 a12 12 0 0 1 24 0 V-4"/></g>
+<rect x="430" y="14" width="22" height="212" rx="6" fill="#A78BFA"/>
+<path d="M680 120 H478" stroke="#F87171" stroke-width="5" stroke-linecap="round"/><path d="M494 108 478 120l16 12" fill="none" stroke="#F87171" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M500 58l30 30M530 58l-30 30" stroke="#F87171" stroke-width="5" stroke-linecap="round"/>
+</svg>
+<p class="blm" style="position:absolute; left:70px; top:56px; width:300px; font-size:30px; color:#22D3EE">Rate</p>
+</div>
+<p class="cm c">&#8235;ה־Capacity נעול — אין ממה להמשיך&#8236;</p>
+</div>
+<div class="card r f1 rise" style="--i:2; align-items:center; gap:18px; padding:28px 32px">
+<div class="chip" style="align-self:stretch; justify-content:space-between"><h3 class="ch" style="color:#22D3EE">Merkle–Damgård</h3><p class="pill r">פגיע</p></div>
+<div class="host" style="width:700px; height:240px">
+<svg width="700" height="240" viewBox="0 0 700 240" aria-label="Merkle–Damgård: קופסה פתוחה שכל המצב בה חשוף; חץ אדום ממשיך ממנה לבלוק חדש" style="position:absolute; left:0; top:0">
+<path d="M60 90 H360 V220 H60 Z" fill="#22D3EE" fill-opacity=".1" stroke="#22D3EE" stroke-width="3" stroke-linejoin="round"/>
+<path d="M60 90 L20 30 M360 90 L400 30" stroke="#22D3EE" stroke-width="3" stroke-linecap="round"/>
+<g fill="#22D3EE"><rect x="86" y="118" width="54" height="36" rx="5"/><rect x="152" y="118" width="54" height="36" rx="5"/><rect x="218" y="118" width="54" height="36" rx="5"/><rect x="284" y="118" width="54" height="36" rx="5"/><rect x="86" y="164" width="54" height="36" rx="5"/><rect x="152" y="164" width="54" height="36" rx="5"/><rect x="218" y="164" width="54" height="36" rx="5"/><rect x="284" y="164" width="54" height="36" rx="5"/></g>
+<path d="M366 156 H526" stroke="#F87171" stroke-width="5" stroke-linecap="round" stroke-dasharray="14 10"/><path d="M512 144 528 156l-16 12" fill="none" stroke="#F87171" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="540" y="110" width="120" height="92" rx="12" fill="#2A1620" stroke="#F87171" stroke-width="3"/>
+</svg>
+<p class="blm" style="position:absolute; left:540px; top:136px; width:120px; font-size:36px; color:#F87171">f</p>
+</div>
+<p class="cm c">&#8235;כל המצב חשוף — אפשר להמשיך ממנו&#8236;</p>
+</div>
+</div>
+<aside>&#8235;זה ההבדל העקרוני בין שתי המשפחות, וזו אחת הסיבות העיקריות שבחרו בתכנון הזה ל־SHA-3.&#8236;</aside>
+</section>

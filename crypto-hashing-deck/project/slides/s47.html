@@ -1,0 +1,43 @@
+<section id="s47">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 7 · SHA-256 ברשת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;SSH ו־DNSSEC&#8236;</h2>
+<div class="row" style="flex:1; gap:32px">
+<div class="card f1 rise" style="--i:1; gap:20px; padding:28px 36px">
+<div class="chip"><svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m6 10 3 2-3 2M11 15h5"/></g></svg><h3 class="ch" style="font-size:44px">SSH</h3></div>
+<div class="code" style="gap:2px; padding:18px 26px">
+<p class="cl" style="font-size:26px"><span class="gr">$</span> ssh user@example.com</p>
+<p class="cl" style="font-size:26px; color:#FBBF24">ED25519 key fingerprint is SHA256:…</p>
+<p class="cl" style="font-size:26px">Are you sure you want to continue</p>
+<p class="cl" style="font-size:26px">connecting (yes/no/[fingerprint])?</p>
+</div>
+<div class="ul" style="gap:12px">
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;בחיבור הראשון מופיע: ED25519 key fingerprint is SHA256:…&#8236;</p></div>
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;זה SHA-256 של המפתח הציבורי של השרת, בקידוד Base64&#8236;</p></div>
+<div class="li"><div class="m s36 a"></div><p class="sw fx">&#8235;מאשרים yes רק אחרי השוואה לערוץ אמין (TOFU — Trust On First Use)&#8236;</p></div>
+</div>
+</div>
+<div class="card f1 rise" style="--i:2; gap:20px; padding:28px 36px">
+<div class="chip"><svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/><path d="M12 7v4M5 17v-3h14v3"/></g></svg><h3 class="ch" style="font-size:44px">DNSSEC</h3></div>
+<!-- LTR chain host 736x150: "." 0-120, ".com" 228-378, "example.com" 506-736; boxes y 50-120 -->
+<div class="host" style="width:736px; height:150px; align-self:center">
+<svg width="736" height="150" viewBox="0 0 736 150" aria-label="היררכיית DNS: השורש, .com ו־example.com, מחוברים בשרשראות גיבוב DS" style="position:absolute; left:0; top:0">
+<g stroke="#22D3EE" stroke-width="3" fill="none" stroke-linecap="round"><path d="M122 85 H226"/><path d="M380 85 H504"/></g>
+<g fill="#0D1326" stroke="#22D3EE" stroke-width="2.5"><rect x="160" y="73" width="30" height="24" rx="12"/><rect x="176" y="73" width="30" height="24" rx="12"/><rect x="428" y="73" width="30" height="24" rx="12"/><rect x="444" y="73" width="30" height="24" rx="12"/></g>
+</svg>
+<div class="box" style="position:absolute; left:0; top:50px; width:120px; height:70px"><p class="blm">.</p></div>
+<div class="box" style="position:absolute; left:228px; top:50px; width:150px; height:70px"><p class="blm" style="font-size:30px">.com</p></div>
+<div class="box glow" style="position:absolute; left:506px; top:50px; width:230px; height:70px"><p class="blm" style="font-size:28px">example.com</p></div>
+<p class="cl" style="position:absolute; left:142px; top:2px; width:84px; font-size:26px; text-align:center; color:#22D3EE">DS</p>
+<p class="cl" style="position:absolute; left:400px; top:2px; width:84px; font-size:26px; text-align:center; color:#22D3EE">DS</p>
+</div>
+<div class="ul" style="gap:12px">
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;רשומת DS בתחום האב מכילה גיבוב של מפתח ה־DNSKEY של הבן&#8236;</p></div>
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;Digest Type 2 = SHA-256&#8236;</p></div>
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;אלגוריתמי חתימה נפוצים: &#8234;8 = RSASHA256, 13 = ECDSAP256SHA256&#8236;&#8236;</p></div>
+</div>
+</div>
+</div>
+<aside>&#8235;ב־SSH, להקליד yes בלי לבדוק את טביעת האצבע זה בדיוק מה שתוקף Man-in-the-Middle מקווה שתעשו.&#8236;</aside>
+</section>

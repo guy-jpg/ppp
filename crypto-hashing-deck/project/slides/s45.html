@@ -1,0 +1,34 @@
+<section id="s45">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 7 · SHA-256 ברשת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;TLS 1.3: הגיבוב בתוך לחיצת היד&#8236;</h2>
+<div class="row" style="flex:1; gap:56px">
+<div class="ul" style="flex:1; gap:22px">
+<div class="li rise" style="--i:1"><div class="m s36"></div><p class="sw fx">&#8235;שם החבילה מגלה הכול: <span class="cy">TLS_AES_128_GCM_SHA256</span>, <span class="cy">TLS_AES_256_GCM_SHA384</span>.&#8236;</p></div>
+<div class="li rise" style="--i:2"><div class="m s36"></div><p class="sw fx">&#8235;<b>Transcript Hash:</b> כל הודעות לחיצת היד מגובבות יחד — שינוי של בית אחד בדרך ייכשל בהודעת Finished.&#8236;</p></div>
+<div class="li rise" style="--i:3"><div class="m s36"></div><p class="sw fx">&#8235;<b>Key Schedule:</b> כל מפתחות ההצפנה נגזרים ב־HKDF, שבנוי על HMAC-SHA256/384.&#8236;</p></div>
+<div class="li rise" style="--i:4"><div class="m s36"></div><p class="sw fx">&#8235;החתימה בהודעת CertificateVerify נעשית על הגיבוב של התמליל.&#8236;</p></div>
+</div>
+<!-- host 740x640: client lifeline x140, server x580; messages y 130/215/290/365/440/515; ribbon x 662-698 -->
+<div class="host fade" style="--i:2; width:740px; height:640px; flex:none">
+<svg width="740" height="640" viewBox="0 0 740 640" aria-label="דיאגרמת רצף בין לקוח לשרת; סרט ציאן של Transcript Hash מצטבר לאורך ההודעות" style="position:absolute; left:0; top:0">
+<defs><marker id="a45" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#F1F5F9"/></marker><marker id="g45" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#34D399"/></marker></defs>
+<g stroke="#94A3B8" stroke-width="2" stroke-dasharray="6 8"><path d="M140 70 V610"/><path d="M580 70 V610"/></g>
+<g stroke="#F1F5F9" stroke-width="3" fill="none" marker-end="url(#a45)"><path d="M142 130 H568"/><path d="M578 215 H152"/><path d="M578 290 H152"/><path d="M578 365 H152"/></g>
+<g stroke="#34D399" stroke-width="3" fill="none" marker-end="url(#g45)"><path d="M578 440 H152"/><path d="M142 515 H568"/></g>
+<g fill="#22D3EE"><rect x="662" y="100" width="36" height="66" rx="4" opacity=".15"/><rect x="662" y="176" width="36" height="66" rx="4" opacity=".28"/><rect x="662" y="252" width="36" height="66" rx="4" opacity=".42"/><rect x="662" y="328" width="36" height="66" rx="4" opacity=".58"/><rect x="662" y="404" width="36" height="66" rx="4" opacity=".75"/><rect x="662" y="480" width="36" height="66" rx="4" opacity=".95"/></g>
+</svg>
+<div class="box" style="position:absolute; left:40px; top:0; width:200px; height:64px; border-color:#F1F5F9"><p class="bl" style="font-size:32px">לקוח</p></div>
+<div class="box" style="position:absolute; left:480px; top:0; width:200px; height:64px; border-color:#F1F5F9"><p class="bl" style="font-size:32px">שרת</p></div>
+<p class="cl" style="position:absolute; left:160px; top:88px; width:400px; font-size:26px; text-align:center">ClientHello</p>
+<p class="cl" style="position:absolute; left:160px; top:173px; width:400px; font-size:26px; text-align:center">ServerHello</p>
+<p class="cl" style="position:absolute; left:160px; top:248px; width:400px; font-size:26px; text-align:center">Certificate</p>
+<p class="cl" style="position:absolute; left:160px; top:323px; width:400px; font-size:26px; text-align:center; color:#FBBF24">CertificateVerify</p>
+<p class="cl" style="position:absolute; left:160px; top:398px; width:400px; font-size:26px; text-align:center; color:#34D399">Finished</p>
+<p class="cl" style="position:absolute; left:160px; top:473px; width:400px; font-size:26px; text-align:center; color:#34D399">Finished</p>
+<p class="cl" style="position:absolute; left:420px; top:566px; width:300px; font-size:24px; text-align:right; color:#22D3EE">Transcript Hash</p>
+</div>
+</div>
+<aside>&#8235;תוקף באמצע שמנסה, למשל, להוריד את רמת ההצפנה, ייתפס בהודעת Finished, כי הגיבוב לא יתאים.&#8236;</aside>
+</section>

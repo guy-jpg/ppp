@@ -1,0 +1,37 @@
+<section id="s37">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag g">&#8235;חלק 5 · BLAKE&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;BLAKE3: גיבוב כעץ, בכל הליבות במקביל&#8236;</h2>
+<div class="row" style="flex:1; gap:56px">
+<div class="ul" style="flex:1; gap:22px">
+<div class="li rise" style="--i:1"><div class="m s36 g"></div><p class="sw fx">&#8235;שוחרר ב־2020. הקובץ נחתך לחתיכות של 1KiB, וכל חתיכה מגובבת בנפרד.&#8236;</p></div>
+<div class="li rise" style="--i:2"><div class="m s36 g"></div><p class="sw fx">&#8235;התוצאות מתחברות בעץ מרקל (Merkle Tree) עד שורש אחד — הגיבוב הסופי.&#8236;</p></div>
+<div class="li rise" style="--i:3"><div class="m s36 g"></div><p class="sw fx">&#8235;החתיכות בלתי תלויות זו בזו, ולכן מעבדים אותן <span class="gr">במקביל</span> על כל הליבות ועם הוראות SIMD.&#8236;</p></div>
+<div class="li rise" style="--i:4"><div class="m s36 g"></div><p class="sw fx">&#8235;אלגוריתם אחד, הרבה תפקידים: גיבוב, MAC עם מפתח, גזירת מפתחות (KDF) ופלט באורך חופשי (XOF).&#8236;</p></div>
+</div>
+<!-- host 740x640. leaves y540-610 x 18+90i w74. L1 y400-460 centers 100/280/460/640 w100. L2 y260-320 centers 190/550 w130. root y110-190 center 370 w300 -->
+<div class="host fade" style="--i:2; width:740px; height:640px; flex:none">
+<svg width="740" height="640" viewBox="0 0 740 640" aria-label="עץ מרקל: 8 חתיכות בצבעים של 4 ליבות מתמזגות כלפי מעלה לשורש ירוק" style="position:absolute; left:0; top:0">
+<g stroke="#94A3B8" stroke-width="2.5" stroke-opacity=".6" fill="none"><path d="M55 540L100 460M145 540L100 460M235 540L280 460M325 540L280 460M415 540L460 460M505 540L460 460M595 540L640 460M685 540L640 460"/><path d="M100 400L190 320M280 400L190 320M460 400L550 320M640 400L550 320"/><path d="M190 260L370 190M550 260L370 190"/></g>
+<g fill="#131B33" stroke-width="3"><rect x="18" y="540" width="74" height="70" rx="8" stroke="#22D3EE"/><rect x="108" y="540" width="74" height="70" rx="8" stroke="#22D3EE"/><rect x="198" y="540" width="74" height="70" rx="8" stroke="#A78BFA"/><rect x="288" y="540" width="74" height="70" rx="8" stroke="#A78BFA"/><rect x="378" y="540" width="74" height="70" rx="8" stroke="#FBBF24"/><rect x="468" y="540" width="74" height="70" rx="8" stroke="#FBBF24"/><rect x="558" y="540" width="74" height="70" rx="8" stroke="#34D399"/><rect x="648" y="540" width="74" height="70" rx="8" stroke="#34D399"/></g>
+<g fill="#22D3EE" fill-opacity=".18"><rect x="18" y="540" width="74" height="70" rx="8"/><rect x="108" y="540" width="74" height="70" rx="8"/></g><g fill="#A78BFA" fill-opacity=".2"><rect x="198" y="540" width="74" height="70" rx="8"/><rect x="288" y="540" width="74" height="70" rx="8"/></g><g fill="#FBBF24" fill-opacity=".18"><rect x="378" y="540" width="74" height="70" rx="8"/><rect x="468" y="540" width="74" height="70" rx="8"/></g><g fill="#34D399" fill-opacity=".18"><rect x="558" y="540" width="74" height="70" rx="8"/><rect x="648" y="540" width="74" height="70" rx="8"/></g>
+<g fill="#131B33" stroke="#94A3B8" stroke-width="2.5"><rect x="50" y="400" width="100" height="60" rx="8"/><rect x="230" y="400" width="100" height="60" rx="8"/><rect x="410" y="400" width="100" height="60" rx="8"/><rect x="590" y="400" width="100" height="60" rx="8"/><rect x="125" y="260" width="130" height="60" rx="8"/><rect x="485" y="260" width="130" height="60" rx="8"/></g>
+<rect x="220" y="110" width="300" height="80" rx="12" fill="#34D399" fill-opacity=".14" stroke="#34D399" stroke-width="3"/>
+</svg>
+<div class="box g glow g" style="position:absolute; left:220px; top:110px; width:300px; height:80px; background:transparent"><p class="blm" style="color:#34D399">BLAKE3 hash</p></div>
+<p class="blm" style="position:absolute; left:18px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:108px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:198px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:288px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:378px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:468px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:558px; top:558px; width:74px; font-size:24px">1KiB</p>
+<p class="blm" style="position:absolute; left:648px; top:558px; width:74px; font-size:24px">1KiB</p>
+<div class="chip" style="position:absolute; left:0; top:0; width:740px; gap:22px">
+<p class="lab" style="font-size:26px; color:#22D3EE">&#8235;ליבה 1&#8236;</p><p class="lab" style="font-size:26px; color:#A78BFA">&#8235;ליבה 2&#8236;</p><p class="lab" style="font-size:26px; color:#FBBF24">&#8235;ליבה 3&#8236;</p><p class="lab" style="font-size:26px; color:#34D399">&#8235;ליבה 4&#8236;</p>
+</div>
+</div>
+</div>
+<aside>&#8235;ב־Merkle–Damgård חייבים לעבד בלוק אחרי בלוק. עץ מאפשר לחלק את העבודה — ולכן BLAKE3 מהיר במיוחד על קבצים גדולים.&#8236;</aside>
+</section>

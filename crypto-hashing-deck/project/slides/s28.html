@@ -1,0 +1,23 @@
+<section id="s28">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag r">&#8235;חלק 3 · Length Extension&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;זה קרה באמת: Flickr API, 2009&#8236;</h2>
+<div class="card r host rise" style="--i:1; flex:1; gap:26px; padding:44px 56px; background:#131B33">
+<div class="chip" style="gap:24px; border-bottom:2px solid rgba(248,113,113,.35); padding-bottom:20px">
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#F87171" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8"/></g></svg>
+<p class="ch" style="font-size:44px">&#8235;תיק: Flickr API · 2009&#8236;</p>
+</div>
+<div class="ul" style="gap:20px">
+<div class="li"><div class="m r"></div><p class="b fx">&#8235;חוקרי האבטחה Thai Duong ו־Juliano Rizzo הראו שה־API של Flickr חתם על בקשות בשיטת MD5(secret ‖ params).&#8236;</p></div>
+<div class="li"><div class="m r"></div><p class="b fx">&#8235;בעזרת Length Extension אפשר היה לזייף בקשות API חתומות — בלי המפתח הסודי.&#8236;</p></div>
+<div class="li"><div class="m a"></div><p class="b fx">&#8235;<b class="am">הלקח:</b> לעולם לא H(key ‖ message) עם גיבוב מסוג Merkle–Damgård.&#8236;</p></div>
+</div>
+<div class="code" style="margin-top:auto; gap:6px">
+<p class="cl"><span class="cy">api_sig</span> = MD5(secret ‖ params)</p>
+<p class="cl">/services/rest/?params<span class="dm">%80%00%00…%00</span><span class="rd">&amp;extra=…</span></p>
+</div>
+<p class="stamp" style="position:absolute; left:56px; top:34px">CASE</p>
+</div>
+<aside>&#8235;זו לא תקיפה תיאורטית — היא שברה API של אחד האתרים הגדולים באותה תקופה.&#8236;</aside>
+</section>

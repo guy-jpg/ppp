@@ -1,0 +1,32 @@
+<section id="s29" style="gap:32px">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag g">&#8235;חלק 3 · ההגנה&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;איך מתגוננים: HMAC ושאר הפתרונות&#8236;</h2>
+<div class="code" style="align-items:center; padding:24px 40px">
+<p class="cl" style="font-size:40px">HMAC(K, m) = <span class="gr">H(</span> (<span class="am">K ⊕ opad</span>) ‖ <span class="cy">H(</span> (<span class="am">K ⊕ ipad</span>) ‖ m <span class="cy">)</span> <span class="gr">)</span></p>
+</div>
+<div class="row" style="flex:1; gap:56px">
+<div class="ul" style="flex:1; gap:24px">
+<div class="li rise" style="--i:1"><div class="m s36 g"></div><p class="sw fx">&#8235;הגיבוב החיצוני ’סוגר’ את הפנימי — התוקף לא מקבל מצב שאפשר להמשיך ממנו.&#8236;</p></div>
+<div class="li rise" style="--i:2"><div class="m s36 v"></div><p class="sw fx">&#8235;<b>חלופות:</b> SHA-3 / KMAC, מפתח מובנה ב־BLAKE2 / BLAKE3, או גרסאות קטומות כמו SHA-512/256 ו־SHA-384.&#8236;</p></div>
+<div class="li rise" style="--i:3"><div class="m s36"></div><p class="sw fx">&#8235;<b>בשטח:</b> HMAC-SHA256 נמצא ב־TLS, ב־IPsec, ב־JWT (HS256) ובחתימות API של AWS (SigV4).&#8236;</p></div>
+</div>
+<!-- host 720x500. outer 0-720 x 0-380. key 40-100/30-90. opad 30-290/170-240. bars 300-360. inner 370-690/90-320. ipad 390-670/150-210. m 390-670/230-290. -->
+<div class="host" style="width:720px; height:500px; flex:none">
+<div class="fragment" data-fragment-index="2" style="position:absolute; left:0; top:0; width:720px; height:380px; box-sizing:border-box; border:3px solid #34D399; border-radius:16px; background:rgba(52,211,153,.05); box-shadow:0 0 36px rgba(52,211,153,.3)"></div>
+<svg class="fragment" data-fragment-index="1" width="720" height="380" viewBox="0 0 720 380" style="position:absolute; left:0; top:0"><path d="M104 60 H530 V146" fill="none" stroke="#FBBF24" stroke-width="2.5" stroke-dasharray="8 7"/></svg>
+<svg class="fragment" data-fragment-index="2" width="720" height="380" viewBox="0 0 720 380" style="position:absolute; left:0; top:0"><path d="M70 94 V166" fill="none" stroke="#FBBF24" stroke-width="2.5" stroke-dasharray="8 7"/></svg>
+<svg class="fragment" data-fragment-index="1" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#FBBF24" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; left:38px; top:28px"><g transform="scale(2.6667)" stroke-width="1.3"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m11.5 11.5 9-9M17.5 5.5l3 3M14.5 8.5l2 2"/></g></svg>
+<div class="box fragment" data-fragment-index="1" style="position:absolute; left:370px; top:90px; width:320px; height:230px; background:rgba(34,211,238,.06); justify-content:flex-start; padding-top:8px"><p class="lab" style="color:#22D3EE; font-weight:700">&#8235;H פנימי&#8236;</p></div>
+<div class="box a fragment" data-fragment-index="1" style="position:absolute; left:390px; top:150px; width:280px; height:60px"><p class="blm" style="font-size:28px; color:#FBBF24">K ⊕ ipad</p></div>
+<div class="box fragment" data-fragment-index="1" style="position:absolute; left:390px; top:230px; width:280px; height:60px; border-color:#94A3B8"><p class="blm" style="font-size:28px">‖ m</p></div>
+<div class="box a fragment" data-fragment-index="2" style="position:absolute; left:30px; top:170px; width:260px; height:70px"><p class="blm" style="font-size:28px; color:#FBBF24">K ⊕ opad</p></div>
+<p class="blm fragment" data-fragment-index="2" style="position:absolute; left:300px; top:180px; width:60px; font-size:44px; color:#F1F5F9">‖</p>
+<div class="chip fragment" data-fragment-index="2" style="position:absolute; left:400px; top:14px; width:300px; gap:12px"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#34D399" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(1.6667)" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></g></svg><p class="lab" style="color:#34D399; font-weight:700">&#8235;H חיצוני&#8236;</p></div>
+<svg class="fragment" data-fragment-index="3" width="24" height="56" viewBox="0 0 24 56" style="position:absolute; left:348px; top:382px"><path d="M12 2V46M4 38l8 10 8-10" fill="none" stroke="#34D399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<p class="pill g fragment" data-fragment-index="3" style="position:absolute; left:220px; top:442px; width:236px; font-family:'JetBrains Mono',monospace">HMAC(K, m)</p>
+</div>
+</div>
+<aside>&#8235;HMAC מוגדר בתקן RFC 2104 ועובד עם כל פונקציית גיבוב. זה הפתרון הסטנדרטי והבטוח.&#8236;</aside>
+</section>

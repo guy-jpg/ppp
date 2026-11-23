@@ -1,0 +1,34 @@
+<section id="s48">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 7 · SHA-256 ברשת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;SRI, Git ו־Docker: הגיבוב הוא השם&#8236;</h2>
+<div class="row" style="flex:1; gap:24px">
+<div class="card rise" style="--i:1; width:610px; flex:none; gap:20px; padding:28px 30px">
+<div class="chip"><svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20M5.5 5.5h.01M8.5 5.5h.01M10 12l-2 2.5 2 2.5M14 12l2 2.5-2 2.5"/></g></svg><h3 class="ch" style="font-size:44px">SRI</h3></div>
+<div class="code" style="gap:0; padding:16px 22px">
+<p class="cl" style="font-size:24px"><span class="cy">&lt;script</span></p>
+<p class="cl" style="font-size:24px">&#160;&#160;src="https://cdn.example.com/lib.js"</p>
+<p class="cl" style="font-size:24px">&#160;&#160;<span class="am">integrity="sha384-…"</span></p>
+<p class="cl" style="font-size:24px">&#160;&#160;crossorigin="anonymous"&gt;<span class="cy">&lt;/script&gt;</span></p>
+</div>
+<p class="sw">&#8235;הדפדפן מחשב את הגיבוב של הקובץ שהגיע מה־CDN <span class="am">ומסרב להריץ</span> אם אין התאמה&#8236;</p>
+</div>
+<div class="card rise" style="--i:2; flex:1; gap:16px; padding:28px 30px">
+<div class="chip"><svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><circle cx="6" cy="5" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M6 7.5v9M18 10.5c0 4-6 3-11 7"/></g></svg><h3 class="ch" style="font-size:44px">Git</h3></div>
+<div class="ul" style="gap:12px">
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;כל commit, tree ו־blob מזוהה לפי הגיבוב שלו&#8236;</p></div>
+<div class="li"><div class="m s36 r"></div><p class="sw fx">&#8235;היסטורית SHA-1 (בגרסה מוקשחת עם זיהוי התנגשויות)&#8236;</p></div>
+<div class="li"><div class="m s36 g"></div><p class="sw fx">&#8235;Git עובר ל־SHA-256:&#8236;</p></div>
+</div>
+<div class="code" style="padding:14px 20px"><p class="cl" style="font-size:24px">git init --object-format=sha256</p></div>
+</div>
+<div class="card rise" style="--i:3; width:300px; flex:none; gap:16px; padding:28px 30px">
+<div class="chip"><svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></g></svg><h3 class="ch" style="font-size:44px">Docker</h3></div>
+<p class="sw">&#8235;אימג׳ מזוהה לפי digest:&#8236;</p>
+<div class="code" style="padding:14px 20px"><p class="cl" style="font-size:26px">nginx@<span class="cy">sha256:…</span></p></div>
+<p class="sw">&#8235;<b>tag</b> אפשר להזיז — <b class="gr">digest</b> לא&#8236;</p>
+</div>
+</div>
+<aside>&#8235;Content Addressing: כשהשם של דבר הוא הגיבוב שלו, אי אפשר לשנות את התוכן בלי לשנות את השם.&#8236;</aside>
+</section>

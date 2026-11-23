@@ -1,0 +1,38 @@
+<section id="s46" style="gap:32px">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 7 · SHA-256 ברשת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;תעודות ו־Certificate Transparency&#8236;</h2>
+<div class="ul" style="gap:14px">
+<div class="li"><div class="m s36 a"></div><p class="sw fx">&#8235;בתוך התעודה: <span class="am">sha256WithRSAEncryption</span> או <span class="am">ecdsa-with-SHA256</span> — אלגוריתם החתימה של ה־CA.&#8236;</p></div>
+<div class="li"><div class="m s36"></div><p class="sw fx">&#8235;טביעת אצבע של תעודה = SHA-256 של התעודה כולה בפורמט DER. כך מצמידים תעודה (Pinning).&#8236;</p></div>
+<div class="li"><div class="m s36 g"></div><p class="sw fx">&#8235;<b>Certificate Transparency:</b> כל תעודה ציבורית נרשמת ביומן ציבורי שבנוי כעץ מרקל מבוסס SHA-256 — אי אפשר למחוק או לשנות רשומה בשקט.&#8236;</p></div>
+</div>
+<div class="row" style="flex:1; gap:40px">
+<div class="card rise" style="--i:1; width:760px; flex:none; gap:6px; padding:24px 32px; text-align:left">
+<div class="chip" style="margin-bottom:8px"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(1.8333)" stroke-width="1.5"><rect x="3" y="2" width="18" height="14" rx="2"/><path d="M7 6.5h10M7 10h6"/><circle cx="15.5" cy="16.5" r="3"/><path d="m14 19-1 3.5 2.5-1.2 2.5 1.2-1-3.5"/></g></svg><p class="ch" style="font-size:36px">&#8235;תעודת X.509&#8236;</p></div>
+<p class="cl" style="font-size:26px"><span class="mu">Subject:</span> CN=example.com</p>
+<p class="cl" style="font-size:26px"><span class="mu">Issuer:</span> CN=… CA</p>
+<p class="cl" style="font-size:26px"><span class="mu">Validity:</span> …</p>
+<div style="border:2px solid #FBBF24; border-radius:8px; padding:4px 12px; background:rgba(251,191,36,.1); box-shadow:0 0 18px rgba(251,191,36,.25)"><p class="cl" style="font-size:26px"><span class="am">Signature Algorithm:</span> sha256WithRSAEncryption</p></div>
+<p class="cl" style="font-size:26px"><span class="cy">SHA-256 Fingerprint:</span> AB:CD:…</p>
+</div>
+<!-- tree host 864x330: leaves y262-326 at 14/184/354/524 (w140), new leaf 694 (w150). L1 y180-226 centers 154/494, new 769. L2 y98-144 center 324. root y14-70 center 546 -->
+<div class="host fade" style="--i:2; flex:1; height:330px">
+<svg width="864" height="330" viewBox="0 0 864 330" style="position:absolute; left:0; top:0"><g stroke="#94A3B8" stroke-width="2.5" stroke-opacity=".7" fill="none"><path d="M546 70 L324 98M324 144 L154 180M324 144 L494 180M154 226 L84 262M154 226 L254 262M494 226 L424 262M494 226 L594 262"/></g></svg>
+<svg class="fragment" data-fragment-index="1" width="864" height="330" viewBox="0 0 864 330" style="position:absolute; left:0; top:0"><g stroke="#FBBF24" stroke-width="2.5" fill="none" stroke-dasharray="8 6"><path d="M546 70 L769 180M769 226 L769 262"/></g></svg>
+<div class="box" style="position:absolute; left:14px; top:262px; width:140px; height:64px; border-color:#94A3B8"><p class="lab" style="color:#F1F5F9">תעודה</p></div>
+<div class="box" style="position:absolute; left:184px; top:262px; width:140px; height:64px; border-color:#94A3B8"><p class="lab" style="color:#F1F5F9">תעודה</p></div>
+<div class="box" style="position:absolute; left:354px; top:262px; width:140px; height:64px; border-color:#94A3B8"><p class="lab" style="color:#F1F5F9">תעודה</p></div>
+<div class="box" style="position:absolute; left:524px; top:262px; width:140px; height:64px; border-color:#94A3B8"><p class="lab" style="color:#F1F5F9">תעודה</p></div>
+<div class="box" style="position:absolute; left:104px; top:180px; width:100px; height:46px"></div>
+<div class="box" style="position:absolute; left:444px; top:180px; width:100px; height:46px"></div>
+<div class="box" style="position:absolute; left:274px; top:98px; width:100px; height:46px"></div>
+<div class="box glow" style="position:absolute; left:426px; top:14px; width:240px; height:56px"><p class="cl" style="font-size:26px; color:#22D3EE; text-align:center">Root hash</p></div>
+<div class="box a fragment" data-fragment-index="1" style="position:absolute; left:694px; top:262px; width:150px; height:64px; border-style:dashed"><p class="lab" style="color:#FBBF24">&#8235;תעודה חדשה&#8236;</p></div>
+<div class="box a fragment" data-fragment-index="1" style="position:absolute; left:719px; top:180px; width:100px; height:46px"></div>
+<div class="box a glow a fragment" data-fragment-index="1" style="position:absolute; left:426px; top:14px; width:240px; height:56px"><p class="cl" style="font-size:26px; color:#FBBF24; text-align:center">Root hash′</p></div>
+</div>
+</div>
+<aside>&#8235;Certificate Transparency נולד אחרי פריצות ל־CAs, כדי שכל תעודה שהונפקה תהיה גלויה לכולם.&#8236;</aside>
+</section>
