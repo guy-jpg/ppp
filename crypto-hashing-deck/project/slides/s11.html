@@ -1,0 +1,38 @@
+<section id="s11">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag r">&#8235;חלק 1 · הבעיה&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;דוגמה: על מה ה־CA באמת חותמת?&#8236;</h2>
+<div class="ul" style="gap:18px">
+<div class="li"><div class="m"></div><p class="b fx">&#8235;ה־CA לא חותמת על התעודה עצמה — היא חותמת על <span class="cy">הגיבוב שלה</span>.&#8236;</p></div>
+<div class="li"><div class="m"></div><p class="b fx">&#8235;הדפדפן מחשב מחדש את SHA-256 של התעודה ובודק שהחתימה מתאימה לו.&#8236;</p></div>
+<div class="li"><div class="m r"></div><p class="b fx">&#8235;אם תוקף ימצא תעודה אחרת עם אותו גיבוב — החתימה תתאים גם לה. <span class="rd">זה בדיוק מה שקרה עם MD5 ב־2008.</span>&#8236;</p></div>
+</div>
+<div class="col" style="gap:0; margin-top:auto">
+<!-- top row: boxes at left 1392 / 1044 / 696 / 348 / 0, width 272, height 110 -->
+<div class="host" style="width:1664px; height:110px">
+<svg width="1664" height="110" viewBox="0 0 1664 110" style="position:absolute; left:0; top:0">
+<defs><marker id="a11" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#22D3EE"/></marker></defs>
+<g stroke="#22D3EE" stroke-width="3" fill="none" marker-end="url(#a11)"><path d="M1388 55H1326"/><path d="M1040 55H978"/><path d="M692 55H630"/><path d="M344 55H282"/></g>
+</svg>
+<div class="box glow" style="position:absolute; left:1392px; top:0; width:272px; height:110px"><p class="bl">תעודה</p></div>
+<div class="box" style="position:absolute; left:1044px; top:0; width:272px; height:110px"><p class="blm">SHA-256</p></div>
+<div class="box" style="position:absolute; left:696px; top:0; width:272px; height:110px"><p class="bl">Digest</p></div>
+<div class="box v" style="position:absolute; left:348px; top:0; width:272px; height:110px"><p class="bl" style="font-size:32px">&#8235;מפתח פרטי של ה־CA&#8236;</p></div>
+<div class="box g glow g" style="position:absolute; left:0; top:0; width:272px; height:110px"><p class="bl">חתימה</p></div>
+</div>
+<!-- red row (built last): boxes at left 1392 / 696 / 0, top 80, height 110 -->
+<div class="host fragment" style="width:1664px; height:190px">
+<svg width="1664" height="190" viewBox="0 0 1664 190" style="position:absolute; left:0; top:0">
+<defs><marker id="b11" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#F87171"/></marker></defs>
+<g stroke="#F87171" stroke-width="3" fill="none" stroke-dasharray="12 9"><path d="M832 4V76"/><path d="M136 4V76"/></g>
+<g stroke="#F87171" stroke-width="3" fill="none" stroke-dasharray="12 9" marker-end="url(#b11)"><path d="M1388 135H978"/><path d="M692 135H282"/></g>
+</svg>
+<div class="box r glow r" style="position:absolute; left:1392px; top:80px; width:272px; height:110px"><p class="bl" style="color:#F87171">תעודה מזויפת</p></div>
+<div class="box r" style="position:absolute; left:696px; top:80px; width:272px; height:110px"><p class="bl" style="color:#F87171">אותו Digest</p></div>
+<div class="box r" style="position:absolute; left:0; top:80px; width:272px; height:110px"><p class="bl" style="font-size:32px; color:#F87171">אותה חתימה<br>תקפה גם לה</p></div>
+<p class="lab" style="position:absolute; left:848px; top:20px; width:120px; text-align:right; color:#F87171">זהה</p>
+</div>
+</div>
+<aside>&#8235;חותמים על הגיבוב כי הוא קצר וקבוע באורכו. המחיר: כל הביטחון של החתימה תלוי בכך שאי אפשר למצוא התנגשות.&#8236;</aside>
+</section>

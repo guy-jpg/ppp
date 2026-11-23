@@ -1,0 +1,24 @@
+<section id="s18" style="gap:32px">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag">&#8235;חלק 2 · האינטואיציה&#8236;</p>
+<div class="pn"></div>
+<div class="anchor">
+<h2 class="t">&#8235;Checksum מול גיבוב קריפטוגרפי&#8236;</h2>
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2.3333)" stroke-width="1.4"><path d="M8 2.5h8l-2.5 5h-3z"/><path d="M6 7.5h11v6H6a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z"/><path d="M17 10.5h3.5v-5M19 5.5h3"/><path d="M9 13.5l-1.5 6h7l-1.5-6M6 19.5h10"/><path d="M3.5 9.5h-2M3.5 11.5h-2"/></g></svg>
+</div>
+<div class="row rise" style="--i:1; gap:40px; align-items:center">
+<p class="sw fx">&#8235;Checksum דומה <span class="am">לשקילה</span>: סטייק שנפגע במקרה כנראה ישקול אחרת — אבל קצב ערמומי יכול להחליף נתח בנתח באותו משקל בדיוק. <span class="cy">המטחנה</span> לא מאפשרת את זה.&#8236;</p>
+<svg width="150" height="120" viewBox="0 0 150 120" aria-label="משקל קצבים" style="flex:none"><g fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M75 14 V104 M44 108 H106 M20 30 H130"/><circle cx="75" cy="12" r="5"/><path d="M34 30 L14 72 M34 30 L54 72 M116 30 L96 72 M116 30 L136 72"/><path d="M10 72 a24 10 0 0 0 48 0 Z M92 72 a24 10 0 0 0 48 0 Z"/></g></svg>
+<svg width="150" height="120" viewBox="0 0 220 150" aria-label="מטחנה" style="flex:none"><g fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M80 10 H150 L135 50 H95 Z"/><rect x="50" y="50" width="120" height="50" rx="20" fill="#0D1326"/><ellipse cx="48" cy="75" rx="9" ry="30" fill="#0A0F1F"/><path d="M170 75 H188 L198 32"/><path d="M198 32 L214 28" stroke-width="9"/><path d="M95 100 L88 138 M125 100 L132 138 M74 138 H148"/></g></svg>
+</div>
+<div class="tb host rise" style="--i:2">
+<div class="tr h"><p class="th" style="width:320px">היבט</p><p class="th" style="width:620px; color:#FBBF24">&#8235;CRC-32 / Checksum&#8236;</p><p class="th" style="width:620px">SHA-256</p></div>
+<div class="tr z" style="padding:16px 24px"><p class="td" style="width:320px; font-weight:700">מטרה</p><p class="td" style="width:620px; color:#94A3B8">גילוי שגיאות מקריות</p><p class="td" style="width:620px">עמידות מול תוקף מכוון</p></div>
+<div class="tr" style="padding:16px 24px"><p class="td" style="width:320px; font-weight:700">מבנה</p><p class="td" style="width:620px; color:#94A3B8">&#8235;ליניארי, ניתן לחישוב מראש&#8236;</p><p class="td" style="width:620px">&#8235;לא ליניארי, 64 סבבי ערבול&#8236;</p></div>
+<div class="tr z" style="padding:16px 24px"><p class="td" style="width:320px; font-weight:700">אורך פלט</p><p class="td" style="width:620px; color:#94A3B8">&#8235;32 ביט&#8236;</p><p class="td" style="width:620px">&#8235;256 ביט&#8236;</p></div>
+<div class="tr" style="padding:16px 24px"><p class="td" style="width:320px; font-weight:700">זיוף מכוון</p><p class="td" style="width:620px; color:#F87171">מיידי</p><p class="td" style="width:620px; color:#34D399">לא ידועה שום דרך מעשית</p></div>
+<div class="tr z" style="padding:16px 24px"><p class="td" style="width:320px; font-weight:700">שימוש טיפוסי</p><p class="td" style="width:620px; color:#94A3B8">&#8235;Ethernet, ZIP, אחסון&#8236;</p><p class="td" style="width:620px">&#8235;חתימות, תעודות, עדכונים&#8236;</p></div>
+<div style="position:absolute; left:16px; top:-10px; width:652px; height:475px; box-sizing:border-box; border:2px solid rgba(34,211,238,.6); border-radius:12px; box-shadow:0 0 24px rgba(34,211,238,.18)"></div>
+</div>
+<aside>&#8235;שניהם שימושיים. הטעות היא להשתמש ב־Checksum במקום שבו יש תוקף.&#8236;</aside>
+</section>

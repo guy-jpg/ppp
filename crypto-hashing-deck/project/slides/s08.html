@@ -1,0 +1,51 @@
+<section id="s08">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag r">&#8235;חלק 1 · הבעיה&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;למה CRC נופל מול תוקף&#8236;</h2>
+<div class="row" style="flex:1; gap:20px; align-items:stretch">
+<div class="card f1" style="padding:28px 32px; gap:20px">
+<div class="chip"><p class="pill c" style="font-family:'JetBrains Mono',monospace">1</p><h3 class="ch">קובץ מקורי</h3></div>
+<svg width="416" height="150" viewBox="0 0 416 150" aria-label="קובץ מקורי">
+<defs><pattern id="b8a" x="16" y="54" width="26" height="22" patternUnits="userSpaceOnUse"><rect width="20" height="14" rx="3" fill="#1B2545"/></pattern></defs>
+<path d="M2 2h372l40 40v106H2z" fill="#0D1326" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/><path d="M374 2v40h40" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/>
+<rect x="16" y="18" width="120" height="14" rx="3" fill="#22D3EE" opacity=".5"/>
+<rect x="16" y="54" width="364" height="88" fill="url(#b8a)"/>
+</svg>
+<p class="pill c" style="font-family:'JetBrains Mono',monospace; align-self:flex-end">CRC = 0x1A2B3C4D</p>
+<p class="cx">&#8235;CRC הוא פונקציה ליניארית (מבוססת XOR) — אין בה סוד ואין בה קושי חישובי.&#8236;</p>
+</div>
+<svg class="fragment" width="56" height="32" viewBox="0 0 56 32" style="align-self:center; flex:none"><path d="M52 16H6M17 5 6 16l11 11" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="card r f1 fragment" style="padding:28px 32px; gap:20px">
+<div class="chip"><p class="pill r" style="font-family:'JetBrains Mono',monospace">2</p><h3 class="ch">התוקף משנה</h3></div>
+<svg width="416" height="150" viewBox="0 0 416 150" aria-label="הקובץ עם אזור ששונה באדום">
+<defs><pattern id="b8b" x="16" y="54" width="26" height="22" patternUnits="userSpaceOnUse"><rect width="20" height="14" rx="3" fill="#1B2545"/></pattern></defs>
+<path d="M2 2h372l40 40v106H2z" fill="#0D1326" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/><path d="M374 2v40h40" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/>
+<rect x="16" y="18" width="120" height="14" rx="3" fill="#22D3EE" opacity=".5"/>
+<rect x="16" y="54" width="364" height="88" fill="url(#b8b)"/>
+<rect x="94" y="76" width="176" height="14" rx="3" fill="#F87171"/><rect x="16" y="98" width="98" height="14" rx="3" fill="#F87171"/>
+</svg>
+<p class="pill r" style="align-self:flex-end">CRC השתנה</p>
+<p class="cx">&#8235;התוקף משנה את הנתונים, ואז מחשב מראש בדיוק 4 בתים (ב־CRC-32) שיחזירו את הערך המקורי.&#8236;</p>
+</div>
+<svg class="fragment" width="56" height="32" viewBox="0 0 56 32" style="align-self:center; flex:none"><path d="M52 16H6M17 5 6 16l11 11" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div class="card a f1 fragment" style="padding:28px 32px; gap:20px">
+<div class="chip"><p class="pill a" style="font-family:'JetBrains Mono',monospace">3</p><h3 class="ch">תיקון של 4 בתים</h3></div>
+<svg width="416" height="150" viewBox="0 0 416 150" aria-label="אותו קובץ זדוני עם תיקון ענבר של ארבעה בתים">
+<defs><pattern id="b8c" x="16" y="54" width="26" height="22" patternUnits="userSpaceOnUse"><rect width="20" height="14" rx="3" fill="#1B2545"/></pattern></defs>
+<path d="M2 2h372l40 40v106H2z" fill="#0D1326" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/><path d="M374 2v40h40" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linejoin="round"/>
+<rect x="16" y="18" width="120" height="14" rx="3" fill="#22D3EE" opacity=".5"/>
+<rect x="16" y="54" width="364" height="88" fill="url(#b8c)"/>
+<rect x="94" y="76" width="176" height="14" rx="3" fill="#F87171"/><rect x="16" y="98" width="98" height="14" rx="3" fill="#F87171"/>
+<g fill="#FBBF24"><rect x="276" y="120" width="20" height="14" rx="3"/><rect x="302" y="120" width="20" height="14" rx="3"/><rect x="328" y="120" width="20" height="14" rx="3"/><rect x="354" y="120" width="20" height="14" rx="3"/></g>
+</svg>
+<div class="chip" style="align-self:flex-end; gap:12px">
+<p class="pill g" style="font-family:'JetBrains Mono',monospace">CRC = 0x1A2B3C4D</p>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#34D399" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(1.6667)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-7"/></g></svg>
+</div>
+<p class="cx">&#8235;התוצאה: קובץ זדוני עם אותו CRC בדיוק — והבדיקה עוברת בהצלחה.&#8236;</p>
+</div>
+</div>
+<p class="s" style="font-size:26px; margin-top:-18px">&#8235;ערכי ה־CRC בשקופית הם להמחשה בלבד.&#8236;</p>
+<aside>&#8235;זו לא חולשה של מימוש מסוים — זו תכונה מתמטית של CRC. הוא נבנה לרעש, לא לתוקפים.&#8236;</aside>
+</section>
