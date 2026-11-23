@@ -1,0 +1,28 @@
+<section id="s63">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag g">&#8235;חלק 10 · ידיים על המקלדת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">&#8235;אימות מפתח SSH&#8236;</h2>
+<div class="row" style="flex:1; gap:48px">
+<div class="col" style="flex:1; gap:16px">
+<div class="code rise" style="--i:1; gap:4px; padding:20px 32px"><p class="clab" style="text-align:right; font-family:'Heebo',Arial,sans-serif; font-size:28px; color:#F1F5F9">על השרת</p><p class="cl"><span class="gr">$</span> ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub</p></div>
+<div class="code rise" style="--i:2; gap:4px; padding:20px 32px"><p class="clab" style="text-align:right; font-family:'Heebo',Arial,sans-serif; font-size:28px; color:#F1F5F9">מהלקוח</p><p class="cl"><span class="gr">$</span> ssh-keyscan -t ed25519 example.com | ssh-keygen -lf -</p></div>
+<div class="code rise" style="--i:3; gap:4px; padding:20px 32px"><p class="clab" style="text-align:right; font-family:'Heebo',Arial,sans-serif; font-size:28px; color:#F1F5F9">טביעה ויזואלית</p><p class="cl"><span class="gr">$</span> ssh-keygen -lv -f key.pub</p></div>
+<div class="ul" style="gap:12px; margin-top:12px">
+<div class="li rise" style="--i:4"><div class="m s36"></div><p class="sw fx">&#8235;הפלט: <span class="cy">&#8234;256 SHA256:… (ED25519)&#8236;</span>.&#8236;</p></div>
+<div class="li rise" style="--i:5"><div class="m s36 a"></div><p class="sw fx">&#8235;משווים לטביעה שהשרת מציג בחיבור הראשון — <span class="am">לפני שעונים yes</span>.&#8236;</p></div>
+</div>
+</div>
+<div class="host fade" style="--i:3; width:400px; height:470px; flex:none; align-self:center">
+<svg width="400" height="470" viewBox="0 0 400 470" aria-label="תיבת randomart מסוגננת: דפוס של סימנים בתוך ריבוע" style="position:absolute; left:0; top:0">
+<rect x="12" y="40" width="376" height="380" rx="10" fill="#0D1326" stroke="#22D3EE" stroke-width="3"/>
+<g fill="#22D3EE"><circle cx="80" cy="110" r="5"/><circle cx="110" cy="140" r="7"/><circle cx="150" cy="150" r="5"/><circle cx="190" cy="180" r="9"/><circle cx="230" cy="170" r="5"/><circle cx="250" cy="210" r="7"/><circle cx="210" cy="240" r="11" fill="none" stroke="#22D3EE" stroke-width="3"/><circle cx="170" cy="270" r="5"/><circle cx="140" cy="300" r="7"/><circle cx="180" cy="320" r="5"/><circle cx="230" cy="300" r="5"/><circle cx="280" cy="260" r="7"/><circle cx="310" cy="300" r="5"/><circle cx="290" cy="340" r="9"/><circle cx="110" cy="250" r="5"/></g>
+<g stroke="#A78BFA" stroke-width="3" stroke-linecap="round"><path d="M96 190h16M140 214h16M260 130h16M320 180h16M120 360h16M240 370h16"/><path d="M300 120l10 10M310 120l-10 10M80 320l10 10M90 320l-10 10"/></g>
+<rect x="196" y="226" width="28" height="28" rx="4" fill="none" stroke="#FBBF24" stroke-width="3"/><circle cx="292" cy="340" r="14" fill="none" stroke="#FBBF24" stroke-width="3"/>
+</svg>
+<p class="cl" style="position:absolute; left:12px; top:2px; width:376px; font-size:24px; text-align:center; color:#22D3EE">[ED25519 256]</p>
+<p class="cl" style="position:absolute; left:12px; top:428px; width:376px; font-size:24px; text-align:center; color:#22D3EE">[SHA256]</p>
+</div>
+</div>
+<aside>&#8235;ה־randomart נועד לבני אדם: קל יותר לזהות שינוי בתמונה מאשר ב־43 תווים של Base64.&#8236;</aside>
+</section>

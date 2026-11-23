@@ -1,0 +1,35 @@
+<section id="s58">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag a">&#8235;חלק 9 · תיק חקירה&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">מה היה עוצר את התקיפה</h2>
+<div class="row" style="flex:1; gap:56px">
+<div class="ul" style="flex:1; gap:22px">
+<div class="li rise" style="--i:1"><div class="m s36 v"></div><p class="sw fx">&#8235;<b>חתימה דיגיטלית על קובץ הגיבובים:</b> SHA256SUMS + SHA256SUMS.gpg, בחתימת מפתח GPG של הפרויקט.&#8236;</p></div>
+<div class="li rise" style="--i:2"><div class="m s36"></div><p class="sw fx">&#8235;<b>מפתח ציבורי שמאומת בערוץ נפרד:</b> שרת מפתחות, טביעת אצבע שמפורסמת במקום אחר, או מפתח שכבר מותקן במערכת.&#8236;</p></div>
+<div class="li rise" style="--i:3"><div class="m s36 r"></div><p class="sw fx">&#8235;תוקף שפורץ לאתר יכול להחליף קובץ וגיבוב — אבל <span class="gr">לא לייצר חתימה בלי המפתח הפרטי</span>.&#8236;</p></div>
+<div class="li rise" style="--i:4"><div class="m s36 g"></div><p class="sw fx">&#8235;ובנוסף: SHA-256 במקום MD5. כך עובדות היום רוב ההפצות, כולל Linux Mint.&#8236;</p></div>
+</div>
+<!-- host 760x640: chain col x 20-360: vault y0-110, sums y180-270, iso y340-430. pubkey chip 440-740 y 10-90. website 440-740 y 220-320. user 440-740 y 500-620 -->
+<div class="host fade" style="--i:2; width:760px; height:640px; flex:none">
+<svg width="760" height="640" viewBox="0 0 760 640" aria-label="שרשרת אמון: מפתח פרטי בכספת חותם על SHA256SUMS, שמכיל את SHA-256 של ה־ISO; המפתח הציבורי מגיע למשתמש בערוץ נפרד מקווקו; האתר שנפרץ מנותק מהשרשרת" style="position:absolute; left:0; top:0">
+<defs><marker id="a58" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#A78BFA"/></marker><marker id="c58" orient="auto" markerWidth="5" markerHeight="5" refX="2" refY="2" overflow="visible"><path d="M0 0 L4 2 L0 4 Z" fill="#22D3EE"/></marker></defs>
+<g stroke="#A78BFA" stroke-width="3" fill="none" marker-end="url(#a58)"><path d="M190 112 V172"/><path d="M190 272 V332"/></g>
+<path d="M360 385 C420 385 430 470 466 520" fill="none" stroke="#94A3B8" stroke-width="3" stroke-dasharray="3 7"/>
+<path d="M712 92 V490" fill="none" stroke="#22D3EE" stroke-width="3" stroke-dasharray="12 9" marker-end="url(#c58)"/>
+<path d="M362 270 L418 270" stroke="#F87171" stroke-width="3" stroke-dasharray="6 8"/>
+<path d="M379 254l22 32M401 254l-22 32" stroke="#F87171" stroke-width="4" stroke-linecap="round"/>
+</svg>
+<div class="box v glow v" style="position:absolute; left:20px; top:0; width:340px; height:110px; gap:4px"><p class="bl" style="font-size:30px; color:#A78BFA">&#8235;מפתח פרטי&#8236;</p><p class="lab" style="font-size:26px">&#8235;offline, בכספת&#8236;</p></div>
+<p class="lab" style="position:absolute; left:206px; top:126px; width:150px; text-align:left; font-size:26px; color:#A78BFA">חותם על</p>
+<div class="box v" style="position:absolute; left:20px; top:180px; width:340px; height:92px; gap:2px"><p class="blm" style="font-size:30px">SHA256SUMS</p><p class="cl" style="font-size:24px; text-align:center; color:#A78BFA">+ SHA256SUMS.gpg</p></div>
+<p class="lab" style="position:absolute; left:206px; top:286px; width:150px; text-align:left; font-size:26px; color:#A78BFA">&#8235;SHA-256 של&#8236;</p>
+<div class="box" style="position:absolute; left:20px; top:340px; width:340px; height:90px"><p class="blm" style="font-size:34px">ISO</p></div>
+<div class="box glow" style="position:absolute; left:440px; top:10px; width:300px; height:80px"><p class="bl" style="font-size:30px; color:#22D3EE">&#8235;מפתח ציבורי&#8236;</p></div>
+<p class="lab" style="position:absolute; left:500px; top:390px; width:196px; text-align:right; font-size:26px; color:#22D3EE">ערוץ נפרד</p>
+<div class="box r" style="position:absolute; left:420px; top:220px; width:250px; height:100px; background:#2A1620; gap:2px"><p class="bl" style="font-size:30px; color:#F87171">&#8235;האתר שנפרץ&#8236;</p><p class="lab" style="font-size:26px; color:#F87171">&#8235;מנותק מהשרשרת&#8236;</p></div>
+<div class="box g glow g" style="position:absolute; left:440px; top:500px; width:300px; height:120px; gap:6px"><p class="bl" style="font-size:32px; color:#34D399">משתמש</p><p class="lab" style="font-size:26px">&#8235;מאמת חתימה ← גיבוב&#8236;</p></div>
+</div>
+</div>
+<aside>&#8235;העיקרון: מה שמאמת חייב להגיע מערוץ שהתוקף לא שולט בו.&#8236;</aside>
+</section>

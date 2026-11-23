@@ -1,0 +1,28 @@
+<section id="s62" style="gap:26px">
+<img class="bg" src="/_blob/b556bc39ac4fecd4ea1798bfcfc531fa" alt="">
+<p class="tag g">&#8235;חלק 10 · ידיים על המקלדת&#8236;</p>
+<div class="pn"></div>
+<h2 class="t">אימות תעודה</h2>
+<div class="code rise" style="--i:1; flex-direction:row-reverse; align-items:center; gap:30px; padding:22px 32px">
+<div class="col" style="width:200px; gap:6px; align-items:center"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></g></svg><p class="lab" style="font-size:28px; color:#F1F5F9">תעודה מקובץ</p></div>
+<div class="col fx" style="gap:2px; border-right:2px solid rgba(148,163,184,.2); padding-right:30px">
+<p class="cl" style="font-size:28px"><span class="gr">$</span> openssl x509 -in cert.pem -noout -fingerprint -sha256</p>
+<p class="cl" style="font-size:28px; color:#22D3EE">sha256 Fingerprint=AB:CD:…</p>
+<p class="cl" style="font-size:28px"><span class="gr">$</span> openssl x509 -in cert.pem -noout -text | grep 'Signature Algorithm'</p>
+<p class="cl" style="font-size:28px; color:#22D3EE">&#160;&#160;&#160;&#160;Signature Algorithm: sha256WithRSAEncryption</p>
+</div>
+</div>
+<div class="code rise" style="--i:2; flex-direction:row-reverse; align-items:center; gap:30px; padding:22px 32px">
+<div class="col" style="width:200px; gap:6px; align-items:center"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#22D3EE" stroke-linecap="round" stroke-linejoin="round"><g transform="scale(2)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></g></svg><p class="lab" style="font-size:28px; color:#F1F5F9">תעודה משרת חי</p></div>
+<div class="col fx" style="gap:2px; border-right:2px solid rgba(148,163,184,.2); padding-right:30px">
+<p class="cl" style="font-size:28px"><span class="gr">$</span> openssl s_client -connect example.com:443 -servername example.com <span class="dm">\</span></p>
+<p class="cl" style="font-size:28px">&#160;&#160;&lt;/dev/null 2&gt;/dev/null | openssl x509 -noout -fingerprint -sha256</p>
+<p class="cl" style="font-size:28px; color:#22D3EE">sha256 Fingerprint=AB:CD:…</p>
+</div>
+</div>
+<div class="ul" style="gap:14px; margin-top:auto">
+<div class="li rise" style="--i:3"><div class="m s36"></div><p class="sw fx">&#8235;הפלט: <span class="cy">sha256 Fingerprint=AB:CD:…</span> — משווים לערך שקיבלתם בערוץ אמין.&#8236;</p></div>
+<div class="li rise" style="--i:4"><div class="m s36 a"></div><p class="sw fx">&#8235;בודקים גם ש־Signature Algorithm הוא <span class="gr">sha256WithRSAEncryption</span> או <span class="gr">ecdsa-with-SHA256</span> — ולא <span class="rd">md5</span> או <span class="rd">sha1</span>.&#8236;</p></div>
+</div>
+<aside>&#8235;אותה טביעת אצבע מופיעה גם בדפדפן, בפרטי התעודה. נסו להשוות.&#8236;</aside>
+</section>
