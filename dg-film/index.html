@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="it" data-composition-variables='[
+  {"id":"word1","type":"string","label":"Burst word 1","default":"AMORE","group":"Words"},
+  {"id":"word2","type":"string","label":"Burst word 2","default":"SICILIA","group":"Words"},
+  {"id":"word3","type":"string","label":"Burst word 3","default":"AUDACE","group":"Words"},
+  {"id":"word4","type":"string","label":"Burst word 4","default":"BAROCCO","group":"Words"},
+  {"id":"word5","type":"string","label":"Burst word 5","default":"FAMIGLIA","group":"Words"},
+  {"id":"tagline","type":"string","label":"Tagline","default":"MILANO · DAL 1985","group":"Words"},
+  {"id":"gold","type":"color","label":"Gold","default":"#C9A45C","group":"Colour"},
+  {"id":"red","type":"color","label":"Red","default":"#B10F1F","group":"Colour"},
+  {"id":"ink","type":"color","label":"Black","default":"#0A0907","group":"Colour"},
+  {"id":"paper","type":"color","label":"White","default":"#F4EFE6","group":"Colour"},
+  {"id":"endHold","type":"number","label":"End hold (s)","default":2.3,"min":0.5,"max":6,"step":0.1,"group":"Rhythm"}
+]'>
+<head>
+<meta charset="utf-8">
+<title>Dolce &amp; Gabbana · 15s</title>
+<script type="application/json" id="om-beats">{"version":1,"src":"assets/music/dg-cue.wav","name":"Forward Drive (cut for this film)","start":0,"bpm":119.99,"confidence":0.541,"usable":true,"looped":true,"duration":14.3,"beats":[0.493,0.993,1.493,1.993,2.493,2.993,3.493,3.993,4.493,4.993,5.493,5.993,6.493,6.993,7.493,7.993,8.494,8.994,9.494,9.994,10.494,10.994,11.494,11.994,12.494,12.994,13.494,13.994,14.494,14.994,15.494,15.994,16.494,16.994,17.494,17.994,18.494,18.994,19.494,19.994,20.495,20.995,21.495,21.995,22.495,22.995,23.495,23.995],"downbeats":[1.993,3.993,5.993,7.993,9.994,11.994,13.994,15.994,17.994,19.994,21.995,23.995],"sections":[{"start":0,"end":25.995,"energy":1}],"drops":[{"t":7.993,"score":0.181},{"t":19.994,"score":0.181},{"t":1.993,"score":0.153},{"t":13.994,"score":0.153}]}</script>
+<script src="vendor/gsap.min.js"></script>
+<style id="om-fonts">
+@font-face { font-family: "Anton"; src: url("assets/fonts/Anton-400.woff") format("woff"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Playfair Display"; src: url("assets/fonts/PlayfairDisplay-400i.woff") format("woff"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Playfair Display"; src: url("assets/fonts/PlayfairDisplay-700i.woff") format("woff"); font-weight: 700; font-style: italic; }
+@font-face { font-family: "Playfair Display"; src: url("assets/fonts/PlayfairDisplay-700.woff") format("woff"); font-weight: 700; font-style: normal; }
+@font-face { font-family: "Inter"; src: url("assets/fonts/Inter-var.woff") format("woff"); font-weight: 100 900; font-style: normal; }
+</style>
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+  #film { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); color: var(--paper); font-family: "Inter", sans-serif; }
+  .layer { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  svg { display: block; overflow: visible; }
+  .anton { font-family: "Anton", sans-serif; font-weight: 400; }
+  .pf { font-family: "Playfair Display", serif; font-style: italic; font-weight: 700; }
+
+  /* scene 2: the maiolica floor rises */
+  #floor { perspective: 1150px; perspective-origin: 50% 38%; overflow: hidden; }
+  #tiles { position: absolute; left: -760px; top: -340px; width: 2600px; height: 2600px; background-size: 210px 210px; transform-origin: 50% 50%; }
+
+  /* the band: S1's black ground, collapsed into the anchor of the burst */
+  #band { position: absolute; left: -20px; top: 790px; width: 1120px; height: 340px; background: var(--ink); transform-origin: 50% 50%; }
+  #bandText { position: absolute; left: 0; top: 790px; width: 1080px; height: 340px; overflow: hidden; }
+  .bw { position: absolute; left: 0; top: 0; width: 1080px; height: 340px; line-height: 340px; text-align: center; font-family: "Anton", sans-serif; font-size: 236px; letter-spacing: 6px; color: var(--paper); white-space: nowrap; opacity: 0; }
+  .bw.gab { font-size: 228px; letter-spacing: 4px; }
+
+  /* burst prints */
+  .print { opacity: 0; }
+  #pRed { background: radial-gradient(1100px 1500px at 50% 45%, var(--red) 0%, #7d0914 100%); }
+  #pTile, #pTile2 { left: -270px; top: -480px; width: 1620px; height: 2880px; background-size: 360px 360px; }
+  #pZeb, #pLeoB { left: -180px; top: -320px; width: 1440px; height: 2560px; background-size: 1440px 2560px; }
+  #pGold { background: linear-gradient(118deg, #5e4519 0%, #a7832f 18%, #e8cd86 33%, #b38c3b 47%, #6f5220 62%, #d6b464 80%, #8a6a2a 100%); overflow: hidden; }
+  #pGold .sheen { position: absolute; left: -600px; top: -200px; width: 520px; height: 2400px; background: linear-gradient(90deg, transparent, rgba(255,246,214,.55), transparent); transform: rotate(18deg); }
+  #pDots { left: -100px; top: -200px; width: 1280px; height: 2320px; background:
+      radial-gradient(circle, var(--paper) 0 21px, transparent 22.5px) 0 0 / 104px 104px,
+      radial-gradient(circle, var(--paper) 0 21px, transparent 22.5px) 52px 52px / 104px 104px, var(--ink); }
+
+  /* lockup */
+  #endCam { transform-origin: 50% 50%; }
+  #lock { position: absolute; left: 0; top: 905px; width: 1080px; text-align: center; white-space: nowrap; opacity: 0; }
+  #lock .lw { font-family: "Inter", sans-serif; font-weight: 600; font-size: 72px; letter-spacing: .16em; color: var(--paper); vertical-align: middle; }
+  #lock .la { font-family: "Playfair Display", serif; font-style: italic; font-weight: 700; font-size: 96px; color: var(--gold); margin: 0 .22em 0 .06em; vertical-align: middle; }
+  #rule { position: absolute; left: 420px; top: 1036px; width: 240px; height: 2px; background: var(--gold); transform-origin: 50% 50%; }
+  #tag { position: absolute; left: 0; top: 1066px; width: 1080px; text-align: center; font-family: "Inter", sans-serif; font-weight: 400; font-size: 30px; letter-spacing: .42em; color: var(--gold); white-space: nowrap; }
+</style>
+<script src="assets/prints.js"></script>
+</head>
+<body>
+<div id="film" data-composition-id="dg" data-width="1080" data-height="1920" data-fps="30">
+  <audio id="om-sound" src="assets/sound.wav" data-start="0" data-duration="14.3" data-track-index="8" data-volume="1"></audio>
+
+  <!-- burst prints (behind everything) -->
+  <div class="layer print" id="pRed" data-om-id="print-red"></div>
+  <div class="layer print" id="pTile" data-om-id="print-tile"></div>
+  <div class="layer print" id="pZeb" data-om-id="print-zebra"></div>
+  <div class="layer print" id="pGold" data-om-id="print-gold"><div class="sheen"></div></div>
+  <div class="layer print" id="pDots" data-om-id="print-dots"></div>
+  <div class="layer print" id="pLeoB" data-om-id="print-leopard"></div>
+  <div class="layer print" id="pTile2"></div>
+
+  <!-- scene 2: maiolica floor -->
+  <div class="layer" id="floor" data-om-id="floor"><div id="tiles"></div></div>
+
+  <!-- the band and its words -->
+  <div id="band" data-om-id="band"></div>
+  <div id="bandText">
+    <div data-layout-allow-overflow class="bw gab" id="wGab" data-om-id="gabbana">GABBANA</div>
+    <div data-layout-allow-overflow class="bw" id="w1" data-om-id="word1" data-var-text="word1">AMORE</div>
+    <div data-layout-allow-overflow class="bw" id="w2" data-om-id="word2" data-var-text="word2">SICILIA</div>
+    <div data-layout-allow-overflow class="bw" id="w3" data-om-id="word3" data-var-text="word3">AUDACE</div>
+    <div data-layout-allow-overflow class="bw" id="w4" data-om-id="word4" data-var-text="word4">BAROCCO</div>
+    <div data-layout-allow-overflow class="bw" id="w5" data-om-id="word5" data-var-text="word5">FAMIGLIA</div>
+  </div>
+
+  <!-- scene 1: leopard, then the print collapses into DOLCE -->
+  <div class="layer" id="w1world">
+    <div class="layer" id="leo1" data-om-id="leopard"></div>
+    <svg class="layer" id="s1svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+      <defs>
+        <pattern id="patLeo1" patternUnits="userSpaceOnUse" width="1080" height="1920"><image class="leoImg" width="1080" height="1920" preserveAspectRatio="none"/></pattern>
+        <clipPath id="clipDolce"><rect x="-200" y="560" width="1480" height="790"/></clipPath>
+      </defs>
+      <rect id="s1black" width="1080" height="1920" style="fill: var(--ink)" opacity="0"/>
+      <g id="dolceKnock" opacity="0" data-om-id="dolce">
+        <text id="dkText" class="anton" x="540" y="1180" text-anchor="middle" font-size="380" letter-spacing="4" fill="url(#patLeo1)">DOLCE</text>
+      </g>
+      <g id="dolceWhite" clip-path="url(#clipDolce)"></g>
+    </svg>
+  </div>
+
+  <!-- the drop: the name, stacked, in its prints -->
+  <svg class="layer" id="hero" viewBox="0 0 1080 1920" width="1080" height="1920" opacity="0" data-om-id="wordmark-stack">
+    <defs>
+      <pattern id="patLeo2" patternUnits="userSpaceOnUse" width="1080" height="1920"><image class="leoImg" width="1080" height="1920" preserveAspectRatio="none"/></pattern>
+      <pattern id="patTile" patternUnits="userSpaceOnUse" width="150" height="150"><image class="tileImg" width="150" height="150"/></pattern>
+      <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#8a6526"/><stop offset=".42" stop-color="#f1d892"/><stop offset=".58" stop-color="#b8913f"/><stop offset=".78" stop-color="#f6e3a6"/><stop offset="1" stop-color="#8c6a2c"/>
+      </linearGradient>
+    </defs>
+    <rect width="1080" height="1920" style="fill: var(--ink)"/>
+    <g id="heroCam">
+    <g id="hRules" opacity="1">
+      <rect id="ruleL" x="96" y="1004" width="300" height="3" style="fill: var(--gold)"/>
+      <rect id="ruleR" x="684" y="1004" width="300" height="3" style="fill: var(--gold)"/>
+    </g>
+    <g id="hD"><text class="anton" x="540" y="842" text-anchor="middle" font-size="356" letter-spacing="4" fill="url(#patLeo2)">DOLCE</text></g>
+    <g id="hA" data-om-id="ampersand"><text class="pf" x="540" y="1092" text-anchor="middle" font-size="290" fill="url(#gGold)">&amp;</text></g>
+    <g id="hG"><text class="anton" x="540" y="1440" text-anchor="middle" font-size="262" letter-spacing="2" fill="url(#patTile)">GABBANA</text></g>
+    </g>
+  </svg>
+
+  <!-- the lockup -->
+  <div class="layer" id="endCam">
+  <div id="lock" data-om-id="lockup"><span class="lw">DOLCE</span><span class="la">&amp;</span><span class="lw">GABBANA</span></div>
+  <div id="rule" data-om-id="rule"></div>
+  <div id="tag" data-om-id="tagline" data-var-text="tagline">MILANO · DAL 1985</div>
+  </div>
+</div>
+
+<script src="vendor/om.js"></script>
+<script>
+OM.music({ src: 'assets/music/dg-cue.wav', name: 'Forward Drive (cut for this film)', start: 0, arrange: 'off', bpm: 120, fade: 0.15 });
+const V = OM.vars();
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+
+// ---------- the prints (generated once, deterministic) ----------
+const LEO = DGPrints.leopard(1620, 2880, 7);
+const ZEB = DGPrints.zebra(1080, 1920, 3);
+const TILE = DGPrints.majolicaSVG();
+$('#leo1').style.background = `url(${LEO}) 0 0 / 1080px 1920px`;
+$('#pLeoB').style.backgroundImage = `url(${LEO})`;
+$('#pZeb').style.backgroundImage = `url(${ZEB})`;
+['#tiles', '#pTile', '#pTile2'].forEach((s) => { $(s).style.backgroundImage = `url(${TILE})`; });
+$$('.leoImg').forEach((el) => el.setAttribute('href', LEO));
+$$('.tileImg').forEach((el) => el.setAttribute('href', TILE));
+const decode = (src) => { const i = new Image(); i.src = src; return i.decode().catch(() => {}); };
+const ready = Promise.all([decode(LEO), decode(ZEB), decode(TILE), document.fonts.ready]);
+
+// ---------- DOLCE in white, one letter at a time, at the knockout's exact glyph positions ----------
+const dk = $('#dkText');
+const whiteLetters = [];
+'DOLCE'.split('').forEach((ch, i) => {
+  const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  t.setAttribute('class', 'anton'); t.setAttribute('font-size', '380'); t.setAttribute('y', '1180');
+  t.style.fill = 'var(--paper)'; t.textContent = ch;
+  $('#dolceWhite').appendChild(t); whiteLetters.push(t);
+});
+function placeLetters() {
+  for (let i = 0; i < 5; i++) { const b = dk.getExtentOfChar(i); whiteLetters[i].setAttribute('x', b.x.toFixed(2)); }
+}
+placeLetters();
+(OM.ready || ((p) => p))(ready.then(placeLetters));
+
+// ---------- timeline ----------
+const B = (n) => n * 0.5;           // 120 bpm on the cue's own grid (assets/music/dg-cue.wav: bar lines at 0, 2, 4 … s)
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'expo.out' } });
+const show = (sel, at) => tl.set(sel, { opacity: 1 }, at);
+const hide = (sel, at) => tl.set(sel, { opacity: 0 }, at);
+
+// scene 1 · hook: leopard full bleed, camera pulling back; DOLCE slams in letter by letter, then the print collapses into it
+tl.addLabel('scene:hook', 0);
+tl.fromTo('#w1world', { scale: 1.32 }, { scale: 1, duration: B(4), ease: 'expo.out', immediateRender: true }, 0);
+whiteLetters.forEach((el, i) => {
+  tl.fromTo(el, { y: i === 0 ? 90 : 560 }, { y: 0, duration: 0.34, ease: 'expo.out', immediateRender: true }, i === 0 ? 0 : B(0.5 * i) - 0.04);
+});
+tl.set('#s1black', { attr: { opacity: 1 } }, B(2));
+tl.set('#dolceKnock', { attr: { opacity: 1 } }, B(2));
+tl.set('#dolceWhite', { opacity: 0 }, B(2));
+OM.sfx('thud', B(2), { gain: 0.8 });
+// the leopard keeps moving inside the letters
+tl.fromTo('#dolceKnock', { scale: 1.12, transformOrigin: '50% 50%' }, { scale: 1, duration: B(2), ease: 'power3.out', immediateRender: false }, B(2));
+const drift1 = { v: 0 };
+tl.fromTo(drift1, { v: 0 }, { v: 1, duration: B(2), ease: 'power1.in', immediateRender: false,
+  onUpdate() { $('#patLeo1').setAttribute('patternTransform', `translate(0 ${(-190 * drift1.v).toFixed(2)})`); } }, B(2));
+
+// scene 2 · the black ground collapses into a band; the maiolica floor rises; GABBANA slams in
+tl.addLabel('scene:tiles', B(4));
+tl.set('#s1black', { attr: { opacity: 0 } }, B(4));
+hide('#leo1', B(4));
+tl.fromTo('#band', { scaleY: 1920 / 340 }, { scaleY: 1, duration: 0.42, ease: 'expo.inOut', immediateRender: true }, B(4));
+tl.fromTo('#dolceKnock', { y: 0 }, { y: -1300, duration: 0.34, ease: 'power3.in', immediateRender: false }, B(4));
+tl.set('#dolceKnock', { attr: { opacity: 0 } }, B(4) + 0.36);
+tl.fromTo('#tiles', { rotationX: 72, rotationZ: 14, z: -300 }, { rotationX: 0, rotationZ: 0, z: 0, duration: B(3), ease: 'expo.out', immediateRender: true }, B(4));
+tl.fromTo('#tiles', { y: 0 }, { y: -420, duration: B(4), ease: 'none', immediateRender: true }, B(4));
+show('#wGab', B(4) + 0.12);
+tl.fromTo('#wGab', { yPercent: 100 }, { yPercent: 0, duration: 0.3, immediateRender: false }, B(4) + 0.12);
+tl.fromTo('#wGab', { letterSpacing: '4px' }, { letterSpacing: '18px', duration: B(3), ease: 'power1.inOut', immediateRender: false }, B(5));
+OM.sfx('whoosh', B(4), { gain: 0.7 });
+
+// scene 3 · burst: the band holds still, the house prints change behind it on every beat
+tl.addLabel('scene:burst', B(8));
+hide('#floor', B(8)); hide('#wGab', B(8));
+const shots = [
+  { p: '#pRed', w: '#w1', from: { scale: 1.14 }, to: { scale: 1 } },
+  { p: '#pTile', w: '#w2', from: { rotation: -9, scale: 1.18 }, to: { rotation: 0, scale: 1 } },
+  { p: '#pZeb', w: '#w3', from: { x: -150 }, to: { x: 0 } },
+  { p: '#pGold', w: '#w4', from: { scale: 1.12 }, to: { scale: 1 } },
+  { p: '#pDots', w: '#w5', from: { y: -110 }, to: { y: 0 } },
+];
+shots.forEach((s, i) => {
+  const at = B(8 + i);
+  show(s.p, at); show(s.w, at);
+  if (i) { hide(shots[i - 1].p, at); hide(shots[i - 1].w, at); }
+  tl.fromTo(s.p, s.from, { ...s.to, duration: B(1), ease: 'power2.out', immediateRender: false }, at);
+  tl.fromTo(s.w, { yPercent: 70, scaleX: 1.25 }, { yPercent: 0, scaleX: 1, duration: 0.2, immediateRender: false }, at);
+  OM.sfx('hit', at, { gain: 0.55, pitch: 1 + i * 0.05 });
+});
+tl.fromTo('#pGold .sheen', { x: 0 }, { x: 1900, duration: B(1), ease: 'power2.inOut', immediateRender: false }, B(11));
+// accelerate: four half-beat flashes, no words, the band thins
+const flashes = [
+  { p: '#pLeoB', from: { scale: 1.2 }, to: { scale: 1.05 } },
+  { p: '#pTile2', from: { rotation: 12, scale: 1.3 }, to: { rotation: 6, scale: 1.2 } },
+  { p: '#pRed', from: { scale: 1.1 }, to: { scale: 1 } },
+  { p: '#pZeb', from: { x: 120 }, to: { x: 40 } },
+];
+hide('#pDots', B(13)); hide('#w5', B(13));
+flashes.forEach((f, i) => {
+  const at = B(13 + i * 0.5);
+  show(f.p, at); if (i) hide(flashes[i - 1].p, at);
+  tl.fromTo(f.p, f.from, { ...f.to, duration: B(0.5), ease: 'none', immediateRender: false }, at);
+  OM.sfx('tick', at, { gain: 0.6, pitch: 1.1 + i * 0.08 });
+});
+tl.fromTo('#band', { scaleY: 1 }, { scaleY: 0.34, duration: B(2), ease: 'power2.in', immediateRender: false }, B(13));
+
+// the stop: the band swallows the frame, one small gold ampersand
+tl.addLabel('scene:stop', B(15));
+tl.fromTo('#band', { scaleY: 0.34 }, { scaleY: 1920 / 340 + 0.2, duration: 0.2, ease: 'expo.out', immediateRender: false }, B(15));
+hide('#pZeb', B(15) + 0.2);
+show('#hero', B(15) + 0.06);
+tl.set(['#hD', '#hG'], { opacity: 0 }, B(15) + 0.06);
+tl.set('#hRules', { opacity: 0 }, 0);
+tl.fromTo('#hA', { scale: 0.32, opacity: 0, transformOrigin: '50% 50%' }, { scale: 0.42, opacity: 1, duration: B(1), ease: 'power2.out', immediateRender: true }, B(15) + 0.06);
+
+// the drop: DOLCE from above in leopard, GABBANA from below in maiolica, the ampersand springs to full size
+tl.addLabel('scene:drop', B(16));
+tl.set(['#hD', '#hG'], { opacity: 1 }, B(16));
+tl.fromTo('#hD', { y: -900 }, { y: 0, duration: 0.32, immediateRender: false }, B(16));
+tl.fromTo('#hG', { y: 900 }, { y: 0, duration: 0.32, immediateRender: false }, B(16));
+tl.fromTo('#hA', { scale: 0.42 }, { scale: 1, duration: 0.9, ease: OM.spring(0.22), immediateRender: false }, B(16));
+tl.fromTo('#hero', { scale: 1.16, transformOrigin: '50% 50%' }, { scale: 1, duration: B(4), ease: 'expo.out', immediateRender: false }, B(16));
+OM.sfx('reverse', B(16), { gain: 0.7, dur: 0.5 });
+OM.sfx('impact', B(16) + 0.001, { gain: 0.9 });
+// the prints keep living inside the letters
+const drift = { v: 0 };
+tl.fromTo(drift, { v: 0 }, { v: 1, duration: B(6), ease: 'none', immediateRender: false,
+  onUpdate() {
+    $('#patLeo2').setAttribute('patternTransform', `translate(${(-70 * drift.v).toFixed(2)} ${(-230 * drift.v).toFixed(2)})`);
+    $('#patTile').setAttribute('patternTransform', `translate(${(180 * drift.v).toFixed(2)} 0)`);
+  } }, B(16));
+// bar 4½: gold rules open out from the ampersand; the camera leans in
+tl.set('#hRules', { opacity: 1 }, B(18));
+tl.fromTo('#ruleL', { scaleX: 0, transformOrigin: '100% 50%' }, { scaleX: 1, duration: 0.6, immediateRender: false }, B(18));
+tl.fromTo('#ruleR', { scaleX: 0, transformOrigin: '0% 50%' }, { scaleX: 1, duration: 0.6, immediateRender: false }, B(18));
+OM.sfx('draw', B(18), { gain: 0.45, dur: 0.5 });
+tl.fromTo('#heroCam', { scale: 1, transformOrigin: '50% 50%' }, { scale: 1.07, duration: B(4), ease: 'none', immediateRender: false }, B(18));
+tl.fromTo('#hA text', { rotation: -5, transformOrigin: '50% 60%' }, { rotation: 4, duration: B(6), ease: 'sine.inOut', immediateRender: false }, B(16));
+
+// bar 5: the prints swap letters on the beat
+tl.set('#hD text', { attr: { fill: 'url(#patTile)' } }, B(20));
+tl.set('#hG text', { attr: { fill: 'url(#patLeo2)' } }, B(20));
+tl.fromTo('#hero', { scale: 1.05 }, { scale: 1, duration: B(2), ease: 'expo.out', immediateRender: false }, B(20));
+OM.sfx('hit', B(20), { gain: 0.5 });
+
+// the squeeze: the stack folds into the lockup
+tl.addLabel('scene:lockup', B(22));
+tl.fromTo('#hD', { y: 0 }, { y: 150, duration: 0.42, ease: 'power3.inOut', immediateRender: false }, B(22));
+tl.fromTo('#hG', { y: 0 }, { y: -150, duration: 0.42, ease: 'power3.inOut', immediateRender: false }, B(22));
+tl.fromTo('#hero', { scale: 1, opacity: 1 }, { scale: 0.2, opacity: 0, duration: 0.42, ease: 'power3.inOut', immediateRender: false }, B(22));
+show('#lock', B(22) + 0.2);
+tl.fromTo('#lock', { opacity: 0, scale: 1.25 }, { opacity: 1, scale: 1, duration: 0.7, immediateRender: false }, B(22) + 0.2);
+tl.fromTo('#lock .lw', { letterSpacing: '0.6em' }, { letterSpacing: '0.16em', duration: 1.3, immediateRender: false }, B(22) + 0.2);
+OM.sfx('whip', B(22), { gain: 0.55 });
+// bar 6, on the track's home-chord hit: the rule and the city
+tl.fromTo('#rule', { scaleX: 0 }, { scaleX: 1, duration: 0.7, immediateRender: true }, B(24));
+tl.fromTo('#tag', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.8, immediateRender: true }, B(24) + 0.1);
+OM.sfx('chime', B(24), { gain: 0.45 });
+// the camera keeps leaning in on the mark until the last frame
+tl.fromTo('#endCam', { scale: 1 }, { scale: 1.1, duration: B(24) + V.endHold - B(22) - 0.3, ease: 'none', immediateRender: true }, B(22) + 0.3);
+tl.to({}, { duration: V.endHold }, B(24));
+
+window.__timelines['dg'] = tl;
+</script>
+</body>
+</html>
