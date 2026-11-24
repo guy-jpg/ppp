@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8">
+<script src="../vendor/gsap.min.js"></script>
+<style>html,body{margin:0;background:#000}#r{position:relative;width:2160px;height:1920px}
+#a{position:absolute;left:0;top:0;width:1080px;height:1920px;background-size:1080px 1920px}
+#b{position:absolute;left:1080px;top:0;width:1080px;height:960px;background-size:1080px 1920px}
+#c{position:absolute;left:1080px;top:960px;width:1080px;height:960px;background-size:240px 240px}</style>
+<script src="../assets/prints.js"></script></head><body>
+<div id="r" data-composition-id="t" data-width="2160" data-height="1920"><div id="a"></div><div id="b"></div><div id="c"></div></div>
+<script>
+const t0=performance.now();
+const L=DGPrints.leopard(1620,2880,7); const t1=performance.now();
+const Z=DGPrints.zebra(1080,1920,3); const t2=performance.now();
+document.getElementById('a').style.backgroundImage=`url(${L})`;
+document.getElementById('b').style.backgroundImage=`url(${Z})`;
+document.getElementById('c').style.backgroundImage=`url(${DGPrints.majolicaSVG()})`;
+console.log('leopard ms',t1-t0,'zebra ms',t2-t1);
+window.__timelines={t:gsap.timeline({paused:true}).to({}, {duration:1})};
+</script></body></html>
