@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: clarifies-underspecified-documentary
+expected_outcome: |
+  The request leaves out essential production details (length, platform/aspect ratio,
+  narration, intended use), so the skill asks a short batch of clarifying questions, each
+  with a sensible default, instead of guessing and building a full video. It may start
+  harmless setup (environment check), but it does not claim any video was rendered and does
+  not present invented archive items or URLs as found sources.

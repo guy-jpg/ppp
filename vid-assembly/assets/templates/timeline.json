@@ -1,0 +1,13 @@
+{
+  "schema": "vid-assembly/timeline@1",
+  "title": "{{TITLE}}",
+  "output": {"preset": "youtube-1080p"},
+  "clips": [
+    {"id": "S00-title", "scene": "S00", "type": "title", "text": "{{TITLE}}", "duration": 4, "fade_in": 0.5}
+  ],
+  "narration": [],
+  "music": [],
+  "sfx": [],
+  "titles": [],
+  "captions": {}
+}

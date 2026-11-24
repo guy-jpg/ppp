@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: assembles-supplied-clips-vertical
+expected_outcome: |
+  All essential details are given, so the skill proceeds without asking. It builds a timeline
+  from the supplied clips, voiceover and music (music ducked under the voice), generates
+  captions from the provided voiceover text, renders a 1080x1920 MP4 of roughly 20 seconds
+  with burned-in captions into an exports folder, runs QC, and reports the real output path,
+  duration and QC status. It claims a render only because the renderer actually produced the file.
+context:
+  scaffold_script: place-files.sh

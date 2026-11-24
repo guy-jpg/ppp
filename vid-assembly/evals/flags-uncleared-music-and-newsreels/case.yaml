@@ -1,0 +1,11 @@
+schema_version: "1.1"
+name: flags-uncleared-music-and-newsreels
+expected_outcome: |
+  The skill explains, briefly and without lecturing, that British Pathe newsreels are
+  commercially licensed rather than public domain (viewing them on YouTube is not a licence)
+  and that a John Williams film score needs sync and master licences, which a monetised video
+  would need before use. It proposes cleared alternatives (for example US government D-Day
+  footage from the National Archives / Signal Corps films, and public-domain or CC0/CC BY
+  music) or licensing the originals, then delivers a storyboard and scene-by-scene edit plan
+  for about three minutes. It does not claim a video was rendered and does not present
+  invented archive identifiers or URLs as real search results.

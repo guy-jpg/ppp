@@ -1,0 +1,176 @@
+{
+  "schema": "vid-assembly/timeline@1",
+  "title": "The Long Signal",
+  "output": {
+    "preset": "youtube-1080p",
+    "path": "exports/the-long-signal_v1.mp4"
+  },
+  "clips": [
+    {
+      "id": "S00-title",
+      "scene": "S00",
+      "type": "title",
+      "text": "THE LONG SIGNAL",
+      "subtext": "A story in five minutes",
+      "duration": 3.5,
+      "fade_in": 0.5,
+      "style": {
+        "font": "DejaVu Serif"
+      }
+    },
+    {
+      "id": "S01-01",
+      "scene": "S01",
+      "source": "media/archival/dish_construction.mp4",
+      "in": "00:01:12.0",
+      "out": "00:01:17.0",
+      "transition": {
+        "type": "dip_to_black",
+        "duration": 1.0
+      },
+      "audio_gain_db": -12,
+      "asset_id": "A001",
+      "description": "WS: crane lifts dish panel"
+    },
+    {
+      "id": "S01-02",
+      "scene": "S01",
+      "source": "media/stills/control_room_1961.jpg",
+      "duration": 5,
+      "motion": {
+        "zoom": [
+          1.0,
+          1.2
+        ],
+        "focus": [
+          0.7,
+          0.4
+        ]
+      },
+      "transition": "dissolve",
+      "asset_id": "A002",
+      "description": "Engineers at the console; push towards the operator's face"
+    },
+    {
+      "id": "S01-03",
+      "scene": "S01",
+      "source": "media/archival/generic_radio_lab.mov",
+      "in": 0.5,
+      "out": 4.5,
+      "grade": "bw",
+      "label": "illustrative",
+      "asset_id": "A003",
+      "description": "Generic 1950s lab footage, not the actual team"
+    },
+    {
+      "id": "S02-01",
+      "scene": "S02",
+      "source": "media/archival/receiver_dv.mp4",
+      "in": 0,
+      "out": 4,
+      "transition": {
+        "type": "wipe_left",
+        "duration": 0.5
+      },
+      "asset_id": "A004",
+      "description": "MCU: receiver dial (DV transfer, anamorphic, interlaced)"
+    },
+    {
+      "id": "S02-02",
+      "scene": "S02",
+      "source": "media/stills/lead_engineer_portrait.png",
+      "duration": 4,
+      "fit": "blur",
+      "motion": "tilt_down",
+      "transition": "dissolve",
+      "asset_id": "A005",
+      "description": "Portrait of the lead engineer"
+    },
+    {
+      "id": "S02-03",
+      "scene": "S02",
+      "source": "media/archival/dish_construction.mp4",
+      "in": "00:02:40.0",
+      "freeze": true,
+      "duration": 3,
+      "motion": "push_in",
+      "fade_out": 1.0,
+      "asset_id": "A001",
+      "description": "Final image: the dish at dusk, frozen"
+    }
+  ],
+  "narration": [
+    {
+      "id": "VO01",
+      "source": "audio/narration/vo01.wav",
+      "at_clip": "S01-01",
+      "offset": 0.5,
+      "text": "In the spring of 1961, a small team of engineers set out to send a signal farther than anyone had tried. Their equipment was improvised, their budget was thin, and nobody expected them to succeed."
+    },
+    {
+      "id": "VO02",
+      "source": "audio/narration/vo02.wav",
+      "at_scene": "S02",
+      "offset": 0.3,
+      "text": "But on a cold night in March, the receiver crackled to life. The long signal had arrived."
+    }
+  ],
+  "music": [
+    {
+      "id": "M01",
+      "source": "audio/music/slow_build.wav",
+      "start": 0,
+      "until_end": true,
+      "gain_db": -16,
+      "fade_in": 2,
+      "fade_out": 3,
+      "asset_id": "A006"
+    }
+  ],
+  "sfx": [
+    {
+      "id": "X01",
+      "source": "audio/sfx/radio_static_burst.wav",
+      "at_clip": "S02-01",
+      "offset": -0.3,
+      "gain_db": -10,
+      "asset_id": "A007"
+    }
+  ],
+  "titles": [
+    {
+      "text": "Jodrell Bank, England\nMarch 1961",
+      "at_clip": "S01-02",
+      "offset": 0.8,
+      "duration": 3.5,
+      "style": "lower_third"
+    },
+    {
+      "text": "ILLUSTRATIVE FOOTAGE",
+      "at_clip": "S01-03",
+      "offset": 0.2,
+      "duration": 2.5,
+      "style": "top_left",
+      "size": 28,
+      "box": false,
+      "color": "white@0.8"
+    }
+  ],
+  "captions": {
+    "file": "captions/en.srt",
+    "mode": "burn",
+    "language": "eng"
+  },
+  "mix": {
+    "normalize_sources": true,
+    "reference_lufs": -18,
+    "ducking": {
+      "enabled": true,
+      "targets": [
+        "music",
+        "program"
+      ],
+      "amount_db": 10
+    }
+  }
+}
